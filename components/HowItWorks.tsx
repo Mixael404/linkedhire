@@ -1,3 +1,5 @@
+import { HiArrowRight, HiChevronRight } from "react-icons/hi2";
+
 const steps = [
   {
     n: "01",
@@ -30,7 +32,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how" className="py-24 bg-[#0A0D1F]">
+    <section id="how" className="py-20 bg-[#0A0D1F]">
       <div className="absolute left-0 right-0 h-px divider" />
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-16">
@@ -78,26 +80,21 @@ export default function HowItWorks() {
                   {step.desc}
                 </p>
                 <div className="flex items-start gap-2">
-                  <span className="text-[#3B82F6] mb-0.5 flex-shrink-0 relative bottom-1">
-                    →
-                  </span>
+                  <HiArrowRight
+                    className="text-[#3B82F6] shrink-0 mt-0.5"
+                    size={15}
+                  />
                   <span className="text-[#64748B] text-sm">{step.detail}</span>
                 </div>
               </div>
 
               {/* Progress indicator */}
               {i < steps.length - 1 && (
-                <div className="hidden sm:flex items-center text-[#1B2847]">
-                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path
-                      d="M9 18l6-6-6-6"
-                      stroke="#2563EB"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      opacity="0.4"
-                    />
-                  </svg>
+                <div className="hidden sm:flex items-center">
+                  <HiChevronRight
+                    className="text-[#2563EB] opacity-40"
+                    size={24}
+                  />
                 </div>
               )}
             </div>

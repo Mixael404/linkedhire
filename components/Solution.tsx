@@ -1,31 +1,41 @@
-const features = [
+import {
+  HiViewfinderCircle,
+  HiPencilSquare,
+  HiGlobeAlt,
+  HiMapPin,
+  HiDocumentText,
+  HiKey,
+} from "react-icons/hi2";
+import { ReactNode } from "react";
+
+const features: { icon: ReactNode; title: string; desc: string }[] = [
   {
-    icon: "🎯",
+    icon: <HiViewfinderCircle size={22} />,
     title: "Анализируем твой опыт",
     desc: "Загружаешь резюме или описываешь опыт - мы понимаем, кто ты как специалист и в чём твоя ценность.",
   },
   {
-    icon: "✍️",
+    icon: <HiPencilSquare size={22} />,
     title: "Создаём сильный профиль",
     desc: "Headline, About, Experience - всё переписываем под международные стандарты на языке, который понимают рекрутеры.",
   },
   {
-    icon: "🌍",
+    icon: <HiGlobeAlt size={22} />,
     title: "Адаптируем под страну",
     desc: "США, Германия, Великобритания - у каждого рынка свои ожидания. Мы адаптируем профиль под нужный регион.",
   },
   {
-    icon: "🗺️",
+    icon: <HiMapPin size={22} />,
     title: "Показываем, что именно изменить в LinkedIn",
     desc: "Точные инструкции: куда нажать, что скопировать, что изменить в LinkedIn. Без догадок.",
   },
   {
-    icon: "📄",
+    icon: <HiDocumentText size={22} />,
     title: "Даём готовое резюме для откликов",
     desc: "ATS-friendly резюме для отклика на вакансии - в дополнение к LinkedIn-профилю.",
   },
   {
-    icon: "🔑",
+    icon: <HiKey size={22} />,
     title: "Добавляем ключевые слова",
     desc: "Нужные SEO-термины в профиле, чтобы LinkedIn-алгоритм показывал тебя по релевантным запросам.",
   },
@@ -33,7 +43,7 @@ const features = [
 
 export default function Solution() {
   return (
-    <section id="features" className="py-24">
+    <section id="features" className="py-20">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-14">
           <span className="section-label mb-4 inline-flex">Решение</span>
@@ -50,9 +60,9 @@ export default function Solution() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((f) => (
-            <div key={f.title} className="card p-6">
-              <div className="icon-box mb-4">{f.icon}</div>
+          {features.map((f, i) => (
+            <div key={i} className="card p-6">
+              <div className="icon-box text-[#3B82F6] mb-4">{f.icon}</div>
               <h3
                 className="text-white font-bold text-base mb-2"
                 style={{ fontFamily: "var(--font-geologica)" }}

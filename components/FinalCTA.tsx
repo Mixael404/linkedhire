@@ -1,6 +1,9 @@
+import CTAButton from "./ui/CTAButton";
+import { HiArrowRight } from "react-icons/hi2";
+
 export default function FinalCTA() {
   return (
-    <section className="py-28 relative overflow-hidden">
+    <section className="py-14 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid opacity-40" />
       <div
         className="absolute inset-0"
@@ -30,21 +33,10 @@ export default function FinalCTA() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-10">
-          <a
-            href="#"
-            className="btn-glow inline-flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-10 py-4 rounded-xl text-base font-bold transition-colors"
-          >
+          <CTAButton href="/onboarding">
             Начать бесплатно
-            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-              <path
-                d="M3 8h10M9 4l4 4-4 4"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </a>
+            <HiArrowRight size={16} />
+          </CTAButton>
         </div>
 
         {/* Reassurance */}
@@ -73,7 +65,7 @@ export default function FinalCTA() {
               ),
             )}
           </div>
-          <p className="text-[#64748B] text-sm mt-3">
+          <p className="text-[#64748B] text-sm mt-4">
             получить работу в{" "}
             <span className="text-white">
               США, Германии, Нидерландах и Великобритании

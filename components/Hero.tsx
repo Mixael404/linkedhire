@@ -1,3 +1,6 @@
+import CTAButton from "./ui/CTAButton";
+import { HiArrowRight } from "react-icons/hi2";
+
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
@@ -10,14 +13,14 @@ export default function Hero() {
       <div className="absolute top-1/3 left-10 w-64 h-64 rounded-full bg-[#2563EB]/5 blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-80 h-80 rounded-full bg-[#06B6D4]/5 blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-6xl mx-auto py-24 w-full">
+      <div className="relative max-w-6xl mx-auto py-20 w-full">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text content */}
           <div>
             <div className="anim-1 mb-6">
               <span className="section-label">
                 <span>✦</span>
-                LinkedIn-оптимизация для разработчиков
+                Работа в IT за рубежом · Удалёнка в USD/EUR
               </span>
             </div>
 
@@ -30,12 +33,11 @@ export default function Hero() {
               <span className="text-gradient">валютную удалёнку?</span>
             </h1>
 
-            <p
-              className="anim-3 text-2xl text-white leading-relaxed mb-10 max-w-lg font-bold"
-            >
-              Сделай LinkedIn, который проходит фильтры западных рекрутеров
+            <p className="anim-3 text-xl text-[#94A3B8] leading-relaxed mb-3 max-w-lg">
+              Пока российский IT-рынок закрывается, в США и Европе тысячи
+              remote-вакансий для разработчиков — без переезда и без идеального
+              английского.
             </p>
-
             <ul
               style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
               className="anim-3 text-lg text-[#94A3B8] leading-relaxed mb-10 max-w-lg"
@@ -46,21 +48,13 @@ export default function Hero() {
             </ul>
 
             <div className="anim-4 flex flex-col sm:flex-row gap-4 mb-10">
-              <a
-                href="#start"
-                className="btn-glow inline-flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl text-base font-bold transition-colors"
-              >
+              <CTAButton href="/onboarding">
                 Начать бесплатно
-                <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
-              <a
-                href="#how"
-                className="inline-flex items-center justify-center gap-2 border border-[#1B2847] hover:border-[#2563EB]/50 text-[#94A3B8] hover:text-white px-8 py-4 rounded-xl text-base font-medium transition-colors"
-              >
+                <HiArrowRight size={16} />
+              </CTAButton>
+              <CTAButton href="#how" variant="secondary">
                 Как это работает
-              </a>
+              </CTAButton>
             </div>
 
             <div className="anim-5 flex items-center gap-3 text-sm text-[#64748B]">
@@ -75,7 +69,8 @@ export default function Hero() {
                 ))}
               </div>
               <span>
-                <span className="text-white font-semibold">500+</span> разработчиков уже получают отклики с новым профилем
+                <span className="text-white font-semibold">500+</span>{" "}
+                разработчиков уже получают отклики с новым профилем
               </span>
             </div>
           </div>
@@ -98,15 +93,22 @@ export default function Hero() {
                       <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-400 border-2 border-[#0D1426]" />
                     </div>
                     <div className="flex-1 pt-1">
-                      <div className="font-bold text-white text-[15px]">Алексей Козлов</div>
+                      <div className="font-bold text-white text-[15px]">
+                        Алексей Козлов
+                      </div>
                       <div className="text-[#3B82F6] text-[13px] font-medium mt-1 leading-snug">
-                        Senior Backend Engineer · Python & Django<br />
+                        Senior Backend Engineer · Python & Django
+                        <br />
                         Fintech · Open to Remote EU/US
                       </div>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[#64748B] text-xs">📍 Москва</span>
+                        <span className="text-[#64748B] text-xs">
+                          📍 Москва
+                        </span>
                         <span className="text-[#64748B] text-xs">·</span>
-                        <span className="text-[#64748B] text-xs">500+ связей</span>
+                        <span className="text-[#64748B] text-xs">
+                          500+ связей
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -122,16 +124,28 @@ export default function Hero() {
                         key={stat.label}
                         className="bg-[#111D35] rounded-xl p-3 text-center border border-[#1B2847]"
                       >
-                        <div className="text-white font-bold text-lg leading-none">{stat.value}</div>
-                        <div className="text-[#64748B] text-[10px] mt-1">{stat.label}</div>
-                        <div className="text-green-400 text-[10px] font-semibold mt-0.5">{stat.delta}</div>
+                        <div className="text-white font-bold text-lg leading-none">
+                          {stat.value}
+                        </div>
+                        <div className="text-[#64748B] text-[10px] mt-1">
+                          {stat.label}
+                        </div>
+                        <div className="text-green-400 text-[10px] font-semibold mt-0.5">
+                          {stat.delta}
+                        </div>
                       </div>
                     ))}
                   </div>
 
                   {/* Skills */}
                   <div className="flex flex-wrap gap-2">
-                    {["Python", "Django", "FastAPI", "PostgreSQL", "Remote"].map((skill) => (
+                    {[
+                      "Python",
+                      "Django",
+                      "FastAPI",
+                      "PostgreSQL",
+                      "Remote",
+                    ].map((skill) => (
                       <span
                         key={skill}
                         className="text-xs bg-[#111D35] border border-[#1B2847] text-[#94A3B8] px-2.5 py-1 rounded-full"
@@ -150,11 +164,16 @@ export default function Hero() {
 
               {/* Floating recruiter message */}
               <div className="absolute -bottom-4 -left-4 card p-3 rounded-xl text-xs max-w-[200px] border-[#2563EB]/30">
-                <div className="text-[#64748B] mb-1">Рекрутер · TechCorp Berlin</div>
-                <div className="text-[#F1F5F9] font-medium">
-                  &quot;Hi Alexey! We&apos;d love to discuss a Senior Backend role...&quot;
+                <div className="text-[#64748B] mb-1">
+                  Рекрутер · TechCorp Berlin
                 </div>
-                <div className="text-green-400 text-[10px] mt-1.5 font-semibold">Только что</div>
+                <div className="text-[#F1F5F9] font-medium">
+                  &quot;Hi Alexey! We&apos;d love to discuss a Senior Backend
+                  role...&quot;
+                </div>
+                <div className="text-green-400 text-[10px] mt-1.5 font-semibold">
+                  Только что
+                </div>
               </div>
             </div>
           </div>

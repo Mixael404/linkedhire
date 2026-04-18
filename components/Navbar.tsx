@@ -1,3 +1,5 @@
+import CTAButton from "./ui/CTAButton";
+
 export default function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-[#1B2847]/60 bg-[#07091A]/80 backdrop-blur-md">
@@ -20,12 +22,9 @@ export default function Navbar() {
           <a href="#start" className="hover:text-white transition-colors">Примеры</a>
         </nav>
 
-        <a
-          href="#start"
-          className="btn-glow bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
-        >
+        <CTAButton href="/onboarding" size="sm">
           Начать бесплатно
-        </a>
+        </CTAButton>
       </div>
     </header>
   );

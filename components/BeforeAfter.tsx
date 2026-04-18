@@ -1,3 +1,6 @@
+import CTAButton from "./ui/CTAButton";
+import { HiXMark, HiCheck, HiArrowRight } from "react-icons/hi2";
+
 const comparisons = [
   {
     section: "Headline",
@@ -26,7 +29,7 @@ const comparisons = [
 
 export default function BeforeAfter() {
   return (
-    <section id="start" className="py-24">
+    <section id="start" className="py-20">
       <div className="max-w-5xl mx-auto px-6">
         <div className="text-center mb-14">
           <span className="section-label mb-4 inline-flex">До и после</span>
@@ -59,8 +62,8 @@ export default function BeforeAfter() {
                 {/* Before */}
                 <div className="before-card p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400 text-xs">
-                      ✕
+                    <span className="w-5 h-5 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
+                      <HiXMark size={13} />
                     </span>
                     <span className="text-red-400 text-xs font-semibold uppercase tracking-wider">
                       До
@@ -74,8 +77,8 @@ export default function BeforeAfter() {
                 {/* After */}
                 <div className="after-card p-5">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 text-xs">
-                      ✓
+                    <span className="w-5 h-5 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400">
+                      <HiCheck size={13} />
                     </span>
                     <span className="text-[#3B82F6] text-xs font-semibold uppercase tracking-wider">
                       После
@@ -96,21 +99,10 @@ export default function BeforeAfter() {
 
         {/* CTA after comparison */}
         <div className="mt-12 text-center">
-          <a
-            href="#start"
-            className="btn-glow inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl text-base font-bold transition-colors"
-          >
+          <CTAButton href="/onboarding">
             Получить такой профиль
-            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
-              <path
-                d="M3 8h10M9 4l4 4-4 4"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </a>
+            <HiArrowRight size={16} />
+          </CTAButton>
         </div>
       </div>
     </section>
