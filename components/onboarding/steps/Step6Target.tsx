@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
 import { OnboardingData } from "../../../types/onboarding";
-import Flags from "country-flag-icons/react/3x2";
+import * as Flags from "country-flag-icons/react/3x2";
 
 function FlagIcon({ code, className }: { code: string; className?: string }) {
   const Flag = (
@@ -15,41 +15,31 @@ function FlagIcon({ code, className }: { code: string; className?: string }) {
 }
 
 export const REGION_OPTIONS = [
-  { value: "worldwide", label: "Весь мир", group: "Общие", flag: null },
-  { value: "west", label: "Запад (в целом)", group: "Общие", flag: null },
-  { value: "eu", label: "ЕС (в целом)", group: "Общие", flag: "EU" },
-  {
-    value: "western_europe",
-    label: "Западная Европа",
-    group: "Общие",
-    flag: null,
-  },
-  {
-    value: "north_america",
-    label: "Северная Америка",
-    group: "Общие",
-    flag: null,
-  },
-  { value: "usa", label: "США", group: "Страны", flag: "US" },
-  { value: "germany", label: "Германия", group: "Страны", flag: "DE" },
-  { value: "netherlands", label: "Нидерланды", group: "Страны", flag: "NL" },
-  { value: "uk", label: "Великобритания", group: "Страны", flag: "GB" },
-  { value: "canada", label: "Канада", group: "Страны", flag: "CA" },
-  { value: "australia", label: "Австралия", group: "Страны", flag: "AU" },
-  { value: "switzerland", label: "Швейцария", group: "Страны", flag: "CH" },
-  { value: "austria", label: "Австрия", group: "Страны", flag: "AT" },
-  { value: "france", label: "Франция", group: "Страны", flag: "FR" },
-  { value: "sweden", label: "Швеция", group: "Страны", flag: "SE" },
-  { value: "norway", label: "Норвегия", group: "Страны", flag: "NO" },
-  { value: "denmark", label: "Дания", group: "Страны", flag: "DK" },
-  { value: "finland", label: "Финляндия", group: "Страны", flag: "FI" },
-  { value: "ireland", label: "Ирландия", group: "Страны", flag: "IE" },
-  { value: "poland", label: "Польша", group: "Страны", flag: "PL" },
-  { value: "czech", label: "Чехия", group: "Страны", flag: "CZ" },
-  { value: "portugal", label: "Португалия", group: "Страны", flag: "PT" },
-  { value: "spain", label: "Испания", group: "Страны", flag: "ES" },
-  { value: "israel", label: "Израиль", group: "Страны", flag: "IL" },
-  { value: "uae", label: "ОАЭ", group: "Страны", flag: "AE" },
+  { value: "Worldwide",       label: "Весь мир",         group: "Общие",  flag: null },
+  { value: "Western markets", label: "Запад (в целом)",  group: "Общие",  flag: null },
+  { value: "European Union",  label: "ЕС (в целом)",     group: "Общие",  flag: "EU" },
+  { value: "Western Europe",  label: "Западная Европа",  group: "Общие",  flag: null },
+  { value: "North America",   label: "Северная Америка", group: "Общие",  flag: null },
+  { value: "United States",   label: "США",              group: "Страны", flag: "US" },
+  { value: "Germany",         label: "Германия",         group: "Страны", flag: "DE" },
+  { value: "Netherlands",     label: "Нидерланды",       group: "Страны", flag: "NL" },
+  { value: "United Kingdom",  label: "Великобритания",   group: "Страны", flag: "GB" },
+  { value: "Canada",          label: "Канада",           group: "Страны", flag: "CA" },
+  { value: "Australia",       label: "Австралия",        group: "Страны", flag: "AU" },
+  { value: "Switzerland",     label: "Швейцария",        group: "Страны", flag: "CH" },
+  { value: "Austria",         label: "Австрия",          group: "Страны", flag: "AT" },
+  { value: "France",          label: "Франция",          group: "Страны", flag: "FR" },
+  { value: "Sweden",          label: "Швеция",           group: "Страны", flag: "SE" },
+  { value: "Norway",          label: "Норвегия",         group: "Страны", flag: "NO" },
+  { value: "Denmark",         label: "Дания",            group: "Страны", flag: "DK" },
+  { value: "Finland",         label: "Финляндия",        group: "Страны", flag: "FI" },
+  { value: "Ireland",         label: "Ирландия",         group: "Страны", flag: "IE" },
+  { value: "Poland",          label: "Польша",           group: "Страны", flag: "PL" },
+  { value: "Czech Republic",  label: "Чехия",            group: "Страны", flag: "CZ" },
+  { value: "Portugal",        label: "Португалия",       group: "Страны", flag: "PT" },
+  { value: "Spain",           label: "Испания",          group: "Страны", flag: "ES" },
+  { value: "Israel",          label: "Израиль",          group: "Страны", flag: "IL" },
+  { value: "UAE",             label: "ОАЭ",              group: "Страны", flag: "AE" },
 ];
 
 export const ENGLISH_LEVELS = [

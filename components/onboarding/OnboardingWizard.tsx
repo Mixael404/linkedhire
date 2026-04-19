@@ -22,7 +22,7 @@ import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
 import Step4Goals, { GOAL_OPTIONS, BLOCKER_OPTIONS, APPLICATIONS_OPTIONS } from "./steps/Step4Goals";
 import Step5WorkExperience, { MONTHS } from "./steps/Step5WorkExperience";
-import Step6Target, { REGION_OPTIONS, ENGLISH_LEVELS } from "./steps/Step6Target";
+import Step6Target, { ENGLISH_LEVELS } from "./steps/Step6Target";
 import { ROLES } from "../../constants/onboarding/roles";
 import { EXPERIENCE_OPTIONS } from "../../constants/onboarding/experience";
 import Link from "next/link";
@@ -55,9 +55,7 @@ function resolveFormData(data: OnboardingData) {
     APPLICATIONS_OPTIONS.find((a) => a.value === data.applicationsCount)
       ?.label ?? data.applicationsCount;
 
-  const targetRegion =
-    REGION_OPTIONS.find((r) => r.value === data.targetRegion)?.label ??
-    data.targetRegion;
+  const targetRegion = data.targetRegion;
 
   const englishLevelOpt = ENGLISH_LEVELS.find(
     (l) => l.value === data.englishLevel,
@@ -262,8 +260,18 @@ export default function OnboardingWizard() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   };
 
-  const onSubmit = methods.handleSubmit((data) => {
-    console.log("Form submitted:", resolveFormData(data));
+  const onSubmit = methods.handleSubmit(async (data) => {
+    const formData = resolveFormData(data);
+    console.log("[onSubmit] sending:", formData);
+
+    const res = await fetch("/api/generate-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ formData }),
+    });
+
+    const profile = await res.json();
+    console.log("[onSubmit] profile:", profile);
   });
 
   const watchedValues = methods.watch();
