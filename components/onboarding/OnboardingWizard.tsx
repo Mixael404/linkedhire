@@ -15,11 +15,16 @@ import ProgressBar from "./ProgressBar";
 import Step1StartMethod from "./steps/Step1StartMethod";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
+import Step4Goals from "./steps/Step4Goals";
+import Step5WorkExperience from "./steps/Step5WorkExperience";
+import Link from "next/link";
 
 const STEPS = [
   { label: "С чего начнём", component: Step1StartMethod },
   { label: "О тебе", component: Step2BasicInfo },
   { label: "Стек технологий", component: Step3Technologies },
+  { label: "Твои цели", component: Step4Goals },
+  { label: "Опыт работы", component: Step5WorkExperience },
 ];
 
 const TOTAL_STEPS = STEPS.length;
@@ -134,7 +139,7 @@ export default function OnboardingWizard() {
         {/* Header */}
         <header className="border-b border-[#1B2847]/60 bg-[#07091A]/80 backdrop-blur-md sticky top-0 z-30">
           <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-linear-to-br from-[#2563EB] to-[#06B6D4] flex items-center justify-center text-white font-bold text-sm">
                 L
               </div>
@@ -144,7 +149,7 @@ export default function OnboardingWizard() {
               >
                 Linked<span className="text-[#3B82F6]">Hire</span>
               </span>
-            </a>
+            </Link>
             <span className="text-[#64748B] text-sm">
               Шаг{" "}
               <span className="text-white font-semibold">{currentStep + 1}</span>

@@ -9,6 +9,7 @@ import BeforeAfter from "../components/BeforeAfter";
 import FinalCTA from "../components/FinalCTA";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";
+import 'simplebar-react/dist/simplebar.min.css';
 
 export default function Home() {
   return (

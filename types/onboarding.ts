@@ -1,3 +1,31 @@
+export interface WorkExperience {
+  company: string;
+  position: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  isCurrent: boolean;
+  tasks: string[];
+  technologies: string[];
+  achievements: string[];
+  needsAchievementHelp: boolean;
+}
+
+export const defaultWorkExperience: WorkExperience = {
+  company: "",
+  position: "",
+  startMonth: "",
+  startYear: "",
+  endMonth: "",
+  endYear: "",
+  isCurrent: false,
+  tasks: [""],
+  technologies: [],
+  achievements: [],
+  needsAchievementHelp: false,
+};
+
 export interface OnboardingData {
   // Step 1
   startMethod: "resume" | "manual" | "";
@@ -6,8 +34,16 @@ export interface OnboardingData {
   role: string;
   customRole: string;
   experience: string;
+  // Step 3
   technologies: string[];
   customTechnology: string;
+  // Step 4
+  goal: string;
+  blockers: string[];
+  blockersOther: string;
+  applicationsCount: string;
+  // Step 5
+  workExperiences: WorkExperience[];
 }
 
 export const defaultOnboardingData: OnboardingData = {
@@ -18,6 +54,11 @@ export const defaultOnboardingData: OnboardingData = {
   experience: "",
   technologies: [],
   customTechnology: "",
+  goal: "",
+  blockers: [],
+  blockersOther: "",
+  applicationsCount: "",
+  workExperiences: [],
 };
 
 export interface StoredOnboarding {
@@ -30,5 +71,7 @@ export const ONBOARDING_STORAGE_KEY = "linkedhire_onboarding";
 export const STEP_FIELDS: Record<number, (keyof OnboardingData)[]> = {
   0: ["startMethod"],
   1: ["role", "experience"],
-  2: [], // technologies is optional
+  2: [],
+  3: ["goal", "applicationsCount"],
+  4: [],
 };

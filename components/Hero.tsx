@@ -13,7 +13,7 @@ export default function Hero() {
       <div className="absolute top-1/3 left-10 w-64 h-64 rounded-full bg-[#2563EB]/5 blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 right-10 w-80 h-80 rounded-full bg-[#06B6D4]/5 blur-3xl pointer-events-none" />
 
-      <div className="relative max-w-6xl mx-auto py-20 w-full">
+      <div className="relative max-w-6xl mx-auto py-20 w-full px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left: Text content */}
           <div>
