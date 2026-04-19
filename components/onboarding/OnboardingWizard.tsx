@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { HiArrowRight, HiArrowLeft } from "react-icons/hi2";
 
@@ -35,9 +35,10 @@ function loadFromStorage(): StoredOnboarding | null {
 
 function saveToStorage(step: number, formData: OnboardingData) {
   try {
+    const { resumeFile: _, ...rest } = formData;
     localStorage.setItem(
       ONBOARDING_STORAGE_KEY,
-      JSON.stringify({ step, formData } satisfies StoredOnboarding)
+      JSON.stringify({ step, formData: rest } as StoredOnboarding)
     );
   } catch {}
 }
@@ -45,6 +46,7 @@ function saveToStorage(step: number, formData: OnboardingData) {
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  const lastParsedFile = useRef<string>("");
 
   const methods = useForm<OnboardingData>({
     defaultValues: defaultOnboardingData,
@@ -80,6 +82,16 @@ export default function OnboardingWizard() {
     const fields = STEP_FIELDS[currentStep];
     const isValid = await methods.trigger(fields);
     if (!isValid) return;
+
+    if (currentStep === 0) {
+      const { startMethod, resumeFile } = methods.getValues();
+      if (startMethod === "resume") {
+        const needsParsing = resumeFile !== lastParsedFile.current;
+        console.log(needsParsing ? `[Resume] Парсинг нужен: ${resumeFile}` : `[Resume] Файл не изменился, парсинг не нужен`);
+        if (needsParsing) lastParsedFile.current = resumeFile;
+      }
+    }
+
     setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   };
 
@@ -96,11 +108,15 @@ export default function OnboardingWizard() {
   const isStepComplete = (step: number): boolean => {
     const fields = STEP_FIELDS[step];
     if (!fields || fields.length === 0) return true;
-    return fields.every((f) => {
+    const baseValid = fields.every((f) => {
       const val = watchedValues[f];
       if (Array.isArray(val)) return val.length > 0;
       return !!val;
     });
+    if (step === 0 && watchedValues.startMethod === "resume") {
+      return baseValid && !!watchedValues.resumeFile;
+    }
+    return baseValid;
   };
 
   const CurrentStepComponent = STEPS[currentStep].component;

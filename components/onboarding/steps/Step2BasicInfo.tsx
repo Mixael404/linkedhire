@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { OnboardingData } from "../../../types/onboarding";
 import { ROLES, ROLE_GROUPS } from "../../../constants/onboarding/roles";
@@ -52,6 +53,10 @@ export default function Step2BasicInfo() {
 
   const role = watch("role");
   const experience = watch("experience");
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+
+  const toggleGroup = (group: string) =>
+    setOpenGroup((prev) => (prev === group ? null : group));
 
   register("role", { required: "Выбери специальность" });
   register("experience", { required: "Выбери опыт" });
@@ -74,29 +79,43 @@ export default function Step2BasicInfo() {
       <div className="mb-10">
         <SectionTitle>Кем ты работаешь?</SectionTitle>
 
-        {ROLE_GROUPS.map((group) => {
-          const groupRoles = ROLES.filter((r) => r.group === group);
-          const hasSelection = groupRoles.some((r) => r.value === role);
+        <div className="flex gap-2">
+          {[ROLE_GROUPS.filter((_, i) => i % 2 === 0), ROLE_GROUPS.filter((_, i) => i % 2 !== 0)].map(
+            (colGroups, colIdx) => (
+              <div key={colIdx} className="flex flex-col gap-2 flex-1">
+                {colGroups.map((group) => {
+                  const groupRoles = ROLES.filter((r) => r.group === group);
+                  const hasSelection = groupRoles.some((r) => r.value === role);
 
-          return (
-            <Accordion key={group} title={group} badge={hasSelection}>
-              <div className="flex flex-wrap gap-2">
-                {groupRoles.map((r) => (
-                  <Chip
-                    key={r.value}
-                    label={r.label}
-                    selected={role === r.value}
-                    onClick={() =>
-                      setValue("role", role === r.value ? "" : r.value, {
-                        shouldValidate: true,
-                      })
-                    }
-                  />
-                ))}
+                  return (
+                    <Accordion
+                      key={group}
+                      title={group}
+                      badge={hasSelection}
+                      open={openGroup === group}
+                      onToggle={() => toggleGroup(group)}
+                    >
+                      <div className="flex flex-wrap gap-2">
+                        {groupRoles.map((r) => (
+                          <Chip
+                            key={r.value}
+                            label={r.label}
+                            selected={role === r.value}
+                            onClick={() =>
+                              setValue("role", role === r.value ? "" : r.value, {
+                                shouldValidate: true,
+                              })
+                            }
+                          />
+                        ))}
+                      </div>
+                    </Accordion>
+                  );
+                })}
               </div>
-            </Accordion>
-          );
-        })}
+            )
+          )}
+        </div>
 
         {/* Custom input — показывается только при выборе "Другое" */}
         {role === "other" && (

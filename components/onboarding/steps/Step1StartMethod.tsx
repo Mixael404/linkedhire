@@ -13,8 +13,10 @@ const mockUploadFile = async (file: File): Promise<void> => {
 };
 
 function FileUploader() {
-  const [uploadState, setUploadState] = useState<UploadState>("idle");
-  const [fileName, setFileName] = useState<string>("");
+  const { setValue, getValues } = useFormContext<OnboardingData>();
+  const existing = getValues("resumeFile");
+  const [uploadState, setUploadState] = useState<UploadState>(existing ? "done" : "idle");
+  const [fileName, setFileName] = useState<string>(existing ?? "");
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -22,6 +24,7 @@ function FileUploader() {
     setFileName(file.name);
     setUploadState("uploading");
     await mockUploadFile(file);
+    setValue("resumeFile", file.name, { shouldValidate: true });
     setUploadState("done");
   };
 
@@ -47,6 +50,7 @@ function FileUploader() {
   const reset = () => {
     setUploadState("idle");
     setFileName("");
+    setValue("resumeFile", "");
     if (inputRef.current) inputRef.current.value = "";
   };
 

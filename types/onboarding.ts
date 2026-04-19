@@ -1,6 +1,7 @@
 export interface OnboardingData {
   // Step 1
   startMethod: "resume" | "manual" | "";
+  resumeFile: string;
   // Step 2
   role: string;
   customRole: string;
@@ -11,6 +12,7 @@ export interface OnboardingData {
 
 export const defaultOnboardingData: OnboardingData = {
   startMethod: "",
+  resumeFile: "",
   role: "",
   customRole: "",
   experience: "",

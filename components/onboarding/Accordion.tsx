@@ -7,10 +7,14 @@ interface AccordionProps {
   title: string;
   badge?: number | boolean;
   children: React.ReactNode;
+  open?: boolean;
+  onToggle?: () => void;
 }
 
-export default function Accordion({ title, badge, children }: AccordionProps) {
-  const [open, setOpen] = useState(false);
+export default function Accordion({ title, badge, children, open: controlledOpen, onToggle }: AccordionProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const toggle = onToggle ?? (() => setInternalOpen((o) => !o));
 
   const showNumericBadge = typeof badge === "number" && badge > 0;
   const showDotBadge = badge === true;
@@ -20,7 +24,7 @@ export default function Accordion({ title, badge, children }: AccordionProps) {
       {/* Header */}
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
         className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-[#111D35] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2.5">
