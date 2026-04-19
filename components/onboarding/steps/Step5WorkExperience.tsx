@@ -367,16 +367,18 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 value={techQuery}
                 onChange={e => { setTechQuery(e.target.value); setTechActiveIdx(-1); }}
                 onKeyDown={e => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    const value = techActiveIdx >= 0 && suggestions.length > 0
+                      ? suggestions[techActiveIdx]
+                      : techQuery.trim();
+                    if (value) { addTech(value); setTechActiveIdx(-1); }
+                    return;
+                  }
                   if (suggestions.length > 0) {
                     if (e.key === "ArrowDown") { e.preventDefault(); setTechActiveIdx(i => Math.min(i + 1, suggestions.length - 1)); return; }
                     if (e.key === "ArrowUp")   { e.preventDefault(); setTechActiveIdx(i => Math.max(i - 1, 0)); return; }
                     if (e.key === "Escape")    { setTechQuery(""); setTechActiveIdx(-1); return; }
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addTech(techActiveIdx >= 0 ? suggestions[techActiveIdx] : techQuery.trim());
-                      setTechActiveIdx(-1);
-                      return;
-                    }
                   }
                   if (e.key === "," && techQuery.trim()) { e.preventDefault(); addTech(techQuery.trim()); setTechActiveIdx(-1); }
                 }}
