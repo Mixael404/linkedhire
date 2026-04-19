@@ -3,14 +3,14 @@
 import { useFormContext } from "react-hook-form";
 import { OnboardingData } from "../../../types/onboarding";
 
-const GOAL_OPTIONS = [
+export const GOAL_OPTIONS = [
   { value: "remote_job", label: "Не могу найти нормальную работу — отклики не дают результата" },
   { value: "income", label: "Работаю, но понимаю, что на локальном рынке потолок по зарплате" },
   { value: "recruiter_responses", label: "Хочу выйти на удалёнку за границей, но не понимаю с чего начать" },
   { value: "learn_linkedin", label: "Ищу первую работу / только начинаю" },
 ];
 
-const BLOCKER_OPTIONS = [
+export const BLOCKER_OPTIONS = [
   { value: "no_replies", label: "Отправляю отклики, но в ответ - тишина" },
   // { value: "no_interviews", label: "Вообще не зовут на собеседования" },
   { value: "competition", label: "Слишком высокая конкуренция" },
@@ -20,7 +20,7 @@ const BLOCKER_OPTIONS = [
   { value: "other", label: "Другое" },
 ];
 
-const APPLICATIONS_OPTIONS = [
+export const APPLICATIONS_OPTIONS = [
   { value: "0-10", label: "0–10" },
   { value: "10-30", label: "10–30" },
   { value: "30-100", label: "30–100" },

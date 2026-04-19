@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { HiArrowRight, HiArrowLeft } from "react-icons/hi2";
+import { useForm, FormProvider, FieldPath } from "react-hook-form";
+import {
+  HiArrowRight,
+  HiArrowLeft,
+  HiExclamationTriangle,
+  HiXMark,
+} from "react-icons/hi2";
 
 import {
   OnboardingData,
@@ -15,9 +20,78 @@ import ProgressBar from "./ProgressBar";
 import Step1StartMethod from "./steps/Step1StartMethod";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
-import Step4Goals from "./steps/Step4Goals";
-import Step5WorkExperience from "./steps/Step5WorkExperience";
+import Step4Goals, { GOAL_OPTIONS, BLOCKER_OPTIONS, APPLICATIONS_OPTIONS } from "./steps/Step4Goals";
+import Step5WorkExperience, { MONTHS } from "./steps/Step5WorkExperience";
+import Step6Target, { REGION_OPTIONS, ENGLISH_LEVELS } from "./steps/Step6Target";
+import { ROLES } from "../../constants/onboarding/roles";
+import { EXPERIENCE_OPTIONS } from "../../constants/onboarding/experience";
 import Link from "next/link";
+
+function resolveFormData(data: OnboardingData) {
+  const role =
+    data.role === "other"
+      ? data.customRole
+      : (ROLES.find((r) => r.value === data.role)?.label ?? data.role);
+
+  const experience =
+    EXPERIENCE_OPTIONS.find((e) => e.value === data.experience)?.label ??
+    data.experience;
+
+  const startMethod =
+    data.startMethod === "resume"
+      ? "Загрузить резюме"
+      : data.startMethod === "manual"
+        ? "Заполнить вручную"
+        : data.startMethod;
+
+  const goal =
+    GOAL_OPTIONS.find((g) => g.value === data.goal)?.label ?? data.goal;
+
+  const blockers = data.blockers.map(
+    (b) => BLOCKER_OPTIONS.find((o) => o.value === b)?.label ?? b,
+  );
+
+  const applicationsCount =
+    APPLICATIONS_OPTIONS.find((a) => a.value === data.applicationsCount)
+      ?.label ?? data.applicationsCount;
+
+  const targetRegion =
+    REGION_OPTIONS.find((r) => r.value === data.targetRegion)?.label ??
+    data.targetRegion;
+
+  const englishLevelOpt = ENGLISH_LEVELS.find(
+    (l) => l.value === data.englishLevel,
+  );
+  const englishLevel = englishLevelOpt
+    ? `${englishLevelOpt.label} — ${englishLevelOpt.sublabel}`
+    : data.englishLevel;
+
+  const workExperiences = data.workExperiences.map((exp) => ({
+    ...exp,
+    startMonth:
+      MONTHS.find((m) => m.value === exp.startMonth)?.label ?? exp.startMonth,
+    endMonth: exp.isCurrent
+      ? "По настоящее время"
+      : (MONTHS.find((m) => m.value === exp.endMonth)?.label ?? exp.endMonth),
+    tasks: exp.tasks.filter((t) => t.trim()),
+    achievements: exp.achievements.filter((a) => a.trim()),
+  }));
+
+  return {
+    startMethod,
+    resumeFile: data.resumeFile,
+    role,
+    experience,
+    technologies: data.technologies,
+    goal,
+    blockers,
+    blockersOther: data.blockersOther,
+    applicationsCount,
+    workExperiences,
+    targetRegion,
+    englishLevel,
+  };
+}
 
 const STEPS = [
   { label: "С чего начнём", component: Step1StartMethod },
@@ -25,6 +99,7 @@ const STEPS = [
   { label: "Стек технологий", component: Step3Technologies },
   { label: "Твои цели", component: Step4Goals },
   { label: "Опыт работы", component: Step5WorkExperience },
+  { label: "Целевой рынок", component: Step6Target },
 ];
 
 const TOTAL_STEPS = STEPS.length;
@@ -43,7 +118,7 @@ function saveToStorage(step: number, formData: OnboardingData) {
     const { resumeFile: _, ...rest } = formData;
     localStorage.setItem(
       ONBOARDING_STORAGE_KEY,
-      JSON.stringify({ step, formData: rest } as StoredOnboarding)
+      JSON.stringify({ step, formData: rest } as StoredOnboarding),
     );
   } catch {}
 }
@@ -51,6 +126,11 @@ function saveToStorage(step: number, formData: OnboardingData) {
 export default function OnboardingWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  const [warningModal, setWarningModal] = useState<{
+    open: boolean;
+    warnings: string[];
+  }>({ open: false, warnings: [] });
+  const [stepError, setStepError] = useState<string | null>(null);
   const lastParsedFile = useRef<string>("");
 
   const methods = useForm<OnboardingData>({
@@ -83,6 +163,11 @@ export default function OnboardingWizard() {
     saveToStorage(currentStep, methods.getValues());
   }, [currentStep, hydrated]);
 
+  const advanceStep = () => {
+    setStepError(null);
+    setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  };
+
   const goNext = async () => {
     const fields = STEP_FIELDS[currentStep];
     const isValid = await methods.trigger(fields);
@@ -92,21 +177,93 @@ export default function OnboardingWizard() {
       const { startMethod, resumeFile } = methods.getValues();
       if (startMethod === "resume") {
         const needsParsing = resumeFile !== lastParsedFile.current;
-        console.log(needsParsing ? `[Resume] Парсинг нужен: ${resumeFile}` : `[Resume] Файл не изменился, парсинг не нужен`);
+        console.log(
+          needsParsing
+            ? `[Resume] Парсинг нужен: ${resumeFile}`
+            : `[Resume] Файл не изменился, парсинг не нужен`,
+        );
         if (needsParsing) lastParsedFile.current = resumeFile;
       }
     }
 
-    setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+    if (currentStep === 4) {
+      const experiences = methods.getValues("workExperiences");
+      methods.clearErrors("workExperiences");
+
+      // Hard validation
+      let hasHardErrors = false;
+      experiences.forEach((exp, i) => {
+        if (!exp.company) {
+          methods.setError(
+            `workExperiences.${i}.company` as FieldPath<OnboardingData>,
+            { message: "Укажи компанию" },
+          );
+          hasHardErrors = true;
+        }
+        if (!exp.position) {
+          methods.setError(
+            `workExperiences.${i}.position` as FieldPath<OnboardingData>,
+            { message: "Укажи должность" },
+          );
+          hasHardErrors = true;
+        }
+        if (!exp.startMonth || !exp.startYear) {
+          methods.setError(
+            `workExperiences.${i}.startMonth` as FieldPath<OnboardingData>,
+            { message: "Укажи период работы" },
+          );
+          hasHardErrors = true;
+        }
+      });
+      if (hasHardErrors) {
+        setStepError(
+          "Заполни обязательные поля (компания, должность, период работы), чтобы продолжить",
+        );
+        return;
+      }
+      setStepError(null);
+
+      // Soft warnings
+      const warnings: string[] = [];
+      if (experiences.length === 0) {
+        warnings.push(
+          "Рекомендуем заполнить опыт работы — наличие опыта многократно повышает шансы на успешный найм",
+        );
+      }
+      experiences.forEach((exp) => {
+        const name =
+          [exp.company, exp.position].filter(Boolean).join(" · ") ||
+          "Место работы";
+        if (exp.tasks.filter((t) => t.trim()).length < 2) {
+          warnings.push(
+            `${name} — рекомендуем указать не менее 2 задач, которые ты выполнял на данной позиции`,
+          );
+        }
+        if (
+          exp.achievements.filter((a) => a.trim()).length === 0 &&
+          !exp.needsAchievementHelp
+        ) {
+          warnings.push(
+            `${name} — рекомендуем добавить достижения или попросить помочь с их формулировкой`,
+          );
+        }
+      });
+      if (warnings.length > 0) {
+        setWarningModal({ open: true, warnings });
+        return;
+      }
+    }
+
+    advanceStep();
   };
 
   const goBack = () => {
+    setStepError(null);
     setCurrentStep((s) => Math.max(s - 1, 0));
   };
 
   const onSubmit = methods.handleSubmit((data) => {
-    // Final submit — will send to API in future steps
-    console.log("Form submitted:", data);
+    console.log("Form submitted:", resolveFormData(data));
   });
 
   const watchedValues = methods.watch();
@@ -152,7 +309,9 @@ export default function OnboardingWizard() {
             </Link>
             <span className="text-[#64748B] text-sm">
               Шаг{" "}
-              <span className="text-white font-semibold">{currentStep + 1}</span>
+              <span className="text-white font-semibold">
+                {currentStep + 1}
+              </span>
               {" из "}
               {TOTAL_STEPS}
             </span>
@@ -164,48 +323,41 @@ export default function OnboardingWizard() {
           <CurrentStepComponent />
 
           {/* Navigation buttons */}
-          <div className="flex items-center justify-between mt-12 pt-6 border-t border-[#1B2847]">
-            {currentStep > 0 ? (
-              <button
-                type="button"
-                onClick={goBack}
-                className="inline-flex items-center gap-2 text-[#64748B] hover:text-white text-sm font-medium transition-colors cursor-pointer"
-              >
-                <HiArrowLeft size={16} />
-                Назад
-              </button>
-            ) : (
-              <div />
+          <div className="mt-12 pt-6 border-t border-[#1B2847]">
+            {stepError && (
+              <p className="text-red-400 text-sm text-center mb-4">
+                {stepError}
+              </p>
             )}
+            <div className="flex items-center justify-between">
+              {currentStep > 0 ? (
+                <button
+                  type="button"
+                  onClick={goBack}
+                  className="inline-flex items-center gap-2 text-[#64748B] hover:text-white text-sm font-medium transition-colors cursor-pointer"
+                >
+                  <HiArrowLeft size={16} />
+                  Назад
+                </button>
+              ) : (
+                <div />
+              )}
 
-            {isLastStep ? (
-              <button
-                type="submit"
-                disabled={!canAdvance}
-                className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
-                  ${canAdvance
-                    ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer"
-                    : "bg-[#2563EB]/40 text-white/50 cursor-not-allowed"
-                  }`}
-              >
-                Получить профиль
-                <HiArrowRight size={16} />
-              </button>
-            ) : (
               <button
                 type="button"
-                onClick={goNext}
+                onClick={isLastStep ? onSubmit : goNext}
                 disabled={!canAdvance}
                 className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
-                  ${canAdvance
+                ${
+                  canAdvance
                     ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer"
                     : "bg-[#2563EB]/40 text-white/50 cursor-not-allowed"
-                  }`}
+                }`}
               >
-                Далее
+                {isLastStep ? "Собрать мой профиль" : "Далее"}
                 <HiArrowRight size={16} />
               </button>
-            )}
+            </div>
           </div>
         </main>
 
@@ -215,6 +367,73 @@ export default function OnboardingWizard() {
           totalSteps={TOTAL_STEPS}
           stepLabels={STEPS.map((s) => s.label)}
         />
+
+        {/* Warning modal */}
+        {warningModal.open && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setWarningModal({ open: false, warnings: [] })}
+            />
+            <div className="relative w-full max-w-md bg-[#0D1426] border border-[#1B2847] rounded-2xl shadow-2xl p-6">
+              <div className="flex items-start gap-4 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <HiExclamationTriangle size={20} className="text-amber-400" />
+                </div>
+                <div>
+                  <h3
+                    className="text-white font-bold text-base"
+                    style={{ fontFamily: "var(--font-geologica)" }}
+                  >
+                    Проверь перед продолжением
+                  </h3>
+                  <p className="text-[#64748B] text-xs mt-0.5">
+                    Эти данные влияют на качество профиля
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setWarningModal({ open: false, warnings: [] })}
+                  className="ml-auto text-[#475569] hover:text-white transition-colors cursor-pointer shrink-0"
+                >
+                  <HiXMark size={18} />
+                </button>
+              </div>
+
+              <ul className="space-y-2.5 mb-6">
+                {warningModal.warnings.map((w, i) => (
+                  <li
+                    key={i}
+                    className="flex items-start gap-2.5 text-sm text-[#94A3B8]"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                    {w}
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setWarningModal({ open: false, warnings: [] })}
+                  className="flex-1 py-2.5 rounded-xl border border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/40 hover:text-white text-sm font-medium transition-colors cursor-pointer"
+                >
+                  Заполнить
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setWarningModal({ open: false, warnings: [] });
+                    advanceStep();
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-bold transition-colors cursor-pointer"
+                >
+                  Продолжить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </form>
     </FormProvider>
   );

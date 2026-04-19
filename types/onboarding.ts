@@ -44,6 +44,9 @@ export interface OnboardingData {
   applicationsCount: string;
   // Step 5
   workExperiences: WorkExperience[];
+  // Step 6
+  targetRegion: string;
+  englishLevel: string;
 }
 
 export const defaultOnboardingData: OnboardingData = {
@@ -59,6 +62,8 @@ export const defaultOnboardingData: OnboardingData = {
   blockersOther: "",
   applicationsCount: "",
   workExperiences: [],
+  targetRegion: "",
+  englishLevel: "",
 };
 
 export interface StoredOnboarding {
@@ -74,4 +79,5 @@ export const STEP_FIELDS: Record<number, (keyof OnboardingData)[]> = {
   2: [],
   3: ["goal", "applicationsCount"],
   4: [],
+  5: ["targetRegion", "englishLevel"],
 };

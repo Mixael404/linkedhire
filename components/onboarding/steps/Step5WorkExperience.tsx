@@ -9,7 +9,7 @@ import { ROLES } from "../../../constants/onboarding/roles";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
 
-const MONTHS = [
+export const MONTHS = [
   { value: "01", label: "Январь" }, { value: "02", label: "Февраль" },
   { value: "03", label: "Март" },   { value: "04", label: "Апрель" },
   { value: "05", label: "Май" },    { value: "06", label: "Июнь" },
@@ -94,7 +94,9 @@ function SelectField({ value, onChange, options, placeholder = "Выбрать",
 }
 
 function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () => void }) {
-  const { register, watch, setValue } = useFormContext<OnboardingData>();
+  const { register, watch, setValue, formState: { errors } } = useFormContext<OnboardingData>();
+  type CardErrors = { company?: { message?: string }; position?: { message?: string }; startMonth?: { message?: string } };
+  const cardErrors = (errors.workExperiences as unknown as CardErrors[] | undefined)?.[index];
   const [open, setOpen] = useState(true);
   const [techQuery, setTechQuery] = useState("");
   const [techActiveIdx, setTechActiveIdx] = useState(-1);
@@ -190,6 +192,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 placeholder="Яндекс / Freelance"
                 className={inputCls}
               />
+              {cardErrors?.company?.message && (
+                <p className="text-red-400 text-xs mt-1">{cardErrors.company.message}</p>
+              )}
             </div>
             <div className="relative">
               <FieldLabel>Должность</FieldLabel>
@@ -215,6 +220,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 placeholder="Frontend Developer"
                 className={inputCls}
               />
+              {cardErrors?.position?.message && (
+                <p className="text-red-400 text-xs mt-1">{cardErrors.position.message}</p>
+              )}
               {positionSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-[#0D1426] border border-[#1B2847] rounded-xl overflow-hidden z-10 shadow-xl">
                   <SimpleBar style={{ maxHeight: 200 }}>
@@ -282,6 +290,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 </>
               )}
             </div>
+            {cardErrors?.startMonth?.message && (
+              <p className="text-red-400 text-xs mt-1">{cardErrors.startMonth.message}</p>
+            )}
             <label className="flex items-center gap-2 mt-2.5 cursor-pointer w-fit">
               <input
                 type="checkbox"
