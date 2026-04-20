@@ -44,6 +44,13 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.anim-fade { animation: fadeIn 0.4s ease both; }
+
 @keyframes glowPulse {
   0%, 100% { box-shadow: 0 0 20px rgba(37,99,235,0.4), 0 4px 24px rgba(0,0,0,0.4); }
   50%       { box-shadow: 0 0 40px rgba(37,99,235,0.7), 0 4px 24px rgba(0,0,0,0.4); }

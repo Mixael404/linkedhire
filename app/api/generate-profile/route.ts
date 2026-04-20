@@ -67,6 +67,7 @@ export interface GeneratedProject {
 }
 
 export interface GeneratedProfile {
+  id: string;
   headline: string;
   about: string;
   workExperiences: GeneratedWorkExperience[];
@@ -113,6 +114,34 @@ async function askSingle(SYSTEM_PROMPT: string, userPrompt: string): Promise<str
 }
 
 export async function POST(req: NextRequest) {
+
+  await new Promise((resolve) => setTimeout(resolve, 7000));
+
+  const profile: GeneratedProfile = {
+      id: "1",
+      headline: "Frontend Developer with 5 years of experience, seeking opportunities in the US", 
+      about: "Professional frontend dev", 
+      workExperiences: [
+        {
+          company: "Tech Company A",
+          position: "Senior Frontend Developer",
+          period: "Jan 2020 - Present",
+          description: "Some mock description about responsibilities and achievements at Tech Company A."
+        },
+      ], 
+      projects: [
+        {
+          company: "Tech Company B",
+          position: "Frontend Developer",
+          period: "Jun 2018 - Dec 2019",
+          description: "Some mock description about a project at Tech Company B."
+        }
+      ],
+      skills: ["React", "TypeScript", "Next.js", "GraphQL", "CSS"],
+    };
+  return NextResponse.json(profile);
+
+
   let body: GenerateProfileRequest;
 
   try {
@@ -186,7 +215,8 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    const profile: GeneratedProfile = { 
+    const profile: GeneratedProfile = {
+      id: "1", // In a real app, generate a unique ID here
       headline, 
       about, 
       workExperiences, 

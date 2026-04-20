@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, FormProvider, FieldPath } from "react-hook-form";
 import {
   HiArrowRight,
@@ -16,6 +17,7 @@ import {
   STEP_FIELDS,
   StoredOnboarding,
 } from "../../types/onboarding";
+import GeneratingLoader from "./GeneratingLoader";
 import ProgressBar from "./ProgressBar";
 import Step1StartMethod from "./steps/Step1StartMethod";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
@@ -122,8 +124,10 @@ function saveToStorage(step: number, formData: OnboardingData) {
 }
 
 export default function OnboardingWizard() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [warningModal, setWarningModal] = useState<{
     open: boolean;
     warnings: string[];
@@ -262,16 +266,21 @@ export default function OnboardingWizard() {
 
   const onSubmit = methods.handleSubmit(async (data) => {
     const formData = resolveFormData(data);
-    console.log("[onSubmit] sending:", formData);
+    setIsGenerating(true);
 
-    const res = await fetch("/api/generate-profile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ formData }),
-    });
+    try {
+      const res = await fetch("/api/generate-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formData }),
+      });
 
-    const profile = await res.json();
-    console.log("[onSubmit] profile:", profile);
+      const profile = await res.json();
+      localStorage.setItem(`linkedhire_profile_${profile.id}`, JSON.stringify(profile));
+      router.push(`/profile/${profile.id}`);
+    } catch {
+      setIsGenerating(false);
+    }
   });
 
   const watchedValues = methods.watch();
@@ -294,6 +303,7 @@ export default function OnboardingWizard() {
   const canAdvance = isStepComplete(currentStep);
 
   if (!hydrated) return null; // prevent SSR flash
+  if (isGenerating) return <GeneratingLoader />;
 
   return (
     <FormProvider {...methods}>
