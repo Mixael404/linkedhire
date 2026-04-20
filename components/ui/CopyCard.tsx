@@ -1,5 +1,6 @@
 "use client";
 
+import { maskText } from "@/lib/maskText";
 import { useEffect, useRef, useState } from "react";
 import { HiClipboard, HiCheck, HiLockClosed } from "react-icons/hi2";
 
@@ -69,7 +70,7 @@ export default function CopyCard({ text, onBlurClick, visibleCharCount, isBlurre
               WebkitUserSelect: "none",
             }}
           >
-            {blurredPart}
+            {maskText(blurredPart, 0)}
           </span>
         )}
       </p>
