@@ -73,6 +73,7 @@ export interface GeneratedProfile {
   workExperiences: GeneratedWorkExperience[];
   projects: GeneratedProject[];
   skills: string[];
+  targetCountry: string;
 }
 
 async function ask(
@@ -113,35 +114,58 @@ async function askSingle(SYSTEM_PROMPT: string, userPrompt: string): Promise<str
   return completion.choices[0]?.message?.content ?? "";
 }
 
+const MAX_SKILLS = 100;
+const MAX_WORK_EXPERIENCES = 6;
+const MAX_TASKS_PER_EXP = 20;
+const MAX_ACHIEVEMENTS_PER_EXP = 20;
+const MAX_SKILLS_PER_EXP = 20;
+const MAX_COMPANY_LENGTH = 50;
+const MAX_POSITION_LENGTH = 50;
+const MAX_TASK_LENGTH = 150;
+const MAX_ACHIEVEMENT_LENGTH = 150;
+
+function precheck(formData: ResolvedFormData): string | null {
+  const totalSkills = new Set([
+    ...(formData.technologies ?? []),
+    ...formData.workExperiences.flatMap((w) => w.technologies ?? []),
+  ]);
+  if (totalSkills.size > MAX_SKILLS) {
+    return `Too many skills: ${totalSkills.size} provided, max is ${MAX_SKILLS}`;
+  }
+
+  if (formData.workExperiences.length > MAX_WORK_EXPERIENCES) {
+    return `Too many work experiences: max is ${MAX_WORK_EXPERIENCES}`;
+  }
+
+  for (let i = 0; i < formData.workExperiences.length; i++) {
+    const exp = formData.workExperiences[i];
+    const label = `Work experience #${i + 1}`;
+
+    if ((exp.company?.length ?? 0) > MAX_COMPANY_LENGTH)
+      return `${label}: company name exceeds ${MAX_COMPANY_LENGTH} characters`;
+    if ((exp.position?.length ?? 0) > MAX_POSITION_LENGTH)
+      return `${label}: position exceeds ${MAX_POSITION_LENGTH} characters`;
+    if ((exp.tasks?.length ?? 0) > MAX_TASKS_PER_EXP)
+      return `${label}: too many tasks, max is ${MAX_TASKS_PER_EXP}`;
+    if ((exp.achievements?.length ?? 0) > MAX_ACHIEVEMENTS_PER_EXP)
+      return `${label}: too many achievements, max is ${MAX_ACHIEVEMENTS_PER_EXP}`;
+    if ((exp.technologies?.length ?? 0) > MAX_SKILLS_PER_EXP)
+      return `${label}: too many skills, max is ${MAX_SKILLS_PER_EXP}`;
+
+    for (const task of exp.tasks ?? []) {
+      if (task.length > MAX_TASK_LENGTH)
+        return `${label}: task exceeds ${MAX_TASK_LENGTH} characters`;
+    }
+    for (const ach of exp.achievements ?? []) {
+      if (ach.length > MAX_ACHIEVEMENT_LENGTH)
+        return `${label}: achievement exceeds ${MAX_ACHIEVEMENT_LENGTH} characters`;
+    }
+  }
+
+  return null;
+}
+
 export async function POST(req: NextRequest) {
-
-  await new Promise((resolve) => setTimeout(resolve, 7000));
-
-  const profile: GeneratedProfile = {
-      id: "1",
-      headline: "Frontend Developer with 5 years of experience, seeking opportunities in the US", 
-      about: "Professional frontend dev", 
-      workExperiences: [
-        {
-          company: "Tech Company A",
-          position: "Senior Frontend Developer",
-          period: "Jan 2020 - Present",
-          description: "Some mock description about responsibilities and achievements at Tech Company A."
-        },
-      ], 
-      projects: [
-        {
-          company: "Tech Company B",
-          position: "Frontend Developer",
-          period: "Jun 2018 - Dec 2019",
-          description: "Some mock description about a project at Tech Company B."
-        }
-      ],
-      skills: ["React", "TypeScript", "Next.js", "GraphQL", "CSS"],
-    };
-  return NextResponse.json(profile);
-
-
   let body: GenerateProfileRequest;
 
   try {
@@ -157,6 +181,44 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
+
+  const precheckError = precheck(formData);
+  if (precheckError) {
+    return NextResponse.json({ error: precheckError }, { status: 422 });
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 7000));
+
+  const profile: GeneratedProfile = {
+      id: "1",
+      headline: "Frontend Developer with 5 years of experience, seeking opportunities in the US", 
+      about: "Professional frontend dev", 
+      workExperiences: [
+        {
+          company: "Tech Company A",
+          position: "Senior Frontend Developer",
+          period: "Jan 2020 - Present",
+          description: "Some mock description about responsibilities and achievements at Tech Company A."
+        },
+        {
+          company: "Tech Company C",
+          position: "Frontend Developer",
+          period: "Jun 2018 - Dec 2019",
+          description: "Some mock description about responsibilities and achievements at Tech Company B."
+        },
+      ], 
+      projects: [
+        {
+          company: "Tech Company B",
+          position: "Frontend Developer",
+          period: "Jun 2018 - Dec 2019",
+          description: "Some mock description about a project at Tech Company B."
+        }
+      ],
+      skills: ["React", "TypeScript", "Next.js", "GraphQL", "CSS"],
+      targetCountry: formData.targetRegion,
+    };
+  return NextResponse.json(profile);
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -222,6 +284,7 @@ export async function POST(req: NextRequest) {
       workExperiences, 
       projects,
       skills: uniqueTechs,
+      targetCountry: formData.targetRegion,
     };
     return NextResponse.json(profile);
   } catch (err) {

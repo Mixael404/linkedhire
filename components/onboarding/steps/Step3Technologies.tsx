@@ -32,23 +32,26 @@ function Chip({
   );
 }
 
+const MAX_SKILLS = 100;
+
 export default function Step3Technologies() {
   const { watch, setValue } = useFormContext<OnboardingData>();
 
   const technologies = watch("technologies") ?? [];
   const [customTechInput, setCustomTechInput] = useState("");
+  const isAtLimit = technologies.length >= MAX_SKILLS;
 
   const toggleTech = (tech: string) => {
     if (technologies.includes(tech)) {
       setValue("technologies", technologies.filter((t) => t !== tech));
-    } else {
+    } else if (!isAtLimit) {
       setValue("technologies", [...technologies, tech]);
     }
   };
 
   const addCustomTech = () => {
     const val = customTechInput.trim();
-    if (val && !technologies.includes(val)) {
+    if (val && !technologies.includes(val) && !isAtLimit) {
       setValue("technologies", [...technologies, val]);
     }
     setCustomTechInput("");
@@ -77,9 +80,9 @@ export default function Step3Technologies() {
 
       {/* Selected tags strip */}
       {technologies.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-5 p-3 bg-[#0D1426] rounded-xl border border-[#1B2847]">
+        <div className={`flex flex-wrap gap-2 mb-5 p-3 bg-[#0D1426] rounded-xl border ${isAtLimit ? "border-amber-500/50" : "border-[#1B2847]"}`}>
           <span className="text-[#64748B] text-xs self-center mr-1">
-            Выбрано:
+            Выбрано: <span className={isAtLimit ? "text-amber-400 font-semibold" : ""}>{technologies.length}/{MAX_SKILLS}</span>
           </span>
           <button
             type="button"
@@ -138,17 +141,24 @@ export default function Step3Technologies() {
           value={customTechInput}
           onChange={(e) => setCustomTechInput(e.target.value)}
           onKeyDown={handleKey}
-          placeholder="Добавить свой стек (Enter или запятая)"
-          className="flex-1 bg-[#0D1426] border border-[#1B2847] focus:border-[#2563EB] rounded-lg px-4 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-[#64748B]"
+          disabled={isAtLimit}
+          placeholder={isAtLimit ? `Лимит ${MAX_SKILLS} технологий достигнут` : "Добавить свой стек (Enter или запятая)"}
+          className="flex-1 bg-[#0D1426] border border-[#1B2847] focus:border-[#2563EB] rounded-lg px-4 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-[#64748B] disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           type="button"
           onClick={addCustomTech}
-          className="w-10 h-10 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+          disabled={isAtLimit}
+          className="w-10 h-10 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white flex items-center justify-center transition-colors cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <HiPlus size={18} />
         </button>
       </div>
+      {isAtLimit && (
+        <p className="text-amber-400 text-xs mt-2">
+          Достигнут максимум {MAX_SKILLS} технологий. Удалите лишние, чтобы добавить новые.
+        </p>
+      )}
     </div>
   );
 }

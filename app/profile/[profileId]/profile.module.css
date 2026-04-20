@@ -1,0 +1,48 @@
+/* Avatar container — coordinates width/height/marginTop at each breakpoint */
+.avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  margin-top: -50px;
+}
+
+/* Inner photo circle */
+.avatarInner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 3px solid white;
+  z-index: 1;
+  width: 76px;
+  height: 76px;
+}
+
+@media (min-width: 640px) {
+  .avatar {
+    width: 120px;
+    height: 120px;
+    margin-top: -60px;
+  }
+
+  .avatarInner {
+    width: 96px;
+    height: 96px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .avatar {
+    width: 130px;
+    height: 130px;
+    margin-top: -65px;
+  }
+
+  .avatarInner {
+    width: 108px;
+    height: 108px;
+  }
+}

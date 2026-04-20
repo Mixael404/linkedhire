@@ -35,10 +35,30 @@ const ACHIEVEMENT_PLACEHOLDERS = [
   "Увеличил покрытие тестами до 80%",
 ];
 
+export const MAX_WORK_EXPERIENCES = 6;
+export const MAX_TASKS = 20;
+export const MAX_ACHIEVEMENTS = 20;
+export const MAX_SKILLS_PER_EXP = 20;
+export const MAX_COMPANY_LENGTH = 50;
+export const MAX_POSITION_LENGTH = 50;
+export const MAX_TASK_LENGTH = 150;
+export const MAX_ACHIEVEMENT_LENGTH = 150;
+
 const inputCls = "w-full bg-[#07091A] border border-[#1B2847] focus:border-[#2563EB] rounded-lg px-3 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-[#475569]";
+const inputErrCls = "w-full bg-[#07091A] border border-red-500/60 focus:border-red-500 rounded-lg px-3 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-[#475569]";
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-[#64748B] text-xs mb-1.5 block">{children}</span>;
+}
+
+function CharCount({ current, max }: { current: number; max: number }) {
+  const pct = current / max;
+  const color = pct >= 1 ? "text-red-400" : pct >= 0.8 ? "text-amber-400" : "text-[#3B4A6B]";
+  return (
+    <span className={`absolute bottom-2.5 right-3 text-[10px] pointer-events-none select-none tabular-nums ${color}`}>
+      {current}/{max}
+    </span>
+  );
 }
 
 interface SelectFieldProps {
@@ -47,9 +67,10 @@ interface SelectFieldProps {
   options: { value: string; label: string }[];
   placeholder?: string;
   className?: string;
+  error?: boolean;
 }
 
-function SelectField({ value, onChange, options, placeholder = "Выбрать", className = "" }: SelectFieldProps) {
+function SelectField({ value, onChange, options, placeholder = "Выбрать", className = "", error }: SelectFieldProps) {
   const [open, setOpen] = useState(false);
   const selected = options.find(o => o.value === value);
 
@@ -61,7 +82,8 @@ function SelectField({ value, onChange, options, placeholder = "Выбрать",
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between gap-2 bg-[#07091A] border border-[#1B2847] hover:border-[#2563EB]/50 rounded-xl px-3 py-2.5 text-sm outline-none transition-colors cursor-pointer"
+        className={`w-full flex items-center justify-between gap-2 bg-[#07091A] border rounded-xl px-3 py-2.5 text-sm outline-none transition-colors cursor-pointer
+          ${error ? "border-red-500/60 hover:border-red-500" : "border-[#1B2847] hover:border-[#2563EB]/50"}`}
       >
         <span className={selected ? "text-white" : "text-[#475569]"}>
           {selected ? selected.label : placeholder}
@@ -95,8 +117,13 @@ function SelectField({ value, onChange, options, placeholder = "Выбрать",
 
 function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () => void }) {
   const { register, watch, setValue, formState: { errors } } = useFormContext<OnboardingData>();
-  type CardErrors = { company?: { message?: string }; position?: { message?: string }; startMonth?: { message?: string } };
+  type CardErrors = {
+    company?: { message?: string };
+    position?: { message?: string };
+    startMonth?: { message?: string };
+  };
   const cardErrors = (errors.workExperiences as unknown as CardErrors[] | undefined)?.[index];
+
   const [open, setOpen] = useState(true);
   const [techQuery, setTechQuery] = useState("");
   const [techActiveIdx, setTechActiveIdx] = useState(-1);
@@ -108,22 +135,20 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
 
   useEffect(() => {
     if (techActiveIdx >= 0 && techListRef.current) {
-      const buttons = techListRef.current.querySelectorAll("button");
-      buttons[techActiveIdx]?.scrollIntoView({ block: "nearest" });
+      techListRef.current.querySelectorAll("button")[techActiveIdx]?.scrollIntoView({ block: "nearest" });
     }
   }, [techActiveIdx]);
 
   useEffect(() => {
     if (positionActiveIdx >= 0 && positionListRef.current) {
-      const buttons = positionListRef.current.querySelectorAll("button");
-      buttons[positionActiveIdx]?.scrollIntoView({ block: "nearest" });
+      positionListRef.current.querySelectorAll("button")[positionActiveIdx]?.scrollIntoView({ block: "nearest" });
     }
   }, [positionActiveIdx]);
 
   const base = `workExperiences.${index}` as const;
 
-  const company      = watch(`${base}.company`) as string;
-  const position     = watch(`${base}.position`) as string;
+  const company      = (watch(`${base}.company`) as string) ?? "";
+  const position     = (watch(`${base}.position`) as string) ?? "";
   const isCurrent    = watch(`${base}.isCurrent`) as boolean;
   const startMonth   = watch(`${base}.startMonth`) as string;
   const startYear    = watch(`${base}.startYear`) as string;
@@ -144,7 +169,10 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
       ).slice(0, 8)
     : [];
 
+  const isSkillsAtLimit = technologies.length >= MAX_SKILLS_PER_EXP;
+
   const addTech = (tech: string) => {
+    if (isSkillsAtLimit) return;
     setValue(`${base}.technologies`, [...technologies, tech]);
     setTechQuery("");
   };
@@ -187,65 +215,74 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Компания</FieldLabel>
-              <input
-                {...register(`${base}.company`)}
-                placeholder="Яндекс / Freelance"
-                className={inputCls}
-              />
+              <div className="relative">
+                <input
+                  {...register(`${base}.company`, {
+                    maxLength: { value: MAX_COMPANY_LENGTH, message: `Максимум ${MAX_COMPANY_LENGTH} символов` },
+                  })}
+                  placeholder="Яндекс / Freelance"
+                  className={`${cardErrors?.company ? inputErrCls : inputCls} pr-14`}
+                />
+                <CharCount current={company.length} max={MAX_COMPANY_LENGTH} />
+              </div>
               {cardErrors?.company?.message && (
                 <p className="text-red-400 text-xs mt-1">{cardErrors.company.message}</p>
               )}
             </div>
-            <div className="relative">
+            <div>
               <FieldLabel>Должность</FieldLabel>
-              <input
-                value={positionQuery || position}
-                onChange={e => {
-                  setPositionQuery(e.target.value);
-                  setValue(`${base}.position`, e.target.value);
-                  setPositionActiveIdx(-1);
-                }}
-                onKeyDown={e => {
-                  if (!positionSuggestions.length) return;
-                  if (e.key === "ArrowDown") { e.preventDefault(); setPositionActiveIdx(i => Math.min(i + 1, positionSuggestions.length - 1)); }
-                  else if (e.key === "ArrowUp") { e.preventDefault(); setPositionActiveIdx(i => Math.max(i - 1, 0)); }
-                  else if (e.key === "Enter" && positionActiveIdx >= 0) {
-                    e.preventDefault();
-                    setValue(`${base}.position`, positionSuggestions[positionActiveIdx].label);
-                    setPositionQuery("");
+              <div className="relative">
+                <input
+                  value={positionQuery || position}
+                  maxLength={MAX_POSITION_LENGTH}
+                  onChange={e => {
+                    setPositionQuery(e.target.value);
+                    setValue(`${base}.position`, e.target.value);
                     setPositionActiveIdx(-1);
-                  } else if (e.key === "Escape") { setPositionQuery(""); setPositionActiveIdx(-1); }
-                }}
-                onBlur={() => setTimeout(() => { setPositionQuery(""); setPositionActiveIdx(-1); }, 150)}
-                placeholder="Frontend Developer"
-                className={inputCls}
-              />
+                  }}
+                  onKeyDown={e => {
+                    if (!positionSuggestions.length) return;
+                    if (e.key === "ArrowDown") { e.preventDefault(); setPositionActiveIdx(i => Math.min(i + 1, positionSuggestions.length - 1)); }
+                    else if (e.key === "ArrowUp") { e.preventDefault(); setPositionActiveIdx(i => Math.max(i - 1, 0)); }
+                    else if (e.key === "Enter" && positionActiveIdx >= 0) {
+                      e.preventDefault();
+                      setValue(`${base}.position`, positionSuggestions[positionActiveIdx].label);
+                      setPositionQuery("");
+                      setPositionActiveIdx(-1);
+                    } else if (e.key === "Escape") { setPositionQuery(""); setPositionActiveIdx(-1); }
+                  }}
+                  onBlur={() => setTimeout(() => { setPositionQuery(""); setPositionActiveIdx(-1); }, 150)}
+                  placeholder="Frontend Developer"
+                  className={`${cardErrors?.position ? inputErrCls : inputCls} pr-14`}
+                />
+                <CharCount current={position.length} max={MAX_POSITION_LENGTH} />
+                {positionSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-[#0D1426] border border-[#1B2847] rounded-xl overflow-hidden z-10 shadow-xl">
+                    <SimpleBar style={{ maxHeight: 200 }}>
+                      <div ref={positionListRef}>
+                        {positionSuggestions.map((r, i) => (
+                          <button
+                            key={r.value}
+                            type="button"
+                            onMouseDown={e => {
+                              e.preventDefault();
+                              setValue(`${base}.position`, r.label);
+                              setPositionQuery("");
+                              setPositionActiveIdx(-1);
+                            }}
+                            className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer
+                              ${i === positionActiveIdx ? "bg-[#2563EB]/15 text-white" : "text-[#94A3B8] hover:bg-[#111D35] hover:text-white"}`}
+                          >
+                            {r.label}
+                          </button>
+                        ))}
+                      </div>
+                    </SimpleBar>
+                  </div>
+                )}
+              </div>
               {cardErrors?.position?.message && (
                 <p className="text-red-400 text-xs mt-1">{cardErrors.position.message}</p>
-              )}
-              {positionSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-[#0D1426] border border-[#1B2847] rounded-xl overflow-hidden z-10 shadow-xl">
-                  <SimpleBar style={{ maxHeight: 200 }}>
-                    <div ref={positionListRef}>
-                      {positionSuggestions.map((r, i) => (
-                        <button
-                          key={r.value}
-                          type="button"
-                          onMouseDown={e => {
-                            e.preventDefault();
-                            setValue(`${base}.position`, r.label);
-                            setPositionQuery("");
-                            setPositionActiveIdx(-1);
-                          }}
-                          className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer
-                            ${i === positionActiveIdx ? "bg-[#2563EB]/15 text-white" : "text-[#94A3B8] hover:bg-[#111D35] hover:text-white"}`}
-                        >
-                          {r.label}
-                        </button>
-                      ))}
-                    </div>
-                  </SimpleBar>
-                </div>
               )}
             </div>
           </div>
@@ -261,6 +298,7 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 onChange={v => setValue(`${base}.startMonth`, v)}
                 options={MONTHS}
                 placeholder="Месяц"
+                error={!!cardErrors?.startMonth}
               />
               <SelectField
                 className="w-24"
@@ -269,7 +307,6 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 options={YEARS.map(y => ({ value: y, label: y }))}
                 placeholder="Год"
               />
-
               {!isCurrent && (
                 <>
                   <span className="text-[#64748B] text-xs">по</span>
@@ -305,20 +342,29 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
 
           {/* Tasks */}
           <div>
-            <FieldLabel>Что ты делал</FieldLabel>
+            <div className="flex items-center justify-between mb-1.5">
+              <FieldLabel>Что ты делал</FieldLabel>
+              <span className={`text-[10px] tabular-nums ${tasks.length >= MAX_TASKS ? "text-amber-400" : "text-[#3B4A6B]"}`}>
+                {tasks.length}/{MAX_TASKS}
+              </span>
+            </div>
             <div className="space-y-2">
               {tasks.map((task, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <input
-                    value={task}
-                    onChange={e => {
-                      const next = [...tasks];
-                      next[i] = e.target.value;
-                      setTasks(next);
-                    }}
-                    placeholder={TASK_PLACEHOLDERS[i % TASK_PLACEHOLDERS.length]}
-                    className={inputCls}
-                  />
+                  <div className="relative flex-1">
+                    <input
+                      value={task}
+                      maxLength={MAX_TASK_LENGTH}
+                      onChange={e => {
+                        const next = [...tasks];
+                        next[i] = e.target.value;
+                        setTasks(next);
+                      }}
+                      placeholder={TASK_PLACEHOLDERS[i % TASK_PLACEHOLDERS.length]}
+                      className={`${inputCls} pr-14`}
+                    />
+                    <CharCount current={task.length} max={MAX_TASK_LENGTH} />
+                  </div>
                   <button
                     type="button"
                     onClick={() => setTasks(tasks.filter((_, j) => j !== i))}
@@ -332,16 +378,22 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
             <button
               type="button"
               onClick={() => setTasks([...tasks, ""])}
-              className="mt-2 flex items-center gap-1.5 text-[#3B82F6] hover:text-[#60A5FA] text-xs font-medium transition-colors cursor-pointer"
+              disabled={tasks.length >= MAX_TASKS}
+              className="mt-2 flex items-center gap-1.5 text-[#3B82F6] hover:text-[#60A5FA] text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <HiPlus size={13} />
-              Добавить задачу
+              {tasks.length >= MAX_TASKS ? `Достигнут лимит ${MAX_TASKS} задач` : "Добавить задачу"}
             </button>
           </div>
 
           {/* Technologies */}
           <div>
-            <FieldLabel>Стек технологий</FieldLabel>
+            <div className="flex items-center justify-between mb-1.5">
+              <FieldLabel>Стек технологий</FieldLabel>
+              <span className={`text-[10px] tabular-nums ${isSkillsAtLimit ? "text-amber-400" : "text-[#3B4A6B]"}`}>
+                {technologies.length}/{MAX_SKILLS_PER_EXP}
+              </span>
+            </div>
             {technologies.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {technologies.map(t => (
@@ -365,6 +417,7 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
               <input
                 ref={techInputRef}
                 value={techQuery}
+                disabled={isSkillsAtLimit}
                 onChange={e => { setTechQuery(e.target.value); setTechActiveIdx(-1); }}
                 onKeyDown={e => {
                   if (e.key === "Enter") {
@@ -383,8 +436,8 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                   if (e.key === "," && techQuery.trim()) { e.preventDefault(); addTech(techQuery.trim()); setTechActiveIdx(-1); }
                 }}
                 onBlur={() => setTimeout(() => { setTechQuery(""); setTechActiveIdx(-1); }, 150)}
-                placeholder="React, Node.js, Python… (Enter или запятая)"
-                className={inputCls}
+                placeholder={isSkillsAtLimit ? `Достигнут лимит ${MAX_SKILLS_PER_EXP} технологий` : "React, Node.js, Python… (Enter или запятая)"}
+                className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
               />
               {suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-[#0D1426] border border-[#1B2847] rounded-xl overflow-hidden z-10 shadow-xl">
@@ -410,22 +463,33 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
 
           {/* Achievements */}
           <div>
-            <FieldLabel>Достижения / результаты</FieldLabel>
+            <div className="flex items-center justify-between mb-1.5">
+              <FieldLabel>Достижения / результаты</FieldLabel>
+              {!needsHelp && (
+                <span className={`text-[10px] tabular-nums ${achievements.length >= MAX_ACHIEVEMENTS ? "text-amber-400" : "text-[#3B4A6B]"}`}>
+                  {achievements.length}/{MAX_ACHIEVEMENTS}
+                </span>
+              )}
+            </div>
             {!needsHelp && (
               <>
                 <div className="space-y-2">
                   {achievements.map((ach, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <input
-                        value={ach}
-                        onChange={e => {
-                          const next = [...achievements];
-                          next[i] = e.target.value;
-                          setAchievements(next);
-                        }}
-                        placeholder={ACHIEVEMENT_PLACEHOLDERS[i % ACHIEVEMENT_PLACEHOLDERS.length]}
-                        className={inputCls}
-                      />
+                      <div className="relative flex-1">
+                        <input
+                          value={ach}
+                          maxLength={MAX_ACHIEVEMENT_LENGTH}
+                          onChange={e => {
+                            const next = [...achievements];
+                            next[i] = e.target.value;
+                            setAchievements(next);
+                          }}
+                          placeholder={ACHIEVEMENT_PLACEHOLDERS[i % ACHIEVEMENT_PLACEHOLDERS.length]}
+                          className={`${inputCls} pr-14`}
+                        />
+                        <CharCount current={ach.length} max={MAX_ACHIEVEMENT_LENGTH} />
+                      </div>
                       <button
                         type="button"
                         onClick={() => setAchievements(achievements.filter((_, j) => j !== i))}
@@ -439,10 +503,11 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 <button
                   type="button"
                   onClick={() => setAchievements([...achievements, ""])}
-                  className="mt-2 flex items-center gap-1.5 text-[#3B82F6] hover:text-[#60A5FA] text-xs font-medium transition-colors cursor-pointer"
+                  disabled={achievements.length >= MAX_ACHIEVEMENTS}
+                  className="mt-2 flex items-center gap-1.5 text-[#3B82F6] hover:text-[#60A5FA] text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <HiPlus size={13} />
-                  Добавить результат
+                  {achievements.length >= MAX_ACHIEVEMENTS ? `Достигнут лимит ${MAX_ACHIEVEMENTS} результатов` : "Добавить результат"}
                 </button>
               </>
             )}
@@ -499,18 +564,27 @@ export default function Step5WorkExperience() {
         ))}
       </div>
 
-      <button
-        type="button"
-        onClick={() => append({ ...defaultWorkExperience })}
-        className={`mt-4 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-dashed transition-all duration-150 cursor-pointer
-          ${fields.length === 0
-            ? "border-[#2563EB]/40 bg-[#2563EB]/5 text-[#3B82F6] hover:border-[#2563EB]/70 hover:bg-[#2563EB]/10"
-            : "border-[#1B2847] text-[#64748B] hover:border-[#2563EB]/40 hover:text-[#3B82F6]"
-          }`}
-      >
-        <HiPlus size={16} />
-        <span className="text-sm font-medium">Добавить место работы</span>
-      </button>
+      {fields.length < MAX_WORK_EXPERIENCES ? (
+        <button
+          type="button"
+          onClick={() => append({ ...defaultWorkExperience })}
+          className={`mt-4 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-dashed transition-all duration-150 cursor-pointer
+            ${fields.length === 0
+              ? "border-[#2563EB]/40 bg-[#2563EB]/5 text-[#3B82F6] hover:border-[#2563EB]/70 hover:bg-[#2563EB]/10"
+              : "border-[#1B2847] text-[#64748B] hover:border-[#2563EB]/40 hover:text-[#3B82F6]"
+            }`}
+        >
+          <HiPlus size={16} />
+          <span className="text-sm font-medium">
+            Добавить место работы
+            <span className="ml-2 text-xs opacity-60">{fields.length}/{MAX_WORK_EXPERIENCES}</span>
+          </span>
+        </button>
+      ) : (
+        <p className="mt-4 text-center text-[#64748B] text-xs">
+          Достигнут максимум {MAX_WORK_EXPERIENCES} мест работы
+        </p>
+      )}
     </div>
   );
 }
