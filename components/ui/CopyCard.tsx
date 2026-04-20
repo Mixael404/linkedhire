@@ -6,18 +6,18 @@ import { HiClipboard, HiCheck, HiLockClosed } from "react-icons/hi2";
 interface CopyCardProps {
   text: string;
   onBlurClick: () => void;
-  blurCharCount: number;
+  visibleCharCount: number;
   isBlurred: boolean;
 }
 
-export default function CopyCard({ text, onBlurClick, blurCharCount, isBlurred }: CopyCardProps) {
+export default function CopyCard({ text, onBlurClick, visibleCharCount, isBlurred }: CopyCardProps) {
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  const visiblePart = isBlurred ? text.slice(0, text.length - blurCharCount) : text;
-  const blurredPart = isBlurred ? text.slice(text.length - blurCharCount) : "";
+  const visiblePart = isBlurred ? text.slice(0, visibleCharCount) : text;
+  const blurredPart = isBlurred ? text.slice(visibleCharCount) : "";
 
   const handleClick = async () => {
     if (isBlurred) {

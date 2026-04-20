@@ -55,7 +55,7 @@ export default function ProfilePage() {
           <CopyCard
             text={profile.headline}
             onBlurClick={() => handleBlurClick("headline")}
-            blurCharCount={40}
+            visibleCharCount={40}
             isBlurred={true}
           />
         </section>
@@ -68,7 +68,7 @@ export default function ProfilePage() {
           <CopyCard
             text={profile.about}
             onBlurClick={() => handleBlurClick("about")}
-            blurCharCount={120}
+            visibleCharCount={80}
             isBlurred={true}
           />
         </section>
@@ -89,7 +89,7 @@ export default function ProfilePage() {
                   <CopyCard
                     text={exp.description}
                     onBlurClick={() => handleBlurClick(`work-${i}`)}
-                    blurCharCount={150}
+                    visibleCharCount={100}
                     isBlurred={true}
                   />
                 </div>
@@ -114,7 +114,7 @@ export default function ProfilePage() {
                   <CopyCard
                     text={proj.description}
                     onBlurClick={() => handleBlurClick(`project-${i}`)}
-                    blurCharCount={150}
+                    visibleCharCount={100}
                     isBlurred={true}
                   />
                 </div>
@@ -132,7 +132,7 @@ export default function ProfilePage() {
             <CopyCard
               text={profile.skills.join(" · ")}
               onBlurClick={() => handleBlurClick("skills")}
-              blurCharCount={30}
+              visibleCharCount={10}
               isBlurred={true}
             />
           </section>
