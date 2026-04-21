@@ -1,6 +1,6 @@
 "use client";
 
-import { maskText } from "@/lib/maskText";
+import { maskText } from "@/utils/maskText";
 import { useEffect, useRef, useState } from "react";
 import { HiClipboard, HiCheck, HiLockClosed } from "react-icons/hi2";
 

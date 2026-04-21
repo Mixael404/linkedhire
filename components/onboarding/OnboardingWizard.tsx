@@ -265,6 +265,7 @@ export default function OnboardingWizard() {
   };
 
   const onSubmit = methods.handleSubmit(async (data) => {
+    // console.log(data);
     const formData = resolveFormData(data);
     setIsGenerating(true);
 

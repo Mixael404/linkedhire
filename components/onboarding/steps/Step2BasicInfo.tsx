@@ -120,6 +120,7 @@ export default function Step2BasicInfo() {
         {/* Custom input — показывается только при выборе "Другое" */}
         {role === "other" && (
           <input
+            onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
             {...register("customRole")}
             placeholder="Введи свою специальность"
             className="mt-3 w-full bg-[#0D1426] border border-[#1B2847] focus:border-[#2563EB] rounded-lg px-4 py-2.5 text-white text-sm outline-none transition-colors placeholder:text-[#64748B]"

@@ -8,6 +8,7 @@ import { headlinePrompt } from "@/constants/prompts/headline";
 import { aboutPrompt } from "@/constants/prompts/about.prompt";
 import { experiencePrompt } from "@/constants/prompts/experience.prompt";
 import { projectPrompt } from "@/constants/prompts/projects.prompt";
+import { firstProfileAnalyze } from "@/utils/firstProfileAnalyze";
 
 // Mirrors the shape returned by resolveFormData() on the client
 export interface ResolvedFormData {
@@ -96,7 +97,10 @@ async function ask(
   return reply;
 }
 
-async function askSingle(SYSTEM_PROMPT: string, userPrompt: string): Promise<string> {
+async function askSingle(
+  SYSTEM_PROMPT: string,
+  userPrompt: string,
+): Promise<string> {
   const completion = await openai.chat.completions.create({
     model: OPENAI_MODEL,
     messages: [
@@ -127,9 +131,18 @@ const MAX_TASK_LENGTH = 150;
 const MAX_ACHIEVEMENT_LENGTH = 150;
 
 const MONTHS: Record<string, string> = {
-  January: "01", February: "02", March: "03", April: "04",
-  May: "05", June: "06", July: "07", August: "08",
-  September: "09", October: "10", November: "11", December: "12",
+  January: "01",
+  February: "02",
+  March: "03",
+  April: "04",
+  May: "05",
+  June: "06",
+  July: "07",
+  August: "08",
+  September: "09",
+  October: "10",
+  November: "11",
+  December: "12",
 };
 
 function toDate(month: string, year: string): string | null {
@@ -208,6 +221,19 @@ export async function POST(req: NextRequest) {
     ? [...(formData.blockers ?? []), formData.blockersOther]
     : (formData.blockers ?? []);
 
+  const response = firstProfileAnalyze(formData);
+
+  const { data: createdProfile } = await supabase
+    .from("profiles")
+    .insert({
+      headline: response.headline,
+      about: response.about,
+      skills: formData.technologies,
+      target_country: formData.targetRegion,
+    })
+    .select("*")
+    .single();
+
   const { data: resume, error: resumeError } = await supabase
     .from("input_resumes")
     .insert({
@@ -219,6 +245,7 @@ export async function POST(req: NextRequest) {
       applications_count: formData.applicationsCount,
       target_region: formData.targetRegion,
       english_level: formData.englishLevel,
+      profile_id: createdProfile.id,
     })
     .select("*")
     .single();
@@ -237,7 +264,7 @@ export async function POST(req: NextRequest) {
     is_current: exp.isCurrent,
     tasks: exp.tasks,
     technologies: exp.technologies,
-    achevements: exp.achievements,
+    achievements: exp.achievements,
   }));
 
   const { error: workExpError, data: workExpData } = await supabase
@@ -247,49 +274,31 @@ export async function POST(req: NextRequest) {
 
   if (workExpError) {
     console.error("[supabase insert work experiences error]", workExpError);
-    return NextResponse.json({ error: "Failed to save work experiences" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to save work experiences" },
+      { status: 500 },
+    );
   }
 
-  // const res = await supabase.from("input_resumes").select("*");
-  // return NextResponse.json(res);
+  const workExperiencesRows = formData.workExperiences.map((proj) => ({
+    company: proj.company,
+    position: proj.position,
+    start_date: toDate(proj.startMonth, proj.startYear),
+    finish_date: proj.isCurrent ? null : toDate(proj.endMonth, proj.endYear),
+    is_current: proj.isCurrent,
+    description: "", // We'll fill this in later after generation
+    profile_id: createdProfile.id,
+  }));
 
-  await new Promise((resolve) => setTimeout(resolve, 7000));
+  await supabase
+    .from("work_experiences")
+    .insert(workExperiencesRows)
 
-  const response = {
-    ...resume,
-    workExperiences: workExpData,
-  }
+  await supabase
+    .from("projects")
+    .insert(workExperiencesRows) // For simplicity, using the same data shape for projects; adjust as needed
 
-  const profile: GeneratedProfile = {
-      id: "1",
-      headline: "Frontend Developer with 5 years of experience, seeking opportunities in the US", 
-      about: "Professional frontend dev", 
-      workExperiences: [
-        {
-          company: "Tech Company A",
-          position: "Senior Frontend Developer",
-          period: "Jan 2020 - Present",
-          description: "Some mock description about responsibilities and achievements at Tech Company A."
-        },
-        {
-          company: "Tech Company C",
-          position: "Frontend Developer",
-          period: "Jun 2018 - Dec 2019",
-          description: "Some mock description about responsibilities and achievements at Tech Company B."
-        },
-      ], 
-      projects: [
-        {
-          company: "Tech Company B",
-          position: "Frontend Developer",
-          period: "Jun 2018 - Dec 2019",
-          description: "Some mock description about a project at Tech Company B."
-        }
-      ],
-      skills: ["React", "TypeScript", "Next.js", "GraphQL", "CSS"],
-      targetCountry: formData.targetRegion,
-    };
-  return NextResponse.json(response);
+  return NextResponse.json(createdProfile);
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -308,51 +317,57 @@ export async function POST(req: NextRequest) {
       headlinePrompt(formData, uniqueTechs, recentExperienceSummary),
     );
     // Step 2: about — роль, цель, опыт работы (краткая сводка), уровень английского
-    const about = await ask(
-      messages, 
-      aboutPrompt(formData)
-    );
-
+    const about = await ask(messages, aboutPrompt(formData));
 
     const workExperiences = await Promise.all(
-      formData.workExperiences.map(async (exp): Promise<GeneratedWorkExperience> => {
-        const period = exp.isCurrent
-          ? `${exp.startMonth} ${exp.startYear} – Present`
-          : `${exp.startMonth} ${exp.startYear} – ${exp.endMonth} ${exp.endYear}`;
+      formData.workExperiences.map(
+        async (exp): Promise<GeneratedWorkExperience> => {
+          const period = exp.isCurrent
+            ? `${exp.startMonth} ${exp.startYear} – Present`
+            : `${exp.startMonth} ${exp.startYear} – ${exp.endMonth} ${exp.endYear}`;
 
-        const description = await askSingle(FIRST_SYSTEM_PROMPT, experiencePrompt(exp));
+          const description = await askSingle(
+            FIRST_SYSTEM_PROMPT,
+            experiencePrompt(exp),
+          );
 
-        return {
-          company: exp.company,
-          position: exp.position,
-          period,
-          description,
-        };
-      }),
+          return {
+            company: exp.company,
+            position: exp.position,
+            period,
+            description,
+          };
+        },
+      ),
     );
 
     const projects = await Promise.all(
-      (formData.workExperiences ?? []).map(async (proj): Promise<GeneratedProject> => {
-        const period = proj.isCurrent
-          ? `${proj.startMonth} ${proj.startYear} – Present`
-          : `${proj.startMonth} ${proj.startYear} – ${proj.endMonth} ${proj.endYear}`;
+      (formData.workExperiences ?? []).map(
+        async (proj): Promise<GeneratedProject> => {
+          const period = proj.isCurrent
+            ? `${proj.startMonth} ${proj.startYear} – Present`
+            : `${proj.startMonth} ${proj.startYear} – ${proj.endMonth} ${proj.endYear}`;
 
-        const description = await askSingle(FIRST_SYSTEM_PROMPT, projectPrompt(proj));
+          const description = await askSingle(
+            FIRST_SYSTEM_PROMPT,
+            projectPrompt(proj),
+          );
 
-        return {
-          company: proj.company,
-          position: proj.position,
-          period,
-          description,
-        };
-      }),
+          return {
+            company: proj.company,
+            position: proj.position,
+            period,
+            description,
+          };
+        },
+      ),
     );
 
     const profile: GeneratedProfile = {
       id: "1", // In a real app, generate a unique ID here
-      headline, 
-      about, 
-      workExperiences, 
+      headline,
+      about,
+      workExperiences,
       projects,
       skills: uniqueTechs,
       targetCountry: formData.targetRegion,
@@ -378,9 +393,9 @@ function getExperienceSummary(formData: ResolvedFormData) {
 
 function getUniqueTechnologies(formData: ResolvedFormData) {
   return [
-      ...new Set([
-        ...formData.technologies,
-        ...formData.workExperiences.flatMap((w) => w.technologies),
-      ]),
-    ];
+    ...new Set([
+      ...formData.technologies,
+      ...formData.workExperiences.flatMap((w) => w.technologies),
+    ]),
+  ];
 }
