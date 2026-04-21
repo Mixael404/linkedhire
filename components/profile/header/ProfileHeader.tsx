@@ -21,16 +21,14 @@ export default function ProfileHeader() {
       >
          {/* Info strip */}
          <div className="bg-[#EBF3FF] border-b border-[#c2d8f0]">
-            <div className="max-w-282 mx-auto px-3 sm:px-4 h-9 flex items-center gap-3">
-               <p className="text-[12px] text-[rgba(0,0,0,0.6)] shrink-0">
-                  Эта страница - аналог вашего профиля в LinkedIn. Копируйте наполнение отсюда в ваш профиль на LinkedIn.
-               </p>
-               <p className="text-[12px] text-[rgba(0,0,0,0.6)] shrink-0">
-                  Сохраните ссылку на эту страницу:
+            <div className="max-w-282 mx-auto px-3 sm:px-4 py-1.5 sm:py-0 sm:h-9 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+               <p className="text-[11px] sm:text-[12px] text-[rgba(0,0,0,0.6)] shrink-0 leading-tight">
+                  <span className="hidden sm:inline">Эта страница — аналог вашего профиля в LinkedIn. </span>
+                  Сохраните ссылку:
                </p>
                <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1.5 min-w-0 flex-1 max-w-xs bg-white border border-[#c2d8f0] hover:border-[#0a66c2] rounded px-2.5 py-1 text-[11px] text-[#0a66c2] font-medium transition-colors truncate"
+                  className="flex items-center gap-1.5 min-w-0 w-full sm:flex-1 sm:max-w-xs bg-white border border-[#c2d8f0] hover:border-[#0a66c2] rounded px-2.5 py-1 text-[11px] text-[#0a66c2] font-medium transition-colors"
                >
                   {copied ? <HiCheck size={12} className="text-green-500 shrink-0" /> : <HiClipboard size={12} className="shrink-0" />}
                   <span className="truncate">{typeof window !== "undefined" ? window.location.href : ""}</span>
