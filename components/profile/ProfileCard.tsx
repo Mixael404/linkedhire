@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import { HiPencilSquare } from "react-icons/hi2";
 import Card from "@/components/profile/Card";
 import CopyCard from "@/components/ui/CopyCard";
 import OrgRow from "@/components/profile/OrgRow";
 import styles from "@/app/profile/[profileId]/profile.module.css";
 import { padWithFakeWords } from "@/lib/padWithFakeWords";
+import OpenToWorkModal from "@/components/ui/OpenToWorkModal";
+import Tooltip from "@/components/ui/Tooltip";
 
 type Props = {
    headline: string;
@@ -24,7 +29,10 @@ export default function ProfileCard({
    onBlurClick,
    is_purchased,
 }: Props) {
+   const [openToWorkOpen, setOpenToWorkOpen] = useState(false);
+
    return (
+      <>
       <Card>
          {/* Banner */}
          <div className="h-28 sm:h-40 lg:h-48 w-full relative overflow-hidden bg-[#d0cfc9]">
@@ -61,9 +69,11 @@ export default function ProfileCard({
                      draggable={false}
                   />
                </div>
-               <button className="mt-2 sm:mt-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center text-[rgba(0,0,0,0.55)]">
-                  <HiPencilSquare size={17} />
-               </button>
+               <Tooltip content="Редактирование основных сведений">
+                  <div className="mt-2 sm:mt-3 w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center text-[rgba(0,0,0,0.55)] cursor-pointer">
+                     <HiPencilSquare size={17} />
+                  </div>
+               </Tooltip>
             </div>
 
             {/* Name area */}
@@ -100,7 +110,7 @@ export default function ProfileCard({
                         {companyName && (
                            <OrgRow initials={companyInitials} name={companyName} />
                         )}
-                        <OrgRow initials="YEO" name="Your education organization" round small />
+                        <OrgRow initials="YEO" name="Your educational organization" round small />
                      </div>
                   </div>
 
@@ -140,9 +150,11 @@ export default function ProfileCard({
                      <button className="px-4 py-1.75 bg-[#0a66c2] hover:bg-[#004182] transition-colors text-white text-sm font-semibold rounded-full">
                         Интересует
                      </button>
-                     <button className="px-4 py-1.75 border border-[rgba(0,0,0,0.5)] text-[rgba(0,0,0,0.6)] hover:bg-gray-100 transition-colors text-sm font-semibold rounded-full">
-                        Добавить раздел
-                     </button>
+                     <Tooltip content="Добавление нового раздела в профиль, которых пока нет в ленте профиля">
+                        <button className="px-4 py-1.75 border border-[rgba(0,0,0,0.5)] text-[rgba(0,0,0,0.6)] hover:bg-gray-100 transition-colors text-sm font-semibold rounded-full">
+                           Добавить раздел
+                        </button>
+                     </Tooltip>
                   </div>
                </div>
             </div>
@@ -158,16 +170,29 @@ export default function ProfileCard({
                      <p className="text-sm text-[rgba(0,0,0,0.55)] mt-0.5 truncate">
                         Должности «{roleTitle}…»
                      </p>
-                     <button className="text-sm text-[#0a66c2] font-semibold mt-1 hover:underline">
+                     <button
+                        className="text-sm text-[#0a66c2] font-semibold cursor-pointer mt-1 hover:underline"
+                        onClick={() => setOpenToWorkOpen(true)}
+                     >
                         Показать сведения
                      </button>
                   </div>
-                  <button className="shrink-0 ml-2 mt-0.5 text-[rgba(0,0,0,0.4)] hover:text-[rgba(0,0,0,0.7)]">
-                     <HiPencilSquare size={15} />
-                  </button>
+                  <Tooltip content="Редактирование предпочтений по вакансиям">
+                     <div className="shrink-0 ml-2 mt-0.5 text-[rgba(0,0,0,0.4)] hover:text-[rgba(0,0,0,0.7)] cursor-pointer">
+                        <HiPencilSquare size={15} />
+                     </div>
+                  </Tooltip>
                </div>
             </div>
          </div>
       </Card>
+
+      <OpenToWorkModal
+         isOpen={openToWorkOpen}
+         onClose={() => setOpenToWorkOpen(false)}
+         roleTitle={roleTitle}
+         targetCountry={targetCountry}
+      />
+      </>
    );
 }

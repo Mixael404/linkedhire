@@ -1,22 +1,28 @@
 "use client";
 
 import { startTransition, useCallback, useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import type { GeneratedProfile } from "@/app/api/generate-profile/route";
 import { getInitials } from "@/lib/initials";
 import ProfileHeader from "@/components/profile/header/ProfileHeader";
 import ProfileCard from "@/components/profile/ProfileCard";
 import AboutSection from "@/components/profile/AboutSection";
 import ExperienceSection from "@/components/profile/ExperienceSection";
+import EducationSection from "@/components/profile/EducationSection";
 import ProjectsSection from "@/components/profile/ProjectsSection";
 import SkillsSection from "@/components/profile/SkillsSection";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
+import OnboardingModal from "@/components/ui/OnboardingModal";
 
 export default function ProfilePage() {
    const { profileId } = useParams<{ profileId: string }>();
+   const searchParams = useSearchParams();
    const [profile, setProfile] = useState<GeneratedProfile | null>(null);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(false);
+   const [modalOpen, setModalOpen] = useState(
+      () => searchParams.get("iniciator") === "onboarding"
+   );
 
    useEffect(() => {
       fetch(`/api/profile/${profileId}`)
@@ -97,6 +103,8 @@ export default function ProfilePage() {
                   targetCountry={profile.target_country}
                />
 
+               <EducationSection />
+
                <ProjectsSection
                   projects={profile.projects}
                   onBlurClick={onBlurClick}
@@ -113,6 +121,12 @@ export default function ProfilePage() {
 
             <ProfileSidebar />
          </div>
+
+         <OnboardingModal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            profileId={profileId}
+         />
       </div>
    );
 }

@@ -21,7 +21,7 @@ export async function GET(
     return NextResponse.json({ error: "Profile not found" }, { status: 404 });
   }
 
-  const [{ data: workExperiences }, { data: projects }] = await Promise.all([
+  const [{ data: workExperiences }, { data: projects }, { data: educations }] = await Promise.all([
     supabase
       .from("work_experiences")
       .select("*")
@@ -32,11 +32,17 @@ export async function GET(
       .select("*")
       .eq("profile_id", profileId)
       .order("start_date", { ascending: false }),
+    supabase
+      .from("educations")
+      .select("*")
+      .eq("profile_id", profileId)
+      .order("start_date", { ascending: false }),
   ]);
 
   return NextResponse.json({
     ...profile,
     workExperiences: workExperiences ?? [],
     projects: projects ?? [],
+    educations: educations ?? [],
   });
 }

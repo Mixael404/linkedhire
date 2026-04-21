@@ -1,12 +1,43 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import NavItem from "@/components/profile/NavItem";
+import { HiClipboard, HiCheck } from "react-icons/hi2";
 
 export default function ProfileHeader() {
+   const [copied, setCopied] = useState(false);
+
+   const handleCopy = async () => {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+   };
+
    return (
       <header
          className="bg-white sticky top-0 z-30"
          style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.08)" }}
       >
+         {/* Info strip */}
+         <div className="bg-[#EBF3FF] border-b border-[#c2d8f0]">
+            <div className="max-w-282 mx-auto px-3 sm:px-4 h-9 flex items-center gap-3">
+               <p className="text-[12px] text-[rgba(0,0,0,0.6)] shrink-0">
+                  Эта страница - аналог вашего профиля в LinkedIn. Копируйте наполнение отсюда в ваш профиль на LinkedIn.
+               </p>
+               <p className="text-[12px] text-[rgba(0,0,0,0.6)] shrink-0">
+                  Сохраните ссылку на эту страницу:
+               </p>
+               <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1.5 min-w-0 flex-1 max-w-xs bg-white border border-[#c2d8f0] hover:border-[#0a66c2] rounded px-2.5 py-1 text-[11px] text-[#0a66c2] font-medium transition-colors truncate"
+               >
+                  {copied ? <HiCheck size={12} className="text-green-500 shrink-0" /> : <HiClipboard size={12} className="shrink-0" />}
+                  <span className="truncate">{typeof window !== "undefined" ? window.location.href : ""}</span>
+               </button>
+            </div>
+         </div>
+
          <div className="max-w-282 mx-auto px-3 sm:px-4 flex items-center gap-1 h-13">
             <Link href="/" className="flex items-center gap-2 mr-1 shrink-0">
                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#2563EB] to-[#06B6D4] flex items-center justify-center text-white font-bold text-sm">

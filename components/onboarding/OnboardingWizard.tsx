@@ -278,7 +278,7 @@ export default function OnboardingWizard() {
 
       const profile = await res.json();
       localStorage.setItem(`linkedhire_profile_${profile.id}`, JSON.stringify(profile));
-      router.push(`/profile/${profile.id}`);
+      router.push(`/profile/${profile.id}?iniciator=onboarding`);
     } catch {
       setIsGenerating(false);
     }
