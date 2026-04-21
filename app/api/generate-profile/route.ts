@@ -56,17 +56,29 @@ export interface GenerateProfileRequest {
 }
 
 export interface GeneratedWorkExperience {
+  id: number;
+  created_at: string;
+
   company: string;
   position: string;
-  period: string;
   description: string;
+
+  finish_date: string | null;
+  start_date: string | null;
+  is_current: boolean;
 }
 
 export interface GeneratedProject {
+  id: number;
+  created_at: string;
+
   company: string;
   position: string;
-  period: string;
   description: string;
+
+  finish_date: string | null;
+  start_date: string | null;
+  is_current: boolean;
 }
 
 export interface GeneratedProfile {
@@ -76,7 +88,8 @@ export interface GeneratedProfile {
   workExperiences: GeneratedWorkExperience[];
   projects: GeneratedProject[];
   skills: string[];
-  targetCountry: string;
+  target_country: string;
+  is_purchased: boolean;
 }
 
 async function ask(
@@ -371,6 +384,7 @@ export async function POST(req: NextRequest) {
       projects,
       skills: uniqueTechs,
       targetCountry: formData.targetRegion,
+      is_purchased: false,
     };
     return NextResponse.json(profile);
   } catch (err) {
