@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { createClient } from "@/lib/supabase/server";
 import { openai, OPENAI_MODEL } from "../../../lib/openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { FIRST_SYSTEM_PROMPT } from "@/constants/prompts/first-system";
@@ -124,6 +126,18 @@ const MAX_POSITION_LENGTH = 50;
 const MAX_TASK_LENGTH = 150;
 const MAX_ACHIEVEMENT_LENGTH = 150;
 
+const MONTHS: Record<string, string> = {
+  January: "01", February: "02", March: "03", April: "04",
+  May: "05", June: "06", July: "07", August: "08",
+  September: "09", October: "10", November: "11", December: "12",
+};
+
+function toDate(month: string, year: string): string | null {
+  const m = MONTHS[month];
+  if (!m || !year) return null;
+  return `${year}-${m}-01`;
+}
+
 function precheck(formData: ResolvedFormData): string | null {
   const totalSkills = new Set([
     ...(formData.technologies ?? []),
@@ -187,7 +201,64 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: precheckError }, { status: 422 });
   }
 
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const allBlockers = formData.blockersOther
+    ? [...(formData.blockers ?? []), formData.blockersOther]
+    : (formData.blockers ?? []);
+
+  const { data: resume, error: resumeError } = await supabase
+    .from("input_resumes")
+    .insert({
+      role: formData.role,
+      experience: formData.experience,
+      technologies: formData.technologies,
+      goal: formData.goal,
+      blockers: allBlockers,
+      applications_count: formData.applicationsCount,
+      target_region: formData.targetRegion,
+      english_level: formData.englishLevel,
+    })
+    .select("*")
+    .single();
+
+  if (resumeError || !resume) {
+    console.error("[supabase insert resume error]", resumeError);
+    return NextResponse.json({ error: resumeError }, { status: 500 });
+  }
+
+  const workExpRows = formData.workExperiences.map((exp) => ({
+    input_resume_id: resume.id,
+    company: exp.company,
+    position: exp.position,
+    start_date: toDate(exp.startMonth, exp.startYear),
+    end_date: exp.isCurrent ? null : toDate(exp.endMonth, exp.endYear),
+    is_current: exp.isCurrent,
+    tasks: exp.tasks,
+    technologies: exp.technologies,
+    achevements: exp.achievements,
+  }));
+
+  const { error: workExpError, data: workExpData } = await supabase
+    .from("input_work_experiences")
+    .insert(workExpRows)
+    .select("*");
+
+  if (workExpError) {
+    console.error("[supabase insert work experiences error]", workExpError);
+    return NextResponse.json({ error: "Failed to save work experiences" }, { status: 500 });
+  }
+
+  // const res = await supabase.from("input_resumes").select("*");
+  // return NextResponse.json(res);
+
   await new Promise((resolve) => setTimeout(resolve, 7000));
+
+  const response = {
+    ...resume,
+    workExperiences: workExpData,
+  }
 
   const profile: GeneratedProfile = {
       id: "1",
@@ -218,7 +289,7 @@ export async function POST(req: NextRequest) {
       skills: ["React", "TypeScript", "Next.js", "GraphQL", "CSS"],
       targetCountry: formData.targetRegion,
     };
-  return NextResponse.json(profile);
+  return NextResponse.json(response);
 
   const messages: ChatCompletionMessageParam[] = [
     {
