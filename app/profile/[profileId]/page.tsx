@@ -77,7 +77,7 @@ export default function ProfilePage() {
          <ProfileHeader />
 
          {/* ══ PAGE BODY ══ */}
-         <div className="max-w-285 mx-auto px-3 sm:px-4 py-4 pb-12 flex flex-col lg:flex-row gap-5 items-start">
+         <div className="max-w-285 mx-auto px-3 sm:px-4 pt-30 sm:pt-25 pb-12 flex flex-col lg:flex-row gap-5 items-start">
             <div className="w-full min-w-0 space-y-3">
                <ProfileCard
                   headline={profile.headline}

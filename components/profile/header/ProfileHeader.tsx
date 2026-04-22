@@ -16,7 +16,7 @@ export default function ProfileHeader() {
 
    return (
       <header
-         className="bg-white sticky top-0 z-30"
+         className="bg-white fixed top-0 left-0 w-full z-30"
          style={{ boxShadow: "0 0 0 1px rgba(0,0,0,0.08)" }}
       >
          {/* Info strip */}
@@ -59,8 +59,8 @@ export default function ProfileHeader() {
 
             <nav className="flex items-center ml-auto">
                <NavItem
-                  active
                   label="Главная"
+                  className="hidden sm:block"
                   icon={
                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
                         <path d="M23 9.36L12.56 2.31a1 1 0 00-1.12 0L1 9.36v1.06h2.09v9.79A1.85 1.85 0 005 22h5v-5h4v5h5a1.85 1.85 0 001.85-1.85v-9.73H23z" />
@@ -68,6 +68,7 @@ export default function ProfileHeader() {
                   }
                />
                <NavItem
+                  className="hidden sm:block"
                   label="Сеть"
                   icon={
                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -76,6 +77,7 @@ export default function ProfileHeader() {
                   }
                />
                <NavItem
+                  className="hidden sm:block"
                   label="Вакансии"
                   icon={
                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
@@ -102,6 +104,7 @@ export default function ProfileHeader() {
                   }
                />
                <NavItem
+                  active
                   label="Профиль"
                   icon={
                      <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">

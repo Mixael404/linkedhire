@@ -3,15 +3,17 @@ export default function NavItem({
    label,
    active = false,
    badge,
+   className = "",
 }: {
    icon: React.ReactNode;
    label: string;
    active?: boolean;
    badge?: number;
+   className?: string;
 }) {
    return (
       <button
-         className={`relative flex flex-col items-center justify-center gap-0.5 px-2 sm:px-4 h-13 text-[11px] leading-none transition-colors ${
+         className={`${className} relative flex flex-col items-center justify-center gap-0.5 px-2 sm:px-4 h-13 text-[11px] leading-none transition-colors ${
             active
                ? "text-[rgba(0,0,0,0.9)] border-b-2 border-[rgba(0,0,0,0.9)]"
                : "text-[rgba(0,0,0,0.55)] hover:text-[rgba(0,0,0,0.9)] border-b-2 border-transparent"
