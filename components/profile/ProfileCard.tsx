@@ -94,7 +94,7 @@ export default function ProfileCard({
                            </button>
                         </div>
 
-                        <div className="mt-2 flex items-center gap-2 flex-nowrap max-w-4/5">
+                        <div className="mt-2 flex items-center gap-2 flex-nowrap max-w-full">
                            <CopyCard
                               text={is_purchased ? headline : padWithFakeWords(headline, 90)}
                               onBlurClick={() => onBlurClick("headline")}

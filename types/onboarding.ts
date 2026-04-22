@@ -10,6 +10,10 @@ export interface WorkExperience {
   technologies: string[];
   achievements: string[];
   needsAchievementHelp: boolean;
+  // Project section enrichment (optional)
+  projectType: 'saas_product' | 'mobile_app' | 'open_source' | 'open_source_contrib' | 'design_system' | 'api_service' | 'freelance' | 'internal_tool' | 'side_project' | 'hackathon' | 'academic' | 'volunteer' | '';
+  projectRole: 'solo' | 'developer' | 'lead' | 'contributor' | 'co-founder' | 'architect' | 'frontend' | 'backend' | 'fullstack' | 'mobile' | 'devops' | 'mentor' | '';
+  projectUrl: string;
 }
 
 export const defaultWorkExperience: WorkExperience = {
@@ -24,6 +28,9 @@ export const defaultWorkExperience: WorkExperience = {
   technologies: [],
   achievements: [],
   needsAchievementHelp: false,
+  projectType: "",
+  projectRole: "",
+  projectUrl: "",
 };
 
 export interface OnboardingData {

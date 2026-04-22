@@ -1,134 +1,126 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
-export type ExperienceInputData = ResolvedFormData["workExperiences"][number];
+export type ExperienceInputData = ResolvedFormData["workExperiences"][number] & {
+  overallExperience?: string;
+  targetRole?: string;
+};
 
+export const experiencePrompt = (data: ExperienceInputData): string => {
+  const tasks = data.tasks?.filter(Boolean).map((t) => `- ${t}`).join('\n') || '- Not provided';
+  const technologies = data.technologies?.length ? data.technologies.join(', ') : 'Not specified';
 
-const imagineAchievements = `Infer and create the most relevant, impactful, and recruiter-attractive achievements that logically follow from the candidate’s role, tasks, and technologies.
+  const endLabel = data.isCurrent
+    ? 'Present'
+    : data.endMonth && data.endYear
+    ? `${data.endMonth} ${data.endYear}`
+    : 'Unknown';
+  const duration = `${data.startMonth} ${data.startYear} – ${endLabel}`;
 
-The achievements must:
-- Sound credible and professional
-- Be aligned with real responsibilities
-- Emphasize impact (performance, UX, scalability, delivery, quality, etc.)
-- Match the expectations of strong LinkedIn profiles for international roles
-`
+  const hasAchievements = (data.achievements?.filter(Boolean).length ?? 0) > 0;
 
-export const experiencePrompt = (data: ExperienceInputData) => {
-const safeTasks = data.tasks?.map((t) => `- ${t}`).join('\n') || '- Not specified';
-const safeAchievements = data.achievements?.map((a) => `- ${a}`).join('\n') || '- Not specified';
-const safeTechnologies = data.technologies?.length
-  ? data.technologies.join(', ')
-  : 'Not specified';
+  const achievementBlock = !hasAchievements || data.needsAchievementHelp
+    ? `No explicit achievements provided.
 
-const achievementInstruction = data.needsAchievementHelp
-  ? `
-### Achievement handling
+INSTRUCTION: Do not just restate the tasks. Instead, analyze the full picture — the role, the company, the tech stack, and the tasks — and infer what engineering or business outcomes this work most likely produced.
 
-Explicit achievements are missing or incomplete.
+Think about:
+- What problem was the team or product trying to solve?
+- What did these tasks enable or improve?
+- What would a recruiter expect a person in this role to have delivered?
 
-You should infer 1–2 realistic, recruiter-friendly impact statements from the candidate's tasks and technologies.
+Then write 1–2 specific, believable outcomes that fit naturally into the bullet list.
+Outcome types by domain:
+- Frontend: improved load performance, reduced bugs, faster delivery of UI features, better accessibility, more consistent UI
+- Backend / API: improved throughput or latency, better reliability, cleaner integrations, faster onboarding for consuming teams
+- DevOps / Infra: reduced deployment friction, better observability, shorter lead time, fewer incidents
+- Mobile: improved crash-free rate, better onboarding flow, reduced app size, smoother animations
+- Fullstack: faster shipping, better test coverage, cleaner architecture, product improvements
 
-These inferred achievements must:
-- be logically grounded in the provided work
-- sound believable and professionally strong
-- focus on likely improvements in performance, UX, maintainability, reliability, delivery speed, integrations, or engineering quality
-- remain conservative and plausible
+Rules: no fabricated percentages, revenue figures, or user counts unless the tasks strongly imply them. Use qualitative phrasing when metrics are unknown ("cut release cycle", "reduced manual QA effort", "improved page stability").`
+    : `Provided achievements — use as the foundation of the impact layer:
+${data.achievements.filter(Boolean).map((a) => `- ${a}`).join('\n')}
 
-Do NOT invent:
-- fake business metrics
-- revenue impact
-- user counts
-- unrealistic scale
-- unsupported architectural authority
-`
-  : `
-### Achievement handling
+Rewrite them into strong, specific, recruiter-readable bullets. Do not water them down or replace with generic claims.`;
 
-Use the provided achievements as the primary source of impact. ${safeAchievements}
+  return `Generate a LinkedIn Experience section description for one role.
 
-You may rewrite them for clarity, stronger wording, and better recruiter readability, but do not replace them with invented claims.
-`;
+ROLE CONTEXT:
+- Position: ${data.position}
+- Company: ${data.company}
+- Period: ${duration}
+- Overall career level: ${data.overallExperience ?? 'not specified'}
+- Target role being pursued: ${data.targetRole ?? 'not specified'}
 
-const prompt = `
-You are a senior international tech recruiter and LinkedIn profile strategist with experience hiring frontend and fullstack engineers for US and EU companies.
-
-Your task is to turn structured raw candidate data into a strong LinkedIn Experience description for one specific role.
-
----
-
-### Objective
-
-Create a LinkedIn-ready experience description that:
-- highlights the candidate's strongest contributions
-- reflects technical depth and ownership
-- shows clear impact where supported by the input
-- sounds credible, concise, and recruiter-friendly
-
----
-
-### Input data
-
-Position: ${data.position}
-Company: ${data.company}
-Employment period: ${data.startMonth} ${data.startYear} – ${data.isCurrent ? 'Present' : `${data.endMonth} ${data.endYear}`}
+TASKS PERFORMED:
+Technologies: ${technologies}
 
 Tasks:
-${safeTasks}
+${tasks}
 
-Achievements:
-${safeAchievements}
-
-Needs achievement help: ${data.needsAchievementHelp ? 'Yes' : 'No'}
-
-Technologies:
-${safeTechnologies}
+ACHIEVEMENTS / IMPACT:
+${achievementBlock}
 
 ---
 
-### Writing rules
+OUTPUT FORMAT:
 
-- Write in English only
-- Output bullet points only
-- Write 4–6 bullet points
-- Each bullet must be one concise sentence
-- Use simple, direct, natural language
-- Use strong but realistic action verbs such as Developed, Built, Implemented, Improved, Integrated, Optimized
-- Avoid fluff, filler, buzzwords, and corporate clichés
-- Never use phrases like "Responsible for", "Worked on", or "Participated in"
-- Avoid overly dramatic verbs like "Spearheaded" or "Revolutionized"
-- Do not copy the input directly
-- Rewrite and improve wording significantly
-- Do not repeat the same idea in different words
-- Do not mix languages
-- Ensure all wording is fully in English
+Line 1 — context sentence (no bullet, no dash):
+One sentence describing what the company or product does and the domain/scale of the work.
+This is NOT about the candidate — it's about where they worked.
+Examples:
+  "B2B monitoring platform for city emergency services in Moscow, serving real-time dispatch operators."
+  "E-commerce SaaS with 500K+ monthly users — multi-vendor marketplace with logistics and analytics modules."
+  "Internal CRM for a network of retail stores, replacing a legacy Excel-based workflow."
+  "Early-stage startup building developer tooling for cloud cost optimization."
+If the company is well known (Yandex, Sber, Tinkoff, EPAM, etc.), name it and add the product context. If unknown — infer the product domain from tasks and stack.
 
----
+Lines 2–6 — bullet points starting with "-":
+3–5 bullets describing the candidate's work and impact.
 
-### Content rules
-
-- Prioritize content in this order: achievements, impact, complex tasks, core responsibilities
-- Merge overlapping tasks into stronger, more valuable bullet points
-- Naturally include relevant technologies inside the bullets when useful
-- Emphasize technical depth only if supported by the input
-- Highlight impact in terms of performance, UX, maintainability, integrations, reliability, delivery, or engineering quality
-- Do not exaggerate seniority, ownership, or architectural authority beyond what the input supports
-
-${achievementInstruction}
+Total output: 600–1000 characters. Long enough to convey real substance, short enough to scan.
 
 ---
 
-### Output constraints
+WRITING APPROACH — READ CAREFULLY:
 
-- Do NOT include the job title
-- Do NOT include the company name
-- Do NOT include dates
-- Do NOT include a separate technologies line
-- Do NOT include headings, labels, or explanations
-- Return only the final LinkedIn-ready bullet list
+The goal is NOT to reproduce the task list in bullet form. The goal is to take the raw material (tasks + stack + context) and rewrite it as a narrative of real engineering work with outcomes.
+
+For each bullet, ask:
+1. What specifically was built or changed?
+2. In what context (which system, feature, workflow, team)?
+3. What was the result or purpose — what got better, faster, more reliable, or simpler?
+
+Good bullet: "Rebuilt the real-time notification pipeline using SignalR to support concurrent sessions across city districts — cut alert delivery latency and reduced missed incident flags by operators."
+Bad bullet: "Worked on real-time notifications using SignalR."
+
+Good bullet: "Integrated 2GIS mapping SDK from scratch, building dynamic marker clustering and filter logic for 300+ daily active incident points across Moscow."
+Bad bullet: "Integrated 2GIS map."
+
+The difference: specificity of what was done + the engineering context + the outcome or scale.
 
 ---
 
-Now generate the best possible LinkedIn Experience description for this role.
+MANDATORY RULES:
+
+1. Start with the context sentence (no bullet). Then bullets.
+2. Every bullet must include: action + what/where + result or purpose. No bullet with only an action and no outcome.
+3. Technologies: embed where they add precision. Do not list them as a standalone bullet.
+4. Seniority: match scope to the career level. A junior role should not sound like a CTO initiative.
+5. If company or position is in Russian/Cyrillic, transliterate to Latin (Яндекс → Yandex, ООО Ромашка → OOO Romashka).
+
+FORBIDDEN:
+- Copying tasks verbatim into bullets
+- Bullets with no outcome, no result, no purpose (e.g., "Worked on X", "Helped with Y")
+- Weak openers: "Responsible for", "Participated in", "Was involved in", "Assisted with"
+- AI-pattern phrases: "leveraged X to drive Y outcomes", "utilized best-in-class Z"
+- Filler adjectives: robust, scalable, efficient, innovative, cutting-edge
+- Invented hard metrics (percentages, revenue, user counts) unless they come from the achievements input
+- Words: passionate, motivated, hardworking, team player, fast learner
+
+FINAL CHECK:
+- Line 1 tells the reader what company/product this was
+- Bullets show real engineering work with outcomes, not a duty list
+- Reads like a real person wrote it about real work
+- Compact enough to scan in 10 seconds but substantial enough to be convincing
 `;
-
-  return prompt;
 };

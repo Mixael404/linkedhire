@@ -33,6 +33,9 @@ export interface ResolvedFormData {
     technologies: string[];
     achievements: string[];
     needsAchievementHelp: boolean;
+    projectType?: string;
+    projectRole?: string;
+    projectUrl?: string;
   }[];
   projects?: {
     company: string;
@@ -90,6 +93,7 @@ export interface GeneratedProfile {
   skills: string[];
   target_country: string;
   is_purchased: boolean;
+  is_generated: boolean;
 }
 
 async function ask(
@@ -243,6 +247,7 @@ export async function POST(req: NextRequest) {
       about: response.about,
       skills: formData.technologies,
       target_country: formData.targetRegion,
+      is_generated: false,
     })
     .select("*")
     .single();
@@ -278,6 +283,9 @@ export async function POST(req: NextRequest) {
     tasks: exp.tasks,
     technologies: exp.technologies,
     achievements: exp.achievements,
+    project_type: exp.projectType || null,
+    project_role: exp.projectRole || null,
+    project_url: exp.projectUrl || null,
   }));
 
   const { error: workExpError, data: workExpData } = await supabase
@@ -312,85 +320,6 @@ export async function POST(req: NextRequest) {
     .insert(workExperiencesRows) // For simplicity, using the same data shape for projects; adjust as needed
 
   return NextResponse.json(createdProfile);
-
-  const messages: ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: FIRST_SYSTEM_PROMPT.trim(),
-    },
-  ];
-
-  try {
-    const recentExperienceSummary = getExperienceSummary(formData);
-    const uniqueTechs = getUniqueTechnologies(formData);
-
-    // Step 1: headline — нужны только роль, опыт и целевой регион
-    const headline = await ask(
-      messages,
-      headlinePrompt(formData, uniqueTechs, recentExperienceSummary),
-    );
-    // Step 2: about — роль, цель, опыт работы (краткая сводка), уровень английского
-    const about = await ask(messages, aboutPrompt(formData));
-
-    const workExperiences = await Promise.all(
-      formData.workExperiences.map(
-        async (exp): Promise<GeneratedWorkExperience> => {
-          const period = exp.isCurrent
-            ? `${exp.startMonth} ${exp.startYear} – Present`
-            : `${exp.startMonth} ${exp.startYear} – ${exp.endMonth} ${exp.endYear}`;
-
-          const description = await askSingle(
-            FIRST_SYSTEM_PROMPT,
-            experiencePrompt(exp),
-          );
-
-          return {
-            company: exp.company,
-            position: exp.position,
-            period,
-            description,
-          };
-        },
-      ),
-    );
-
-    const projects = await Promise.all(
-      (formData.workExperiences ?? []).map(
-        async (proj): Promise<GeneratedProject> => {
-          const period = proj.isCurrent
-            ? `${proj.startMonth} ${proj.startYear} – Present`
-            : `${proj.startMonth} ${proj.startYear} – ${proj.endMonth} ${proj.endYear}`;
-
-          const description = await askSingle(
-            FIRST_SYSTEM_PROMPT,
-            projectPrompt(proj),
-          );
-
-          return {
-            company: proj.company,
-            position: proj.position,
-            period,
-            description,
-          };
-        },
-      ),
-    );
-
-    const profile: GeneratedProfile = {
-      id: "1", // In a real app, generate a unique ID here
-      headline,
-      about,
-      workExperiences,
-      projects,
-      skills: uniqueTechs,
-      targetCountry: formData.targetRegion,
-      is_purchased: false,
-    };
-    return NextResponse.json(profile);
-  } catch (err) {
-    console.error("[generate-profile error]", err);
-    return NextResponse.json({ error: "Generation failed" }, { status: 502 });
-  }
 }
 
 function getExperienceSummary(formData: ResolvedFormData) {

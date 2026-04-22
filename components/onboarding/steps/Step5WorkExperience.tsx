@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { HiPlus, HiXMark, HiTrash, HiChevronDown, HiChevronUp, HiBriefcase } from "react-icons/hi2";
-import { OnboardingData, defaultWorkExperience } from "../../../types/onboarding";
+import { OnboardingData, WorkExperience, defaultWorkExperience } from "../../../types/onboarding";
 import { ALL_TECHS } from "../../../constants/onboarding/technologies";
 import { ROLES } from "../../../constants/onboarding/roles";
 import SimpleBar from "simplebar-react";
@@ -158,6 +158,10 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
   const technologies = (watch(`${base}.technologies`) as string[]) ?? [];
   const achievements = (watch(`${base}.achievements`) as string[]) ?? [];
   const needsHelp    = watch(`${base}.needsAchievementHelp`) as boolean;
+  const projectType  = (watch(`${base}.projectType`) as string) ?? "";
+  const projectRole  = (watch(`${base}.projectRole`) as string) ?? "";
+  const projectUrl   = (watch(`${base}.projectUrl`) as string) ?? "";
+  const [projectOpen, setProjectOpen] = useState(true);
 
   const positionSuggestions = positionQuery.length > 0
     ? ROLES.filter(r => r.label.toLowerCase().includes(positionQuery.toLowerCase())).slice(0, 6)
@@ -524,6 +528,86 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                 Система предложит примеры метрик на основе твоего опыта<br />
                 <span className="text-[#374151]">(Ты сможешь отредактировать их перед использованием)</span>
               </p>
+            )}
+          </div>
+
+          {/* Project section (LinkedIn Projects enrichment) */}
+          <div className="border-t border-[#1B2847] pt-4">
+            <button
+              type="button"
+              onClick={() => setProjectOpen(o => !o)}
+              className="flex items-center gap-2 text-[#64748B] hover:text-[#94A3B8] transition-colors cursor-pointer w-full text-left"
+            >
+              {projectOpen
+                ? <HiChevronUp size={13} className="shrink-0" />
+                : <HiChevronDown size={13} className="shrink-0" />
+              }
+              <span className="text-xs font-medium">Для секции «Проекты» в LinkedIn</span>
+              <span className="text-[10px] text-[#3B4A6B] ml-auto">необязательно</span>
+            </button>
+
+            {projectOpen && (
+              <div className="mt-4 space-y-4">
+                <p className="text-[#475569] text-xs leading-relaxed -mt-1">
+                  Заполни, если хочешь показать этот опыт как отдельный проект — например, фриланс, побочный проект или важный внутренний инструмент.
+                </p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <FieldLabel>Тип проекта</FieldLabel>
+                    <SelectField
+                      value={projectType}
+                      onChange={v => setValue(`${base}.projectType`, v as WorkExperience['projectType'])}
+                      options={[
+                        { value: "saas_product",       label: "SaaS / продукт с реальными пользователями" },
+                        { value: "mobile_app",         label: "Мобильное приложение" },
+                        { value: "open_source",        label: "Open source проект / библиотека" },
+                        { value: "open_source_contrib",label: "Вклад в чужой open source" },
+                        { value: "design_system",      label: "Дизайн-система / UI-библиотека" },
+                        { value: "api_service",        label: "API / backend сервис" },
+                        { value: "freelance",          label: "Фриланс / заказная разработка" },
+                        { value: "internal_tool",      label: "Внутренний инструмент / автоматизация" },
+                        { value: "side_project",       label: "Pet-проект / эксперимент" },
+                        { value: "hackathon",          label: "Хакатон" },
+                        { value: "academic",           label: "Учебный / дипломный" },
+                        { value: "volunteer",          label: "Волонтёрский / некоммерческий" },
+                      ]}
+                      placeholder="Выбрать тип"
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel>Роль в проекте</FieldLabel>
+                    <SelectField
+                      value={projectRole}
+                      onChange={v => setValue(`${base}.projectRole`, v as WorkExperience['projectRole'])}
+                      options={[
+                        { value: "solo",        label: "Единственный разработчик" },
+                        { value: "developer",   label: "Разработчик" },
+                        { value: "co-founder",  label: "Со-основатель" },
+                        { value: "lead",        label: "Тимлид / основной разработчик" },
+                        { value: "architect",   label: "Архитектор / Tech Lead" },
+                        { value: "fullstack",   label: "Full-stack разработчик" },
+                        { value: "frontend",    label: "Frontend разработчик" },
+                        { value: "backend",     label: "Backend разработчик" },
+                        { value: "mobile",      label: "Mobile разработчик" },
+                        { value: "devops",      label: "DevOps / Инфраструктура" },
+                        { value: "contributor", label: "Контрибьютор" },
+                        { value: "mentor",      label: "Ментор / ревьюер" },
+                      ]}
+                      placeholder="Выбрать роль"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <FieldLabel>Ссылка на проект</FieldLabel>
+                  <input
+                    {...register(`${base}.projectUrl`)}
+                    placeholder="https://github.com/… или demo-ссылка"
+                    className={inputCls}
+                  />
+                </div>
+              </div>
             )}
           </div>
 

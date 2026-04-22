@@ -14,6 +14,7 @@ import SkillsSection from "@/components/profile/SkillsSection";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import OnboardingModal from "@/components/ui/OnboardingModal";
 import PaywallModal from "@/components/ui/PaywallModal";
+import GeneratingLoader from "@/components/onboarding/GeneratingLoader";
 
 export default function ProfilePage() {
    const { profileId } = useParams<{ profileId: string }>();
@@ -25,6 +26,7 @@ export default function ProfilePage() {
       () => searchParams.get("iniciator") === "onboarding"
    );
    const [paywallOpen, setPaywallOpen] = useState(false);
+   const [isGenerating, setIsGenerating] = useState(false);
 
    useEffect(() => {
       fetch(`/api/profile/${profileId}`)
@@ -44,9 +46,21 @@ export default function ProfilePage() {
          });
    }, [profileId]);
 
+   useEffect(() => {
+      if (!profile) return;
+      if (!profile.is_purchased || profile.is_generated) return;
+
+      setIsGenerating(true);
+      fetch(`/api/profile/${profileId}/generate`, { method: "POST" })
+         .then(() => window.location.reload())
+         .catch(() => setIsGenerating(false));
+   }, [profile, profileId]);
+
    const onBlurClick = useCallback((_section: string) => {
       setPaywallOpen(true);
    }, []);
+
+   if (isGenerating) return <GeneratingLoader />;
 
    if (loading) {
       return (

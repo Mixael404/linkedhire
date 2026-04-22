@@ -26,7 +26,7 @@ export default function SkillsSection({ skills, onBlurClick, is_purchased }: Pro
             text={skills.join(" · ")}
             onBlurClick={() => onBlurClick("skills")}
             visibleCharCount={skills.slice(0, 3).join(" · ").length}
-            isBlurred
+            isBlurred={!is_purchased}
             variant="light"
          />
       </Card>
