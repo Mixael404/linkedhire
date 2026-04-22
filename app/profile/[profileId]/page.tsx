@@ -13,6 +13,7 @@ import ProjectsSection from "@/components/profile/ProjectsSection";
 import SkillsSection from "@/components/profile/SkillsSection";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import OnboardingModal from "@/components/ui/OnboardingModal";
+import PaywallModal from "@/components/ui/PaywallModal";
 
 export default function ProfilePage() {
    const { profileId } = useParams<{ profileId: string }>();
@@ -23,6 +24,7 @@ export default function ProfilePage() {
    const [modalOpen, setModalOpen] = useState(
       () => searchParams.get("iniciator") === "onboarding"
    );
+   const [paywallOpen, setPaywallOpen] = useState(false);
 
    useEffect(() => {
       fetch(`/api/profile/${profileId}`)
@@ -42,8 +44,8 @@ export default function ProfilePage() {
          });
    }, [profileId]);
 
-   const onBlurClick = useCallback((section: string) => {
-      console.log(`[CopyCard] blur clicked — section: ${section}`);
+   const onBlurClick = useCallback((_section: string) => {
+      setPaywallOpen(true);
    }, []);
 
    if (loading) {
@@ -125,6 +127,11 @@ export default function ProfilePage() {
          <OnboardingModal
             isOpen={modalOpen}
             onClose={() => setModalOpen(false)}
+            profileId={profileId}
+         />
+         <PaywallModal
+            isOpen={paywallOpen}
+            onClose={() => setPaywallOpen(false)}
             profileId={profileId}
          />
       </div>
