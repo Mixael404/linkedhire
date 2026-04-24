@@ -19,20 +19,21 @@ export default function CopyCard({
   isBlurred,
   variant = "dark",
 }: CopyCardProps) {
+  const normalizedText = text.replaceAll("–", "-");
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  const visiblePart = isBlurred ? text.slice(0, visibleCharCount) : text;
-  const blurredPart = isBlurred ? text.slice(visibleCharCount) : "";
+  const visiblePart = isBlurred ? normalizedText.slice(0, visibleCharCount) : normalizedText;
+  const blurredPart = isBlurred ? normalizedText.slice(visibleCharCount) : "";
 
   const handleClick = async () => {
     if (isBlurred) {
       onBlurClick();
       return;
     }
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(normalizedText);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setCopied(true);
     timeoutRef.current = setTimeout(() => setCopied(false), 2000);

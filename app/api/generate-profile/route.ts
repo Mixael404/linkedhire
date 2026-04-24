@@ -93,47 +93,6 @@ export interface GeneratedProfile {
   email?: string | null;
 }
 
-async function ask(
-  messages: ChatCompletionMessageParam[],
-  userPrompt: string,
-): Promise<string> {
-  messages.push({ role: "user", content: userPrompt });
-
-  const completion = await openai.chat.completions.create({
-    model: OPENAI_MODEL,
-    messages,
-    temperature: 0.7,
-    // max_tokens: 800,
-  });
-
-  const reply = completion.choices[0]?.message?.content ?? "";
-  messages.push({ role: "assistant", content: reply });
-  return reply;
-}
-
-async function askSingle(
-  SYSTEM_PROMPT: string,
-  userPrompt: string,
-): Promise<string> {
-  const completion = await openai.chat.completions.create({
-    model: OPENAI_MODEL,
-    messages: [
-      {
-        role: "system",
-        content: SYSTEM_PROMPT,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
-    temperature: 0.7,
-    // max_tokens: 900,
-  });
-
-  return completion.choices[0]?.message?.content ?? "";
-}
-
 const MAX_SKILLS = 100;
 const MAX_WORK_EXPERIENCES = 6;
 const MAX_TASKS_PER_EXP = 20;
