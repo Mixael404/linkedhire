@@ -90,7 +90,7 @@ export default function ProfilePage() {
             fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
          }}
       >
-         <ProfileHeader />
+         <ProfileHeader profileId={profileId} hasEmail={!!profile.email} />
 
          {/* ══ PAGE BODY ══ */}
          <div className="max-w-285 mx-auto px-3 sm:px-4 pt-30 sm:pt-25 pb-12 flex flex-col lg:flex-row gap-5 items-start">

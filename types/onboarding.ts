@@ -35,7 +35,7 @@ export const defaultWorkExperience: WorkExperience = {
 
 export interface OnboardingData {
   // Step 1
-  startMethod: "resume" | "manual" | "";
+  startMethod: "resume" | "manual" | "existing" | "";
   resumeFile: string;
   // Step 2
   role: string;

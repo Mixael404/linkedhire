@@ -9,6 +9,8 @@ import BeforeAfter from "../components/BeforeAfter";
 import FinalCTA from "../components/FinalCTA";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";
+import AuthErrorToast from "../components/ui/AuthErrorToast";
+import { Suspense } from "react";
 import 'simplebar-react/dist/simplebar.min.css';
 
 export default function Home() {
@@ -16,6 +18,7 @@ export default function Home() {
     <>
       <Navbar />
       <ScrollToTop />
+      <Suspense><AuthErrorToast /></Suspense>
       <main>
         <Hero />
         <Problem />

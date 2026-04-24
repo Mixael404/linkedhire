@@ -90,6 +90,7 @@ export interface GeneratedProfile {
   target_country: string;
   is_purchased: boolean;
   is_generated: boolean;
+  email?: string | null;
 }
 
 async function ask(

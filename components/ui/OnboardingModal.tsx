@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { HiCheck, HiClipboard, HiLink } from "react-icons/hi2";
 import Modal from "@/components/ui/Modal";
+import EmailOtpForm from "@/components/ui/EmailOtpForm";
 
 type Props = {
    isOpen: boolean;
@@ -12,6 +13,7 @@ type Props = {
 
 export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
    const [copied, setCopied] = useState(false);
+   const [emailConfirmed, setEmailConfirmed] = useState(false);
 
    const shareUrl =
       typeof window !== "undefined"
@@ -26,7 +28,7 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
 
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
-         <div className="p-4 sm:p-7">
+         <div className="p-4 sm:p-5">
             {/* Header */}
             <div className="mb-3 sm:mb-5">
                <div className="flex items-center gap-2 mb-2 sm:mb-3">
@@ -69,11 +71,6 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
                ))}
             </div>
 
-            {/* No registration note */}
-            <p className="text-[11px] sm:text-[13px] text-[rgba(0,0,0,0.5)] mb-3 sm:mb-4 leading-relaxed">
-               Никакой регистрации не требуется. Профиль всегда доступен по ссылке ниже — сохраните её.
-            </p>
-
             {/* Copy link area */}
             <div
                onClick={handleCopy}
@@ -96,6 +93,22 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
             {copied && (
                <p className="text-[11px] text-green-600 mt-1.5 text-center">Ссылка скопирована!</p>
             )}
+
+            {/* Email registration section */}
+            <div className="mt-4 pt-4 border-t border-[#e8f0f8]">
+               <p className="text-[10px] sm:text-[13px] font-semibold text-[rgba(0,0,0,0.5)] uppercase tracking-wide mb-3">
+                  Сохраните доступ к профилю
+               </p>
+               <EmailOtpForm profileId={profileId} onConfirmed={() => setEmailConfirmed(true)} />
+               {!emailConfirmed && (
+                  <button
+                     onClick={onClose}
+                     className="mt-2 text-[11px] text-[rgba(0,0,0,0.4)] hover:text-[rgba(0,0,0,0.6)] transition-colors cursor-pointer"
+                  >
+                     Пропустить, буду хранить ссылку
+                  </button>
+               )}
+            </div>
          </div>
       </Modal>
    );

@@ -19,6 +19,7 @@ import {
 } from "../../types/onboarding";
 import GeneratingLoader from "./GeneratingLoader";
 import ProgressBar from "./ProgressBar";
+import Step1StartMethod from "./steps/Step1StartMethod";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
 import Step4Goals, { GOAL_OPTIONS, BLOCKER_OPTIONS, APPLICATIONS_OPTIONS } from "./steps/Step4Goals";
@@ -95,7 +96,7 @@ function resolveFormData(data: OnboardingData) {
 }
 
 const STEPS = [
-  // { label: "С чего начнём", component: Step1StartMethod },
+  { label: "С чего начнём", component: Step1StartMethod },
   { label: "О тебе", component: Step2BasicInfo },
   { label: "Стек технологий", component: Step3Technologies },
   { label: "Твои цели", component: Step4Goals },
@@ -134,6 +135,7 @@ export default function OnboardingWizard() {
     warnings: string[];
   }>({ open: false, warnings: [] });
   const [stepError, setStepError] = useState<string | null>(null);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const lastParsedFile = useRef<string>("");
 
   const methods = useForm<OnboardingData>({
@@ -165,6 +167,13 @@ export default function OnboardingWizard() {
     if (!hydrated) return;
     saveToStorage(currentStep, methods.getValues());
   }, [currentStep, hydrated]);
+
+  const resetForm = () => {
+    localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+    methods.reset(defaultOnboardingData);
+    setCurrentStep(0);
+    setStepError(null);
+  };
 
   const advanceStep = () => {
     setStepError(null);
@@ -286,6 +295,7 @@ export default function OnboardingWizard() {
       }
 
       localStorage.setItem(`linkedhire_profile_${profile.id}`, JSON.stringify(profile));
+      localStorage.removeItem(ONBOARDING_STORAGE_KEY);
       router.push(`/profile/${profile.id}?iniciator=onboarding`);
     } catch {
       toast.error("Не удалось отправить данные. Проверь соединение и попробуй снова.");
@@ -311,6 +321,7 @@ export default function OnboardingWizard() {
   const CurrentStepComponent = STEPS[currentStep].component;
   const isLastStep = currentStep === TOTAL_STEPS - 1;
   const canAdvance = isStepComplete(currentStep);
+  const isExistingFlow = currentStep === 0 && methods.watch("startMethod") === "existing";
 
   if (!hydrated) return null; // prevent SSR flash
   if (isGenerating) return <GeneratingLoader />;
@@ -371,19 +382,30 @@ export default function OnboardingWizard() {
                 <div />
               )}
 
+              {!isExistingFlow && (
+                <button
+                  type="button"
+                  onClick={isLastStep ? onSubmit : goNext}
+                  disabled={!canAdvance}
+                  className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
+                  ${
+                    canAdvance
+                      ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer"
+                      : "bg-[#2563EB]/40 text-white/50 cursor-not-allowed"
+                  }`}
+                >
+                  {isLastStep ? "Собрать мой профиль" : "Далее"}
+                  <HiArrowRight size={16} />
+                </button>
+              )}
+            </div>
+            <div className="flex justify-end mt-5">
               <button
                 type="button"
-                onClick={isLastStep ? onSubmit : goNext}
-                disabled={!canAdvance}
-                className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
-                ${
-                  canAdvance
-                    ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer"
-                    : "bg-[#2563EB]/40 text-white/50 cursor-not-allowed"
-                }`}
+                onClick={() => setResetConfirmOpen(true)}
+                className="text-[#828891] hover:text-[#64748B] text-sm transition-colors cursor-pointer"
               >
-                {isLastStep ? "Собрать мой профиль" : "Далее"}
-                <HiArrowRight size={16} />
+                Начать заново
               </button>
             </div>
           </div>
@@ -457,6 +479,43 @@ export default function OnboardingWizard() {
                   className="flex-1 py-2.5 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-bold transition-colors cursor-pointer"
                 >
                   Продолжить
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reset confirmation modal */}
+        {resetConfirmOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setResetConfirmOpen(false)}
+            />
+            <div className="relative w-full max-w-sm bg-[#0D1426] border border-[#1B2847] rounded-2xl shadow-2xl p-6">
+              <h3
+                className="text-white font-bold text-base mb-2"
+                style={{ fontFamily: "var(--font-geologica)" }}
+              >
+                Начать заново?
+              </h3>
+              <p className="text-[#64748B] text-sm mb-6">
+                Все введённые данные будут удалены и форма вернётся к первому шагу.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setResetConfirmOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/40 hover:text-white text-sm font-medium transition-colors cursor-pointer"
+                >
+                  Отмена
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setResetConfirmOpen(false); resetForm(); }}
+                  className="flex-1 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-sm font-bold transition-colors cursor-pointer"
+                >
+                  Да, сбросить
                 </button>
               </div>
             </div>
