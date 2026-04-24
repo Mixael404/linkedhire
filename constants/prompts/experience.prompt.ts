@@ -22,6 +22,7 @@ export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormDat
       - Target role: ${data.role}
       - Career goal: ${data.goal}
       - Core technologies: ${data.technologies.join(", ")}
+      ${data.taskTypes?.length ? `- Task domains (types of problems this engineer most frequently solves and is most competent in): ${data.taskTypes.join(", ")}` : ""}
       - Target region: ${data.targetRegion}
       - English level: ${data.englishLevel}
 

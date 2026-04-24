@@ -22,6 +22,8 @@ INPUT DATA:
 - Career goal: ${formData.goal}
 - Target region: ${formData.targetRegion}
 - English level: ${formData.englishLevel}
+${formData.taskTypes?.length ? `- Task domains (types of problems this engineer most frequently solves and is most competent in): ${formData.taskTypes.join(", ")}` : ""}
+
 
    WORK CONTEXT (derive specialization from this):
    ${formData.workExperiences.map(exp => `

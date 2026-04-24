@@ -11,6 +11,7 @@ export interface ResolvedFormData {
   resumeFile: string;
   role: string;
   experience: string;
+  taskTypes?: string[];
   technologies: string[];
   goal: string;
   blockers: string[];
@@ -141,6 +142,17 @@ const MAX_COMPANY_LENGTH = 50;
 const MAX_POSITION_LENGTH = 50;
 const MAX_TASK_LENGTH = 150;
 const MAX_ACHIEVEMENT_LENGTH = 150;
+const MAX_SKILL_LENGTH = 50;
+const MAX_PROJECT_URL_LENGTH = 200;
+const MAX_ROLE_LENGTH = 100;
+const MAX_SHORT_FIELD_LENGTH = 50;   // experience, englishLevel, applicationsCount
+const MAX_GOAL_LENGTH = 300;
+const MAX_REGION_LENGTH = 100;
+const MAX_BLOCKERS = 10;
+const MAX_BLOCKER_LENGTH = 200;
+const MAX_BLOCKERS_OTHER_LENGTH = 300;
+const MAX_TASK_TYPES = 5;
+const MAX_TASK_TYPE_LENGTH = 100;
 
 const MONTHS: Record<string, string> = {
   January: "01",
@@ -164,17 +176,53 @@ function toDate(month: string, year: string): string | null {
 }
 
 function precheck(formData: ResolvedFormData): string | null {
+  // ── Scalar fields ──────────────────────────────────────────────────────────
+  if ((formData.role?.length ?? 0) > MAX_ROLE_LENGTH)
+    return `role exceeds ${MAX_ROLE_LENGTH} characters`;
+  if ((formData.experience?.length ?? 0) > MAX_SHORT_FIELD_LENGTH)
+    return `experience exceeds ${MAX_SHORT_FIELD_LENGTH} characters`;
+  if ((formData.goal?.length ?? 0) > MAX_GOAL_LENGTH)
+    return `goal exceeds ${MAX_GOAL_LENGTH} characters`;
+  if ((formData.targetRegion?.length ?? 0) > MAX_REGION_LENGTH)
+    return `targetRegion exceeds ${MAX_REGION_LENGTH} characters`;
+  if ((formData.englishLevel?.length ?? 0) > MAX_SHORT_FIELD_LENGTH)
+    return `englishLevel exceeds ${MAX_SHORT_FIELD_LENGTH} characters`;
+  if ((formData.applicationsCount?.length ?? 0) > MAX_SHORT_FIELD_LENGTH)
+    return `applicationsCount exceeds ${MAX_SHORT_FIELD_LENGTH} characters`;
+  if ((formData.blockersOther?.length ?? 0) > MAX_BLOCKERS_OTHER_LENGTH)
+    return `blockersOther exceeds ${MAX_BLOCKERS_OTHER_LENGTH} characters`;
+
+  // ── taskTypes ──────────────────────────────────────────────────────────────
+  if ((formData.taskTypes?.length ?? 0) > MAX_TASK_TYPES)
+    return `Too many task types: max is ${MAX_TASK_TYPES}`;
+  for (const t of formData.taskTypes ?? []) {
+    if (t.length > MAX_TASK_TYPE_LENGTH)
+      return `task type exceeds ${MAX_TASK_TYPE_LENGTH} characters`;
+  }
+
+  // ── blockers ───────────────────────────────────────────────────────────────
+  if ((formData.blockers?.length ?? 0) > MAX_BLOCKERS)
+    return `Too many blockers: max is ${MAX_BLOCKERS}`;
+  for (const b of formData.blockers ?? []) {
+    if (b.length > MAX_BLOCKER_LENGTH)
+      return `blocker exceeds ${MAX_BLOCKER_LENGTH} characters`;
+  }
+
+  // ── Global technologies ────────────────────────────────────────────────────
   const totalSkills = new Set([
     ...(formData.technologies ?? []),
     ...formData.workExperiences.flatMap((w) => w.technologies ?? []),
   ]);
-  if (totalSkills.size > MAX_SKILLS) {
+  if (totalSkills.size > MAX_SKILLS)
     return `Too many skills: ${totalSkills.size} provided, max is ${MAX_SKILLS}`;
+  for (const skill of formData.technologies ?? []) {
+    if (skill.length > MAX_SKILL_LENGTH)
+      return `technology exceeds ${MAX_SKILL_LENGTH} characters`;
   }
 
-  if (formData.workExperiences.length > MAX_WORK_EXPERIENCES) {
+  // ── workExperiences ────────────────────────────────────────────────────────
+  if (formData.workExperiences.length > MAX_WORK_EXPERIENCES)
     return `Too many work experiences: max is ${MAX_WORK_EXPERIENCES}`;
-  }
 
   for (let i = 0; i < formData.workExperiences.length; i++) {
     const exp = formData.workExperiences[i];
@@ -184,6 +232,8 @@ function precheck(formData: ResolvedFormData): string | null {
       return `${label}: company name exceeds ${MAX_COMPANY_LENGTH} characters`;
     if ((exp.position?.length ?? 0) > MAX_POSITION_LENGTH)
       return `${label}: position exceeds ${MAX_POSITION_LENGTH} characters`;
+    if ((exp.projectUrl?.length ?? 0) > MAX_PROJECT_URL_LENGTH)
+      return `${label}: project URL exceeds ${MAX_PROJECT_URL_LENGTH} characters`;
     if ((exp.tasks?.length ?? 0) > MAX_TASKS_PER_EXP)
       return `${label}: too many tasks, max is ${MAX_TASKS_PER_EXP}`;
     if ((exp.achievements?.length ?? 0) > MAX_ACHIEVEMENTS_PER_EXP)
@@ -198,6 +248,43 @@ function precheck(formData: ResolvedFormData): string | null {
     for (const ach of exp.achievements ?? []) {
       if (ach.length > MAX_ACHIEVEMENT_LENGTH)
         return `${label}: achievement exceeds ${MAX_ACHIEVEMENT_LENGTH} characters`;
+    }
+    for (const skill of exp.technologies ?? []) {
+      if (skill.length > MAX_SKILL_LENGTH)
+        return `${label}: technology exceeds ${MAX_SKILL_LENGTH} characters`;
+    }
+  }
+
+  // ── projects (optional array, same rules) ─────────────────────────────────
+  if ((formData.projects?.length ?? 0) > MAX_WORK_EXPERIENCES)
+    return `Too many projects: max is ${MAX_WORK_EXPERIENCES}`;
+
+  for (let i = 0; i < (formData.projects?.length ?? 0); i++) {
+    const proj = formData.projects![i];
+    const label = `Project #${i + 1}`;
+
+    if ((proj.company?.length ?? 0) > MAX_COMPANY_LENGTH)
+      return `${label}: name exceeds ${MAX_COMPANY_LENGTH} characters`;
+    if ((proj.position?.length ?? 0) > MAX_POSITION_LENGTH)
+      return `${label}: position exceeds ${MAX_POSITION_LENGTH} characters`;
+    if ((proj.tasks?.length ?? 0) > MAX_TASKS_PER_EXP)
+      return `${label}: too many tasks, max is ${MAX_TASKS_PER_EXP}`;
+    if ((proj.achievements?.length ?? 0) > MAX_ACHIEVEMENTS_PER_EXP)
+      return `${label}: too many achievements, max is ${MAX_ACHIEVEMENTS_PER_EXP}`;
+    if ((proj.technologies?.length ?? 0) > MAX_SKILLS_PER_EXP)
+      return `${label}: too many skills, max is ${MAX_SKILLS_PER_EXP}`;
+
+    for (const task of proj.tasks ?? []) {
+      if (task.length > MAX_TASK_LENGTH)
+        return `${label}: task exceeds ${MAX_TASK_LENGTH} characters`;
+    }
+    for (const ach of proj.achievements ?? []) {
+      if (ach.length > MAX_ACHIEVEMENT_LENGTH)
+        return `${label}: achievement exceeds ${MAX_ACHIEVEMENT_LENGTH} characters`;
+    }
+    for (const skill of proj.technologies ?? []) {
+      if (skill.length > MAX_SKILL_LENGTH)
+        return `${label}: technology exceeds ${MAX_SKILL_LENGTH} characters`;
     }
   }
 

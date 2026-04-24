@@ -41,6 +41,7 @@ export interface OnboardingData {
   role: string;
   customRole: string;
   experience: string;
+  taskTypes: string[];
   // Step 3
   technologies: string[];
   customTechnology: string;
@@ -62,6 +63,7 @@ export const defaultOnboardingData: OnboardingData = {
   role: "",
   customRole: "",
   experience: "",
+  taskTypes: [],
   technologies: [],
   customTechnology: "",
   goal: "",

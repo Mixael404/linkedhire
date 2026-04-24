@@ -15,7 +15,7 @@ INPUT DATA:
 - Target role: ${data.role}
 - Experience level: ${data.experience}
 - Core technologies: ${data.technologies.join(', ')}
-- Career goal: ${data.goal}
+${data.taskTypes?.length ? `- Task domains (types of problems this engineer most frequently solves and is most competent in): ${data.taskTypes.join(', ')}` : ''}- Career goal: ${data.goal}
 - Target region: ${data.targetRegion}
 - English level: ${data.englishLevel}
 

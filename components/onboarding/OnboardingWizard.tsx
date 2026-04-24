@@ -19,7 +19,6 @@ import {
 } from "../../types/onboarding";
 import GeneratingLoader from "./GeneratingLoader";
 import ProgressBar from "./ProgressBar";
-import Step1StartMethod from "./steps/Step1StartMethod";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
 import Step4Goals, { GOAL_OPTIONS, BLOCKER_OPTIONS, APPLICATIONS_OPTIONS } from "./steps/Step4Goals";
@@ -28,6 +27,7 @@ import Step6Target, { ENGLISH_LEVELS } from "./steps/Step6Target";
 import { ROLES } from "../../constants/onboarding/roles";
 import { EXPERIENCE_OPTIONS } from "../../constants/onboarding/experience";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 function resolveFormData(data: OnboardingData) {
   const role =
@@ -82,6 +82,7 @@ function resolveFormData(data: OnboardingData) {
     resumeFile: data.resumeFile,
     role,
     experience,
+    taskTypes: data.taskTypes,
     technologies: data.technologies,
     goal,
     blockers,
@@ -94,7 +95,7 @@ function resolveFormData(data: OnboardingData) {
 }
 
 const STEPS = [
-  { label: "С чего начнём", component: Step1StartMethod },
+  // { label: "С чего начнём", component: Step1StartMethod },
   { label: "О тебе", component: Step2BasicInfo },
   { label: "Стек технологий", component: Step3Technologies },
   { label: "Твои цели", component: Step4Goals },
@@ -265,7 +266,6 @@ export default function OnboardingWizard() {
   };
 
   const onSubmit = methods.handleSubmit(async (data) => {
-    // console.log(data);
     const formData = resolveFormData(data);
     setIsGenerating(true);
 
@@ -277,9 +277,18 @@ export default function OnboardingWizard() {
       });
 
       const profile = await res.json();
+
+      if (!res.ok) {
+        const message = profile?.error ?? "Что-то пошло не так. Попробуй ещё раз.";
+        toast.error(message);
+        setIsGenerating(false);
+        return;
+      }
+
       localStorage.setItem(`linkedhire_profile_${profile.id}`, JSON.stringify(profile));
       router.push(`/profile/${profile.id}?iniciator=onboarding`);
     } catch {
+      toast.error("Не удалось отправить данные. Проверь соединение и попробуй снова.");
       setIsGenerating(false);
     }
   });

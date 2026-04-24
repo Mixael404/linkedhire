@@ -7,6 +7,80 @@ import { ROLES, ROLE_GROUPS } from "../../../constants/onboarding/roles";
 import { EXPERIENCE_OPTIONS } from "../../../constants/onboarding/experience";
 import Accordion from "../Accordion";
 
+const MAX_TASK_TYPES = 5;
+
+export const TASK_CATEGORIES = [
+  {
+    id: "ui_ux",
+    label: "🟦 Интерфейсы и пользовательский опыт",
+    subtitle: "всё, что видит пользователь",
+    tasks: [
+      "Дашборды и аналитика",
+      "Сложные формы и валидация",
+      "Таблицы / большие списки",
+      "Карты / гео-интерфейсы",
+      "Личные кабинеты / админки",
+      "Design system / UI компоненты",
+      "Drag & drop / сложные взаимодействия",
+      "Оптимизация производительности UI (Core Web Vitals, рендеринг)",
+    ],
+  },
+  {
+    id: "data",
+    label: "🟪 Работа с данными и интеграциями",
+    subtitle: "ключевая категория для backend / fullstack",
+    tasks: [
+      "API (REST / GraphQL)",
+      "Проектирование схем и моделей данных",
+      "Оптимизация запросов к БД (индексы, explain, N+1)",
+      "Интеграции (внешние сервисы, вебхуки)",
+      "Платёжные системы / биллинг",
+      "Кеширование / оптимизация запросов",
+      "Обработка данных / бизнес-логика",
+    ],
+  },
+  {
+    id: "performance",
+    label: "🟨 Нагрузка, производительность и масштаб",
+    subtitle: "реальное поведение системы",
+    tasks: [
+      "Real-time (сокеты, стриминг)",
+      "Высокая нагрузка (high-load)",
+      "Производительность / оптимизация",
+      "Асинхронные процессы / очереди",
+      "Масштабируемые системы",
+      "Observability (логи, трейсы, метрики)",
+    ],
+  },
+  {
+    id: "architecture",
+    label: "🟩 Архитектура и разработка системы",
+    subtitle: "senior-сигналы",
+    tasks: [
+      "Микросервисы / сервисная архитектура",
+      "Архитектура приложения",
+      "Проектирование системы",
+      "CI/CD / деплой",
+      "Тестирование (unit / e2e)",
+      "Рефакторинг / поддержка",
+    ],
+  },
+  {
+    id: "security",
+    label: "🟥 Безопасность",
+    subtitle: "защита данных и инфраструктуры",
+    tasks: [
+      "Аутентификация / авторизация",
+      "OAuth / SSO / JWT",
+      "Защита API (rate limiting, валидация)",
+      "Шифрование данных",
+      "Пентест / аудит безопасности",
+      "OWASP / уязвимости",
+      "Управление секретами",
+    ],
+  },
+];
+
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <h3
@@ -21,21 +95,26 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function Chip({
   label,
   selected,
+  disabled,
   onClick,
 }: {
   label: string;
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150 cursor-pointer
+      disabled={disabled}
+      className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150
         ${
           selected
-            ? "bg-[#2563EB] border-[#2563EB] text-white"
-            : "bg-[#0D1426] border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/50 hover:text-white"
+            ? "bg-[#2563EB] border-[#2563EB] text-white cursor-pointer"
+            : disabled
+            ? "bg-[#0D1426] border-[#1B2847] text-[#475569] cursor-not-allowed"
+            : "bg-[#0D1426] border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/50 hover:text-white cursor-pointer"
         }`}
     >
       {label}
@@ -53,7 +132,9 @@ export default function Step2BasicInfo() {
 
   const role = watch("role");
   const experience = watch("experience");
+  const taskTypes = watch("taskTypes") ?? [];
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const [openTaskGroup, setOpenTaskGroup] = useState<string | null>(null);
 
   const toggleGroup = (group: string) =>
     setOpenGroup((prev) => (prev === group ? null : group));
@@ -77,7 +158,7 @@ export default function Step2BasicInfo() {
 
       {/* ── Роль ── */}
       <div className="mb-10">
-        <SectionTitle>Кем ты работаешь?</SectionTitle>
+        <SectionTitle>На какую позицию ты претендуешь?</SectionTitle>
 
         <div className="flex gap-2">
           {[ROLE_GROUPS.filter((_, i) => i % 2 === 0), ROLE_GROUPS.filter((_, i) => i % 2 !== 0)].map(
@@ -133,7 +214,7 @@ export default function Step2BasicInfo() {
       </div>
 
       {/* ── Опыт ── */}
-      <div>
+      <div className="mb-10">
         <SectionTitle>Сколько у тебя опыта?</SectionTitle>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {EXPERIENCE_OPTIONS.map((opt) => {
@@ -172,6 +253,53 @@ export default function Step2BasicInfo() {
         {errors.experience && (
           <p className="text-red-400 text-xs mt-2">{errors.experience.message}</p>
         )}
+      </div>
+
+      {/* ── Типы задач ── */}
+      <div>
+        <div className="flex items-baseline justify-between mb-4">
+          <SectionTitle>С какими типами задач работал?</SectionTitle>
+          <span className={`text-xs font-medium tabular-nums ${taskTypes.length >= MAX_TASK_TYPES ? "text-amber-400" : "text-[#64748B]"}`}>
+            {taskTypes.length} / {MAX_TASK_TYPES}
+          </span>
+        </div>
+
+        <div className="flex flex-col">
+          {TASK_CATEGORIES.map((cat) => {
+            const selectedInCat = taskTypes.filter((t) => cat.tasks.includes(t)).length;
+            return (
+              <Accordion
+                key={cat.id}
+                title={cat.label}
+                badge={selectedInCat > 0 ? selectedInCat : undefined}
+                open={openTaskGroup === cat.id}
+                onToggle={() => setOpenTaskGroup((prev) => (prev === cat.id ? null : cat.id))}
+              >
+                <p className="text-[#475569] text-xs mb-3">👉 {cat.subtitle}</p>
+                <div className="flex flex-wrap gap-2">
+                  {cat.tasks.map((task) => {
+                    const isSelected = taskTypes.includes(task);
+                    return (
+                      <Chip
+                        key={task}
+                        label={task}
+                        selected={isSelected}
+                        disabled={!isSelected && taskTypes.length >= MAX_TASK_TYPES}
+                        onClick={() => {
+                          if (isSelected) {
+                            setValue("taskTypes", taskTypes.filter((t) => t !== task));
+                          } else if (taskTypes.length < MAX_TASK_TYPES) {
+                            setValue("taskTypes", [...taskTypes, task]);
+                          }
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </Accordion>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
