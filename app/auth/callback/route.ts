@@ -8,6 +8,11 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const profileId = searchParams.get("profileId");
 
+  const urlError = searchParams.get("error");
+  if (urlError === "access_denied") {
+    return NextResponse.redirect(`${origin}/?error=link_expired`);
+  }
+
   if (!code) {
     return NextResponse.redirect(`${origin}/?error=profile_not_found`);
   }
@@ -58,13 +63,14 @@ export async function GET(request: NextRequest) {
   }
 
   // Login flow: find profile by email
-  const { data: profile } = await admin
+  const { data: profile, error: profileError } = await admin
     .from("profiles")
     .select("id")
     .eq("email", user.email)
     .single();
 
-  if (!profile) {
+  if (profileError || !profile) {
+    console.error("[auth/callback] profile lookup failed", { email: user.email, profileError });
     return NextResponse.redirect(`${origin}/?error=profile_not_found`);
   }
 

@@ -10,6 +10,9 @@ import { padWithFakeWords } from "@/lib/padWithFakeWords";
 import OpenToWorkModal from "@/components/ui/OpenToWorkModal";
 import Tooltip from "@/components/ui/Tooltip";
 
+import DownloadResumeButton from "@/components/ui/DownloadResumeButton";
+import type { GeneratedProfile } from "@/app/api/generate-profile/route";
+
 type Props = {
    headline: string;
    targetCountry?: string | null;
@@ -18,6 +21,8 @@ type Props = {
    roleTitle: string;
    onBlurClick: (section: string) => void;
    is_purchased: boolean;
+   is_generated: boolean;
+   profile: GeneratedProfile;
 };
 
 export default function ProfileCard({
@@ -28,6 +33,8 @@ export default function ProfileCard({
    roleTitle,
    onBlurClick,
    is_purchased,
+   is_generated,
+   profile,
 }: Props) {
    const [openToWorkOpen, setOpenToWorkOpen] = useState(false);
 
@@ -140,6 +147,9 @@ export default function ProfileCard({
                      <button className="flex-1 py-1.75 bg-[#0a66c2] hover:bg-[#004182] transition-colors text-white text-sm font-semibold rounded-full">
                         Интересует
                      </button>
+                     {is_purchased && is_generated && (
+                        <DownloadResumeButton profile={profile} />
+                     )}
                      <button className="w-9 h-9 border border-[rgba(0,0,0,0.5)] text-[rgba(0,0,0,0.6)] hover:bg-gray-100 transition-colors rounded-full flex items-center justify-center text-[18px] font-bold leading-none pb-1">
                         ···
                      </button>
@@ -155,6 +165,9 @@ export default function ProfileCard({
                            Добавить раздел
                         </button>
                      </Tooltip>
+                     {is_purchased && is_generated && (
+                        <DownloadResumeButton profile={profile} />
+                     )}
                   </div>
                </div>
             </div>

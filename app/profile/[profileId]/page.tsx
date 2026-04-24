@@ -103,6 +103,8 @@ export default function ProfilePage() {
                   roleTitle={roleTitle}
                   onBlurClick={onBlurClick}
                   is_purchased={profile.is_purchased}
+                  is_generated={profile.is_generated}
+                  profile={profile}
                />
 
                <AboutSection
