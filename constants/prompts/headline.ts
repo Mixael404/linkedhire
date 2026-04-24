@@ -1,69 +1,125 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
-export const headlinePrompt = (formData: ResolvedFormData, uniqueTechs: string[], recentExperienceSummary: string): string => (
-    `
-Generate a high-conversion LinkedIn headline based strictly on the provided data.
+export const headlinePrompt = (formData: ResolvedFormData): string => (
+`
+You are a senior technical recruiter hiring engineers for top US/EU companies.
+
+Your task is to generate a HIGH-CONVERSION LinkedIn headline.
+
+The headline must:
+- attract recruiter attention
+- clearly position the candidate
+- stand out from generic profiles
+- remain concise and professional
+
+---
 
 INPUT DATA:
-- Role: ${formData.role}
-- Experience: ${formData.experience}
-- Technologies: ${uniqueTechs.join(", ")}
-- Goal: ${formData.goal}
+
+- Target role: ${formData.role}
+- Experience level: ${formData.experience}
+- Core technologies: ${formData.technologies.join(', ')}
+- Career goal: ${formData.goal}
 - Target region: ${formData.targetRegion}
 - English level: ${formData.englishLevel}
-- Work experience: ${recentExperienceSummary}
+
+   WORK CONTEXT (derive specialization from this):
+   ${formData.workExperiences.map(exp => `
+   Company: ${exp.company}
+   Position: ${exp.position}
+   Tasks: ${exp.tasks.join('; ')}
+   Technologies: ${exp.technologies.join(', ')}
+   Project type: ${exp.projectType || 'Not specified'}
+   `).join('\n')}
+
+---
+
+CORE OBJECTIVE:
+
+Create a headline that positions the candidate as a STRONG, SPECIALIZED engineer — not a generic one.
+
+---
+
+HEADLINE STRUCTURE (MANDATORY):
+
+<ROLE / SENIORITY> | <CORE STACK> | <SPECIALIZATION / EDGE>
+
+---
 
 CRITICAL RULES:
 
-1. LENGTH:
-   - Maximum 200 characters (hard limit)
+1. ROLE:
+- Must match target role
+- Adjust seniority based on experience (${formData.experience})
 
-2. STRUCTURE (MANDATORY):
-   [Target Role] | [Top 3–5 technologies] | [Value / specialization]
+2. STACK:
+- Include 2–4 most relevant technologies ONLY
+- Prioritize technologies used in real projects
+- Do NOT overload with tools
 
-3. ROLE:
-   - Normalize to a standard global title (e.g. "Frontend Engineer", "Backend Engineer")
-   - If customRole exists and is meaningful → use it
-   - Do NOT mix multiple roles
+3. SPECIALIZATION (MOST IMPORTANT):
+You MUST infer what this engineer is strong at based on experience.
 
-4. TECHNOLOGIES:
-   - Select ONLY the most relevant and high-signal technologies
-   - Prioritize those used in real work experience
-   - Avoid long lists
+Examples:
+- real-time systems
+- complex UI / data-heavy interfaces
+- SaaS platforms
+- high-load applications
+- dashboards / analytics
+- map-based systems
+- form-heavy applications
 
-5. VALUE:
-   - Must describe real impact or specialization
-   - Use concrete phrasing
+If unclear:
+→ infer from tasks and technologies
 
-ALLOWED VALUE PATTERNS:
-- Building scalable web applications
-- High-performance frontend systems
-- API & microservices development
-- Shipping product features end-to-end
-- Performance optimization & UX improvement
+---
 
-FORBIDDEN:
-- “Looking for opportunities”
-- “Open to work”
-- “Passionate developer”
-- Any vague or generic statements
+4. AVOID GENERIC PHRASES:
+Do NOT use:
+- "building scalable applications"
+- "passionate developer"
+- "results-driven"
+- "hardworking"
 
-6. PRIORITIZATION:
-   - Most important keywords must appear in the first ~60 characters
-   - Headline must be readable, not keyword spam
+These are weak and overused.
 
-7. DATA USAGE:
-   - Do NOT invent anything
-   - If data is weak → simplify, do NOT hallucinate
+---
 
-8. STYLE:
-   - Use "|" as separator
-   - Clean, minimal, recruiter-friendly
-   - No repetition
+5. STYLE:
+- concise (under 220 characters)
+- clean separators: "|"
+- no emojis
+- no full sentences
+- no fluff
 
-FINAL CHECK:
-- <= 200 characters
-- Role + Tech + Value present
-- Sounds like a real market-ready headline
+---
+
+6. DIFFERENTIATION:
+The headline must answer:
+→ "Why should a recruiter pick THIS engineer over 100 others?"
+
+---
+
+7. REGION ADAPTATION:
+Optimize wording for recruiters in ${formData.targetRegion}
+
+---
+
+QUALITY BAR:
+
+The result should feel like:
+→ a strong mid/senior engineer with a clear technical identity
+
+---
+
+EXAMPLES (STYLE ONLY):
+
+Frontend Engineer | React, Next.js | Real-time systems & complex UI
+Senior Frontend Engineer | TypeScript, React | Data-heavy dashboards & SaaS
+Frontend Developer | React, Redux | High-load applications & performance
+
+---
+
+Now generate ONE headline.
 `
 )

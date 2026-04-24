@@ -1,126 +1,159 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
+import { PROJECT_ROLE_LABEL, PROJECT_TYPE_LABEL } from "./projects.prompt";
 
 export type ExperienceInputData = ResolvedFormData["workExperiences"][number] & {
-  overallExperience?: string;
-  targetRole?: string;
+   overallExperience?: string;
+   targetRole?: string;
 };
 
-export const experiencePrompt = (data: ExperienceInputData): string => {
-  const tasks = data.tasks?.filter(Boolean).map((t) => `- ${t}`).join('\n') || '- Not provided';
-  const technologies = data.technologies?.length ? data.technologies.join(', ') : 'Not specified';
+export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormData): string => {
+   return `
+      You are a senior technical recruiter and hiring manager from a top US tech company.
 
-  const endLabel = data.isCurrent
-    ? 'Present'
-    : data.endMonth && data.endYear
-    ? `${data.endMonth} ${data.endYear}`
-    : 'Unknown';
-  const duration = `${data.startMonth} ${data.startYear} – ${endLabel}`;
+      Your task is to generate a HIGH-IMPACT LinkedIn Experience section for ONE role.
 
-  const hasAchievements = (data.achievements?.filter(Boolean).length ?? 0) > 0;
+      The output must reflect a TOP 10% candidate profile — someone recruiters proactively reach out to.
 
-  const achievementBlock = !hasAchievements || data.needsAchievementHelp
-    ? `No explicit achievements provided.
+      ---
 
-INSTRUCTION: Do not just restate the tasks. Instead, analyze the full picture — the role, the company, the tech stack, and the tasks — and infer what engineering or business outcomes this work most likely produced.
+      INPUT DATA:
 
-Think about:
-- What problem was the team or product trying to solve?
-- What did these tasks enable or improve?
-- What would a recruiter expect a person in this role to have delivered?
+      TARGET PROFILE:
+      - Target role: ${data.role}
+      - Career goal: ${data.goal}
+      - Core technologies: ${data.technologies.join(", ")}
+      - Target region: ${data.targetRegion}
+      - English level: ${data.englishLevel}
 
-Then write 1–2 specific, believable outcomes that fit naturally into the bullet list.
-Outcome types by domain:
-- Frontend: improved load performance, reduced bugs, faster delivery of UI features, better accessibility, more consistent UI
-- Backend / API: improved throughput or latency, better reliability, cleaner integrations, faster onboarding for consuming teams
-- DevOps / Infra: reduced deployment friction, better observability, shorter lead time, fewer incidents
-- Mobile: improved crash-free rate, better onboarding flow, reduced app size, smoother animations
-- Fullstack: faster shipping, better test coverage, cleaner architecture, product improvements
+      ROLE DATA:
+      - Company: ${exp.company}
+      - Position: ${exp.position}
+      - Start date: ${exp.startMonth} ${exp.startYear}
+      - End date: ${exp.isCurrent ? "Present" : `${exp.endMonth} ${exp.endYear}`}
+      - Tasks: ${exp.tasks.join("; ")}
+      - Technologies used: ${exp.technologies.join(", ")}
+      - Achievements: ${exp.achievements.join("; ")}
+      - Needs achievement help: ${exp.needsAchievementHelp ? "Yes" : "No"}
+      - Project type: ${PROJECT_TYPE_LABEL[exp.projectType as string] || 'Not specified'}
+      - Project role: ${PROJECT_ROLE_LABEL[exp.projectRole as string] || 'Not specified'}
+      - Project URL: ${exp.projectUrl || 'Not specified'}
 
-Rules: no fabricated percentages, revenue figures, or user counts unless the tasks strongly imply them. Use qualitative phrasing when metrics are unknown ("cut release cycle", "reduced manual QA effort", "improved page stability").`
-    : `Provided achievements — use as the foundation of the impact layer:
-${data.achievements.filter(Boolean).map((a) => `- ${a}`).join('\n')}
+      ---
 
-Rewrite them into strong, specific, recruiter-readable bullets. Do not water them down or replace with generic claims.`;
+      CORE OBJECTIVE:
 
-  return `Generate a LinkedIn Experience section description for one role.
+      Transform raw experience into a compelling, results-driven narrative that signals:
+      - ownership
+      - technical depth
+      - business impact
+      - seniority
 
-ROLE CONTEXT:
-- Position: ${data.position}
-- Company: ${data.company}
-- Period: ${duration}
-- Overall career level: ${data.overallExperience ?? 'not specified'}
-- Target role being pursued: ${data.targetRole ?? 'not specified'}
+      If project role is provided:
+      → explicitly reflect it through ownership, leadership, or responsibility level in bullet points
 
-TASKS PERFORMED:
-Technologies: ${technologies}
+      Even if the input is weak, the output MUST look strong and market-ready.
 
-Tasks:
-${tasks}
+      ---
 
-ACHIEVEMENTS / IMPACT:
-${achievementBlock}
+      OUTPUT FORMAT:
 
----
+      1. First line:
+      <Position> at <Company>
 
-OUTPUT FORMAT:
+      2. Then 5–8 bullet points
 
-Line 1 — context sentence (no bullet, no dash):
-One sentence describing what the company or product does and the domain/scale of the work.
-This is NOT about the candidate — it's about where they worked.
-Examples:
-  "B2B monitoring platform for city emergency services in Moscow, serving real-time dispatch operators."
-  "E-commerce SaaS with 500K+ monthly users — multi-vendor marketplace with logistics and analytics modules."
-  "Internal CRM for a network of retail stores, replacing a legacy Excel-based workflow."
-  "Early-stage startup building developer tooling for cloud cost optimization."
-If the company is well known (Yandex, Sber, Tinkoff, EPAM, etc.), name it and add the product context. If unknown — infer the product domain from tasks and stack.
+      ---
 
-Lines 2–6 — bullet points starting with "-":
-3–5 bullets describing the candidate's work and impact.
+      MANDATORY STRUCTURE:
 
-Total output: 600–1000 characters. Long enough to convey real substance, short enough to scan.
+      • Bullet 1 (Context — REQUIRED):
+      Describe the product/system:
+      - what was built
+      - domain
+      - scale (if inferable)
+      If project type is provided:
+      → incorporate it into the first bullet to clarify product context
 
----
+      • Bullets 2–8:
+      Mix of:
+      - achievements
+      - technical contributions
+      - ownership
+      - system improvements
 
-WRITING APPROACH — READ CAREFULLY:
+      ---
 
-The goal is NOT to reproduce the task list in bullet form. The goal is to take the raw material (tasks + stack + context) and rewrite it as a narrative of real engineering work with outcomes.
+      CRITICAL RULES:
 
-For each bullet, ask:
-1. What specifically was built or changed?
-2. In what context (which system, feature, workflow, team)?
-3. What was the result or purpose — what got better, faster, more reliable, or simpler?
+      1. Every bullet MUST:
+      - start with a strong action verb
+      - include technical context
+      - be specific and meaningful
 
-Good bullet: "Rebuilt the real-time notification pipeline using SignalR to support concurrent sessions across city districts — cut alert delivery latency and reduced missed incident flags by operators."
-Bad bullet: "Worked on real-time notifications using SignalR."
+      2. At least 3 bullets MUST include IMPACT
 
-Good bullet: "Integrated 2GIS mapping SDK from scratch, building dynamic marker clustering and filter logic for 300+ daily active incident points across Moscow."
-Bad bullet: "Integrated 2GIS map."
+      3. Seniority signals MUST be present:
+      - ownership
+      - architecture decisions
+      - system-level thinking
+      - cross-team work
 
-The difference: specificity of what was done + the engineering context + the outcome or scale.
+      ---
 
----
+      ACHIEVEMENTS GENERATION (CRITICAL):
 
-MANDATORY RULES:
+      If achievements are EMPTY and Needs achievement help = Yes:
 
-1. Start with the context sentence (no bullet). Then bullets.
-2. Every bullet must include: action + what/where + result or purpose. No bullet with only an action and no outcome.
-3. Technologies: embed where they add precision. Do not list them as a standalone bullet.
-4. Seniority: match scope to the career level. A junior role should not sound like a CTO initiative.
-5. If company or position is in Russian/Cyrillic, transliterate to Latin (Яндекс → Yandex, ООО Ромашка → OOO Romashka).
+      You MUST NOT leave the experience weak or generic.
 
-FORBIDDEN:
-- Copying tasks verbatim into bullets
-- Bullets with no outcome, no result, no purpose (e.g., "Worked on X", "Helped with Y")
-- Weak openers: "Responsible for", "Participated in", "Was involved in", "Assisted with"
-- AI-pattern phrases: "leveraged X to drive Y outcomes", "utilized best-in-class Z"
-- Filler adjectives: robust, scalable, efficient, innovative, cutting-edge
-- Invented hard metrics (percentages, revenue, user counts) unless they come from the achievements input
-- Words: passionate, motivated, hardworking, team player, fast learner
+      You MUST actively RECONSTRUCT strong, realistic achievements by analyzing:
+      - tasks
+      - technologies
+      - role seniority
+      - expectations for this role in Western companies
 
-FINAL CHECK:
-- Line 1 tells the reader what company/product this was
-- Bullets show real engineering work with outcomes, not a duty list
-- Reads like a real person wrote it about real work
-- Compact enough to scan in 10 seconds but substantial enough to be convincing
-`;
+      Your goal is NOT to describe the input — but to UPGRADE it.
+
+      You MUST:
+      - transform responsibilities into results
+      - infer likely outcomes of the work
+      - add realistic impact
+
+      You MUST NOT:
+      - invent unrealistic metrics
+      - fabricate specific business numbers
+
+      You SHOULD use believable impact such as:
+      - improved performance / reduced latency
+      - enhanced UX
+      - increased reliability
+      - improved scalability
+      - better developer productivity
+
+      If input is weak → OUTPUT MUST STILL LOOK STRONG.
+
+      ---
+
+      WRITING STYLE:
+
+      - Western LinkedIn style
+      - concise but dense
+      - no fluff
+      - no generic phrases ("responsible for", "worked on")
+
+      ---
+
+      POSITIONING:
+
+      Optimize for recruiters in ${data.targetRegion}
+      Align with target role: ${data.role}
+
+      If project URL is provided and looks valid:
+        → include it as a final line:
+        "Project link: <url>"
+
+      ---
+
+      Now generate the Experience section.
+      `;
 };

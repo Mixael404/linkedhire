@@ -1,104 +1,164 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
-export const aboutPrompt = (formData: ResolvedFormData) => {
+export const aboutPrompt = (data: ResolvedFormData) => {
   return `
-  Generate a high-conversion LinkedIn "About" section based strictly on the provided data.
+You are a senior technical recruiter and hiring manager from a top US/EU tech company.
+
+Your task is to generate a HIGH-QUALITY LinkedIn "About" section.
+
+The output must feel like it was written by a strong engineer — not by AI.
+
+---
 
 INPUT DATA:
-- Role: ${formData.role}
-- Experience: ${formData.experience}
-- Technologies: ${formData.technologies}
-- Target region: ${formData.targetRegion}
-- English level: ${formData.englishLevel}
-- Work experience: ${formData.workExperiences.map((e) => `${e.position} at ${e.company} (${e.startMonth} ${e.startYear} - ${e.isCurrent ? "Present" : `${e.endMonth} ${e.endYear}`})`).join("; ")}
 
-CRITICAL RULES:
+- Target role: ${data.role}
+- Experience level: ${data.experience}
+- Core technologies: ${data.technologies.join(', ')}
+- Career goal: ${data.goal}
+- Target region: ${data.targetRegion}
+- English level: ${data.englishLevel}
 
-1. LENGTH:
-   - 400–900 characters (optimal range)
-   - Maximum readability, no long walls of text
+WORK EXPERIENCE SIGNALS:
+${data.workExperiences.map(exp => `
+Company: ${exp.company}
+Position: ${exp.position}
+Tasks: ${exp.tasks.join('; ')}
+Technologies: ${exp.technologies.join(', ')}
+Project type: ${exp.projectType || 'Not specified'}
+`).join('\n')}
 
-2. STRUCTURE (MANDATORY):
+PROJECT SIGNALS (if available):
+${data.projects?.map(p => `
+Project: ${p.company}
+Tasks: ${p.tasks.join('; ')}
+Technologies: ${p.technologies.join(', ')}
+`).join('\n') || 'None'}
 
-Paragraph 1 — POSITIONING (2–3 lines):
-- Who you are (role + specialization)
-- What you build or focus on
-- Must be clear in first 2 lines
+---
 
-Paragraph 2 — PROOF:
-- Real experience or type of systems worked on
-- Mention scale, complexity, or responsibility if available
-- If achievements exist → integrate them naturally (no bullet list)
+CORE OBJECTIVE:
 
-Paragraph 3 — STACK:
-- Core technologies (grouped, not a long list)
-- Only relevant technologies
+Create a clear, concise, and human-sounding summary that:
+- positions the candidate strongly
+- highlights real strengths
+- feels natural and not over-polished
+- avoids generic corporate language
 
-Paragraph 4 — DIRECTION:
-- What roles or type of work you are targeting
-- Keep it natural (no “open to work” phrases)
+---
 
-3. STYLE:
+MANDATORY STRUCTURE (STRICT):
 
-- Short paragraphs (1–3 lines each)
-- Easy to scan
-- No emojis
-- No bullet points
-- No markdown formatting
+1. POSITIONING (1–2 sentences)
+- Who this engineer is
+- What kind of problems they work on
 
-4. NO FLUFF (STRICTLY FORBIDDEN):
+2. SPECIALIZATION (2–3 sentences)
+- Identify 1–2 strongest areas based on experience
+- Explain what kind of systems / problems they handle
 
-Do NOT use:
-- “passionate”
-- “motivated”
-- “hardworking”
-- “team player”
-- “fast learner”
-- Any generic soft-skill phrases
+3. TECHNICAL THINKING (2–3 sentences)
+- How they approach frontend engineering
+- Mention architecture, complexity, real-world challenges
 
-5. CONTENT RULES:
+4. DIRECTION (1–2 sentences)
+- What kind of roles / problems they are interested in
 
-- Focus on real engineering work, not abstract statements
-- Use action-oriented language:
-  - building
-  - developing
-  - optimizing
-  - delivering
-  - improving
-  - scaling
+---
 
-- If experience is weak:
-  → Focus on skills and type of problems solved
-  → Do NOT fabricate achievements
+CRITICAL: AUTO-DETECTION OF SPECIALIZATION
 
-6. ROLE CONSISTENCY:
+You MUST analyze the input data and identify 1–2 strongest areas.
 
-- Must align with the headline direction
-- Do NOT mix multiple roles
+Possible patterns:
+- real-time systems
+- dashboards / analytics
+- complex forms / workflows
+- SaaS platforms
+- high-load applications
+- map-based systems
+- internal tools
 
-7. DATA USAGE:
+You MUST:
+- pick the most relevant ones
+- build the entire summary around them
 
-- Prioritize real work experience over generic description
-- Use technologies that appear in experience
-- If data is missing → simplify, do NOT hallucinate
+If unclear:
+→ infer from tasks and technologies
 
-8. LANGUAGE:
+---
 
-- English only
-- Clean, professional, natural tone
+CRITICAL: HUMAN WRITING STYLE
 
-9. OUTPUT:
+The text MUST feel natural and slightly imperfect in a good way.
 
-- Plain text only
-- No explanations
-- No labels like “About:”
+You MUST:
+- vary sentence structure
+- avoid repetitive patterns
+- avoid overly polished phrasing
+- sound like a real engineer describing their work
 
-FINAL CHECK:
+You MUST NOT:
+- sound like a corporate template
+- use buzzwords excessively
+- repeat the same structure in every sentence
 
-- Clear positioning in first 2 lines
-- Contains proof (not just claims)
-- Contains stack (but not overloaded)
-- Clear direction
-- Reads like a real engineer, not AI text
-  `
+---
+
+FORBIDDEN PHRASES (DO NOT USE):
+
+- "results-driven"
+- "passionate developer"
+- "hardworking"
+- "dedicated professional"
+- "building scalable applications"
+- "delivering high-quality solutions"
+
+---
+
+TECHNOLOGIES:
+
+- Mention selectively (NOT as a list)
+- Integrate naturally into sentences
+- Focus on what they are used for
+
+---
+
+TONE:
+
+- confident but not arrogant
+- professional but natural
+- slightly informal is OK
+
+---
+
+LENGTH:
+
+- 4–6 short paragraphs
+- easy to scan
+- no walls of text
+
+---
+
+QUALITY BAR:
+
+The result should feel like:
+→ a real mid/senior engineer who understands what they are doing
+
+---
+
+EXAMPLE STYLE (do not copy content):
+
+Frontend Engineer working on complex, data-heavy web applications with a focus on real-time interactions.
+
+Most of my experience is around building dashboards, dynamic forms, and systems where the UI needs to handle a lot of changing data. I’ve worked on SaaS platforms where frontend isn’t just about rendering components, but managing state, performance, and user flows.
+
+I tend to focus on structure and maintainability — things like how data flows through the app, how state is organized, and how to keep complex UI manageable over time.
+
+Currently looking for roles where frontend involves more than just UI — especially systems with real-time data, complex interactions, or architectural challenges.
+
+---
+
+Now generate the About section.
+`
 };

@@ -3,11 +3,6 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { openai, OPENAI_MODEL } from "../../../lib/openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { FIRST_SYSTEM_PROMPT } from "@/constants/prompts/first-system";
-import { headlinePrompt } from "@/constants/prompts/headline";
-import { aboutPrompt } from "@/constants/prompts/about.prompt";
-import { experiencePrompt } from "@/constants/prompts/experience.prompt";
-import { projectPrompt } from "@/constants/prompts/projects.prompt";
 import { firstProfileAnalyze } from "@/utils/firstProfileAnalyze";
 
 // Mirrors the shape returned by resolveFormData() on the client
