@@ -29,6 +29,7 @@ import { ROLES } from "../../constants/onboarding/roles";
 import { EXPERIENCE_OPTIONS } from "../../constants/onboarding/experience";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import posthog from "posthog-js";
 
 function resolveFormData(data: OnboardingData) {
   const role =
@@ -177,6 +178,10 @@ export default function OnboardingWizard() {
 
   const advanceStep = () => {
     setStepError(null);
+    posthog.capture("onboarding_step_completed", {
+      step_index: currentStep,
+      step_name: STEPS[currentStep]?.label,
+    });
     setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
   };
 
@@ -296,6 +301,12 @@ export default function OnboardingWizard() {
 
       localStorage.setItem(`linkedhire_profile_${profile.id}`, JSON.stringify(profile));
       localStorage.removeItem(ONBOARDING_STORAGE_KEY);
+      posthog.capture("onboarding_submitted", {
+        role: formData.role,
+        experience: formData.experience,
+        target_region: formData.targetRegion,
+        work_experiences_count: formData.workExperiences.length,
+      });
       router.push(`/profile/${profile.id}?iniciator=onboarding`);
     } catch {
       toast.error("Не удалось отправить данные. Проверь соединение и попробуй снова.");

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geologica, Manrope } from "next/font/google";
 import "./globals.css";
 import ToastProvider from "@/components/ToastProvider";
+import PostHogProvider from "@/components/PostHogProvider";
 
 const geologica = Geologica({
   subsets: ["latin", "cyrillic"],
@@ -44,8 +45,10 @@ export default function RootLayout({
       className={`${geologica.variable} ${manrope.variable} h-full`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
-        <ToastProvider />
+        <PostHogProvider>
+          {children}
+          <ToastProvider />
+        </PostHogProvider>
       </body>
     </html>
   );

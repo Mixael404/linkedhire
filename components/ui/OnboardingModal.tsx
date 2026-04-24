@@ -4,6 +4,7 @@ import { useState } from "react";
 import { HiCheck, HiClipboard, HiLink } from "react-icons/hi2";
 import Modal from "@/components/ui/Modal";
 import EmailOtpForm from "@/components/ui/EmailOtpForm";
+import posthog from "posthog-js";
 
 type Props = {
    isOpen: boolean;
@@ -22,6 +23,7 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
 
    const handleCopy = async () => {
       await navigator.clipboard.writeText(shareUrl);
+      posthog.capture("profile_link_copied", { profile_id: profileId });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
    };

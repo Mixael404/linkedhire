@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { HiCheckCircle, HiDocumentText, HiGlobeAlt, HiSparkles } from "react-icons/hi2";
 import Modal from "@/components/ui/Modal";
+import posthog from "posthog-js";
 
 type Props = {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export default function PaywallModal({ isOpen, onClose, profileId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   async function handlePurchase() {
+    posthog.capture("paywall_purchase_clicked", { profile_id: profileId });
     setLoading(true);
     setError(null);
 
@@ -60,8 +62,13 @@ export default function PaywallModal({ isOpen, onClose, profileId }: Props) {
     }
   }
 
+  function handleClose() {
+    posthog.capture("paywall_closed", { profile_id: profileId });
+    onClose();
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <div className="p-5 sm:p-7">
         {/* Brand */}
         <div className="flex items-center gap-2 mb-5">

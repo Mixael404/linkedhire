@@ -15,6 +15,7 @@ import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import OnboardingModal from "@/components/ui/OnboardingModal";
 import PaywallModal from "@/components/ui/PaywallModal";
 import GeneratingLoader from "@/components/onboarding/GeneratingLoader";
+import posthog from "posthog-js";
 
 export default function ProfilePage() {
    const { profileId } = useParams<{ profileId: string }>();
@@ -38,6 +39,12 @@ export default function ProfilePage() {
             startTransition(() => {
                setProfile(data);
                setLoading(false);
+               posthog.capture("profile_viewed", {
+                  profile_id: profileId,
+                  is_purchased: data.is_purchased,
+                  is_generated: data.is_generated,
+                  source: new URLSearchParams(window.location.search).get("iniciator") ?? "direct",
+               });
             }),
          )
          .catch(() => {
@@ -57,8 +64,9 @@ export default function ProfilePage() {
    }, [profile, profileId]);
 
    const onBlurClick = useCallback((_section: string) => {
+      posthog.capture("paywall_opened", { profile_id: profileId, section: _section });
       setPaywallOpen(true);
-   }, []);
+   }, [profileId]);
 
    if (isGenerating) return <GeneratingLoader />;
 
