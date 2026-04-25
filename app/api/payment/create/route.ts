@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
         type: "redirect",
         return_url: `${appUrl}/payment/waiting?profileId=${profileId}`,
       },
-      description: `LinkedHire — профиль ${profileId}`,
+      description: `LinkedHire - профиль ${profileId}`,
       metadata: { profile_id: profileId },
     }),
   });

@@ -1,12 +1,12 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
 export const aboutPrompt = (data: ResolvedFormData) => {
-  return `
+   return `
 You are a senior technical recruiter and hiring manager from a top US/EU tech company.
 
 Your task is to generate a HIGH-QUALITY LinkedIn "About" section.
 
-The output must feel like it was written by a strong engineer — not by AI.
+The output must feel like it was written by a strong engineer - not by AI.
 
 ---
 
@@ -14,26 +14,36 @@ INPUT DATA:
 
 - Target role: ${data.role}
 - Experience level: ${data.experience}
-- Core technologies: ${data.technologies.join(', ')}
-${data.taskTypes?.length ? `- Task domains (types of problems this engineer most frequently solves and is most competent in): ${data.taskTypes.join(', ')}` : ''}- Career goal: ${data.goal}
+- Core technologies: ${data.technologies.join(", ")}
+${data.taskTypes?.length ? `- Task domains (types of problems this engineer most frequently solves and is most competent in): ${data.taskTypes.join(", ")}` : ""}- Career goal: ${data.goal}
 - Target region: ${data.targetRegion}
 - English level: ${data.englishLevel}
 
 WORK EXPERIENCE SIGNALS:
-${data.workExperiences.map(exp => `
+${data.workExperiences
+   .map(
+      (exp) => `
 Company: ${exp.company}
 Position: ${exp.position}
-Tasks: ${exp.tasks.join('; ')}
-Technologies: ${exp.technologies.join(', ')}
-Project type: ${exp.projectType || 'Not specified'}
-`).join('\n')}
+Tasks: ${exp.tasks.join("; ")}
+Technologies: ${exp.technologies.join(", ")}
+Project type: ${exp.projectType || "Not specified"}
+`,
+   )
+   .join("\n")}
 
 PROJECT SIGNALS (if available):
-${data.projects?.map(p => `
+${
+   data.projects
+      ?.map(
+         (p) => `
 Project: ${p.company}
-Tasks: ${p.tasks.join('; ')}
-Technologies: ${p.technologies.join(', ')}
-`).join('\n') || 'None'}
+Tasks: ${p.tasks.join("; ")}
+Technologies: ${p.technologies.join(", ")}
+`,
+      )
+      .join("\n") || "None"
+}
 
 ---
 
@@ -153,12 +163,12 @@ Frontend Engineer working on complex, data-heavy web applications with a focus o
 
 Most of my experience is around building dashboards, dynamic forms, and systems where the UI needs to handle a lot of changing data. I’ve worked on SaaS platforms where frontend isn’t just about rendering components, but managing state, performance, and user flows.
 
-I tend to focus on structure and maintainability — things like how data flows through the app, how state is organized, and how to keep complex UI manageable over time.
+I tend to focus on structure and maintainability - things like how data flows through the app, how state is organized, and how to keep complex UI manageable over time.
 
-Currently looking for roles where frontend involves more than just UI — especially systems with real-time data, complex interactions, or architectural challenges.
+Currently looking for roles where frontend involves more than just UI - especially systems with real-time data, complex interactions, or architectural challenges.
 
 ---
 
 Now generate the About section.
-`
+`;
 };

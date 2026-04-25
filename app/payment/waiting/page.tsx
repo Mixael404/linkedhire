@@ -51,7 +51,7 @@ function WaitingContent() {
           setPollStatus("canceled");
         }
       } catch {
-        // network hiccup — keep polling
+        // network hiccup - keep polling
       }
     }
 
@@ -102,7 +102,7 @@ function PollingState() {
         Проверяем оплату
       </h2>
       <p className="text-sm text-[rgba(0,0,0,0.5)] leading-relaxed">
-        Ожидаем подтверждения от ЮKassa. Это займёт несколько секунд — не закрывайте страницу.
+        Ожидаем подтверждения от ЮKassa. Это займёт несколько секунд - не закрывайте страницу.
       </p>
     </>
   );
@@ -156,7 +156,7 @@ function ErrorState({ onBack }: { onBack: () => void }) {
         Что-то пошло не так
       </h2>
       <p className="text-sm text-[rgba(0,0,0,0.5)] mb-6">
-        Не удалось определить статус платежа. Если деньги были списаны — напишите нам.
+        Не удалось определить статус платежа. Если деньги были списаны - напишите нам.
       </p>
       <button
         onClick={onBack}

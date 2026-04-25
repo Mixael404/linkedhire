@@ -1,6 +1,6 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
-export const resumeSummaryPrompt = (data: ResolvedFormData) => (`
+export const resumeSummaryPrompt = (data: ResolvedFormData) => `
 	You are an expert resume writer specializing in high-performing Western-style tech resumes (EU/US market).
 
 Your task is to generate a **professional resume Summary section** that strictly follows modern hiring standards and recruiter expectations.
@@ -11,18 +11,22 @@ Your task is to generate a **professional resume Summary section** that strictly
 
 * Target role: ${data.role}
 * Experience level: ${data.experience}
-* Core technologies: ${data.technologies.join(', ')}
-  ${data.taskTypes?.length ? `- Task domains: ${data.taskTypes.join(', ')}` : ''}
+* Core technologies: ${data.technologies.join(", ")}
+  ${data.taskTypes?.length ? `- Task domains: ${data.taskTypes.join(", ")}` : ""}
 * Career goal: ${data.goal}
 * Target region: ${data.targetRegion}
 * English level: ${data.englishLevel}
 
 WORK EXPERIENCE SIGNALS:
-${data.workExperiences.map(exp => `Company: ${exp.company}
+${data.workExperiences
+   .map(
+      (exp) => `Company: ${exp.company}
 Position: ${exp.position}
-Tasks: ${exp.tasks.join('; ')}
-Technologies: ${exp.technologies.join(', ')}
-Project type: ${exp.projectType || 'Not specified'}`).join('\n')}
+Tasks: ${exp.tasks.join("; ")}
+Technologies: ${exp.technologies.join(", ")}
+Project type: ${exp.projectType || "Not specified"}`,
+   )
+   .join("\n")}
 
 ---
 
@@ -32,7 +36,7 @@ Project type: ${exp.projectType || 'Not specified'}`).join('\n')}
 2. Length: 3–5 sentences maximum.
 3. Language: English only.
 4. Tone: professional, confident, concise (no fluff, no storytelling).
-5. Do NOT repeat the input literally — synthesize and generalize.
+5. Do NOT repeat the input literally - synthesize and generalize.
 
 ---
 
@@ -96,4 +100,4 @@ Senior Frontend Engineer with 5+ years of experience building complex SaaS produ
 
 Generate the summary now.
 	
-`);
+`;

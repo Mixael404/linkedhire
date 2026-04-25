@@ -1,7 +1,7 @@
 import { ResolvedFormData } from "@/app/api/generate-profile/route";
 
-export const headlinePrompt = (formData: ResolvedFormData): string => (
-`
+export const headlinePrompt = (formData: ResolvedFormData): string =>
+   `
 You are a senior technical recruiter hiring engineers for top US/EU companies.
 
 Your task is to generate a HIGH-CONVERSION LinkedIn headline.
@@ -18,7 +18,7 @@ INPUT DATA:
 
 - Target role: ${formData.role}
 - Experience level: ${formData.experience}
-- Core technologies: ${formData.technologies.join(', ')}
+- Core technologies: ${formData.technologies.join(", ")}
 - Career goal: ${formData.goal}
 - Target region: ${formData.targetRegion}
 - English level: ${formData.englishLevel}
@@ -26,19 +26,23 @@ ${formData.taskTypes?.length ? `- Task domains (types of problems this engineer 
 
 
    WORK CONTEXT (derive specialization from this):
-   ${formData.workExperiences.map(exp => `
+   ${formData.workExperiences
+      .map(
+         (exp) => `
    Company: ${exp.company}
    Position: ${exp.position}
-   Tasks: ${exp.tasks.join('; ')}
-   Technologies: ${exp.technologies.join(', ')}
-   Project type: ${exp.projectType || 'Not specified'}
-   `).join('\n')}
+   Tasks: ${exp.tasks.join("; ")}
+   Technologies: ${exp.technologies.join(", ")}
+   Project type: ${exp.projectType || "Not specified"}
+   `,
+      )
+      .join("\n")}
 
 ---
 
 CORE OBJECTIVE:
 
-Create a headline that positions the candidate as a STRONG, SPECIALIZED engineer — not a generic one.
+Create a headline that positions the candidate as a STRONG, SPECIALIZED engineer - not a generic one.
 
 ---
 
@@ -123,5 +127,4 @@ Frontend Developer | React, Redux | High-load applications & performance
 ---
 
 Now generate ONE headline.
-`
-)
+`;

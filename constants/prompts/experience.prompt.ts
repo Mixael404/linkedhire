@@ -12,7 +12,7 @@ export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormDat
 
       Your task is to generate a HIGH-IMPACT LinkedIn Experience section for ONE role.
 
-      The output must reflect a TOP 10% candidate profile — someone recruiters proactively reach out to.
+      The output must reflect a TOP 10% candidate profile - someone recruiters proactively reach out to.
 
       ---
 
@@ -35,9 +35,9 @@ export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormDat
       - Technologies used: ${exp.technologies.join(", ")}
       - Achievements: ${exp.achievements.join("; ")}
       - Needs achievement help: ${exp.needsAchievementHelp ? "Yes" : "No"}
-      - Project type: ${PROJECT_TYPE_LABEL[exp.projectType as string] || 'Not specified'}
-      - Project role: ${PROJECT_ROLE_LABEL[exp.projectRole as string] || 'Not specified'}
-      - Project URL: ${exp.projectUrl || 'Not specified'}
+      - Project type: ${PROJECT_TYPE_LABEL[exp.projectType as string] || "Not specified"}
+      - Project role: ${PROJECT_ROLE_LABEL[exp.projectRole as string] || "Not specified"}
+      - Project URL: ${exp.projectUrl || "Not specified"}
 
       ---
 
@@ -67,7 +67,7 @@ export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormDat
 
       MANDATORY STRUCTURE:
 
-      • Bullet 1 (Context — REQUIRED):
+      • Bullet 1 (Context - REQUIRED):
       Describe the product/system:
       - what was built
       - domain
@@ -113,7 +113,7 @@ export const experiencePrompt = (exp: ExperienceInputData, data: ResolvedFormDat
       - role seniority
       - expectations for this role in Western companies
 
-      Your goal is NOT to describe the input — but to UPGRADE it.
+      Your goal is NOT to describe the input - but to UPGRADE it.
 
       You MUST:
       - transform responsibilities into results

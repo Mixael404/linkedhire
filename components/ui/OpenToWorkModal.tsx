@@ -47,7 +47,9 @@ export default function OpenToWorkModal({ isOpen, onClose, roleTitle, targetCoun
                </div>
                <div>
                   <p className="text-[16px] font-semibold text-[rgba(0,0,0,0.9)]">John Doe</p>
-                  <p className="text-sm text-[rgba(0,0,0,0.55)] mt-0.5">находится в поиске работы</p>
+                  <p className="text-sm text-[rgba(0,0,0,0.55)] mt-0.5">
+                     находится в поиске работы
+                  </p>
                </div>
             </div>
 
@@ -55,7 +57,7 @@ export default function OpenToWorkModal({ isOpen, onClose, roleTitle, targetCoun
             <div className="space-y-4">
                <Row label="Должности" value={roleTitle} />
                <Row label="Типы места работы" value="Удалённая работа" />
-               <Row label="Регионы" value={targetCountry ?? "—"} />
+               <Row label="Регионы" value={targetCountry ?? "-"} />
                <Row label="Дата начала" value="Сразу же, я активно подаю заявки" />
                <Row
                   label="Типы занятости"

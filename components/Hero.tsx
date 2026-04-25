@@ -35,7 +35,7 @@ export default function Hero() {
 
             <p className="anim-3 text-xl text-[#94A3B8] leading-relaxed mb-3 max-w-lg">
               Пока российский IT-рынок закрывается, в США и Европе тысячи
-              remote-вакансий для разработчиков — без переезда и без идеального
+              remote-вакансий для разработчиков - без переезда и без идеального
               английского.
             </p>
             <ul

@@ -47,30 +47,35 @@ export const ENGLISH_LEVELS = [
     value: "a1_a2",
     label: "A1–A2",
     sublabel: "Начальный",
+    sublabelEn: "Elementary",
     description: "Базовые фразы, минимальный словарный запас",
   },
   {
     value: "b1",
     label: "B1",
     sublabel: "Средний",
+    sublabelEn: "Intermediate",
     description: "Могу объясниться, понимаю простые тексты",
   },
   {
     value: "b2",
     label: "B2",
     sublabel: "Выше среднего",
+    sublabelEn: "Upper-Intermediate",
     description: "Уверенно общаюсь, могу проходить интервью",
   },
   {
     value: "c1",
     label: "C1",
     sublabel: "Продвинутый",
+    sublabelEn: "Advanced",
     description: "Свободно говорю и пишу, почти без ошибок",
   },
   {
     value: "c2_native",
     label: "C2 / Native",
     sublabel: "Владею свободно",
+    sublabelEn: "Fluent",
     description: "Уровень носителя или близко к нему",
   },
 ];
@@ -281,7 +286,7 @@ export default function Step6Target() {
         )}
 
         <p className="text-[#475569] text-xs mt-2 leading-relaxed">
-          Каждая страна имеет свои особенности найма — чем точнее ты укажешь
+          Каждая страна имеет свои особенности найма - чем точнее ты укажешь
           рынок, тем лучше мы адаптируем профиль именно под него
         </p>
       </div>

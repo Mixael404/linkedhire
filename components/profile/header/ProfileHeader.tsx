@@ -31,15 +31,23 @@ export default function ProfileHeader({ profileId, hasEmail }: Props) {
             <div className="bg-[#EBF3FF] border-b border-[#c2d8f0]">
                <div className="max-w-282 mx-auto px-3 sm:px-4 py-1.5 sm:py-0 sm:h-9 flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
                   <p className="hidden sm:block text-[11px] sm:text-[12px] text-[rgba(0,0,0,0.6)] shrink-0 leading-tight">
-                     <span className="hidden sm:inline">Эта страница — аналог вашего профиля в LinkedIn. </span>
+                     <span className="hidden sm:inline">
+                        Эта страница - аналог вашего профиля в LinkedIn.{" "}
+                     </span>
                      Сохраните ссылку:
                   </p>
                   <button
                      onClick={handleCopy}
                      className="flex items-center gap-1.5 min-w-0 w-full sm:flex-1 sm:max-w-xs bg-white border border-[#c2d8f0] hover:border-[#0a66c2] rounded px-2.5 py-1 text-[11px] text-[#0a66c2] font-medium transition-colors"
                   >
-                     {copied ? <HiCheck size={12} className="text-green-500 shrink-0" /> : <HiClipboard size={12} className="shrink-0" />}
-                     <span className="truncate">{typeof window !== "undefined" ? window.location.href : ""}</span>
+                     {copied ? (
+                        <HiCheck size={12} className="text-green-500 shrink-0" />
+                     ) : (
+                        <HiClipboard size={12} className="shrink-0" />
+                     )}
+                     <span className="truncate">
+                        {typeof window !== "undefined" ? window.location.href : ""}
+                     </span>
                   </button>
 
                   {profileId && !hasEmail && (
@@ -47,7 +55,8 @@ export default function ProfileHeader({ profileId, hasEmail }: Props) {
                         onClick={() => setRegModalOpen(true)}
                         className="shrink-0 text-[11px] sm:text-[12px] text-[#0a66c2] hover:underline whitespace-nowrap cursor-pointer"
                      >
-                        или <span className="font-semibold">зарегистрируйтесь</span>, чтобы профиль всегда был под рукой
+                        или <span className="font-semibold">зарегистрируйтесь</span>, чтобы профиль
+                        всегда был под рукой
                      </button>
                   )}
                </div>
@@ -66,7 +75,7 @@ export default function ProfileHeader({ profileId, hasEmail }: Props) {
                   </span>
                </Link>
 
-               {/* Search — hidden on mobile */}
+               {/* Search - hidden on mobile */}
                <div className="hidden sm:flex items-center bg-[#eef3f8] rounded px-3 py-1.75 gap-2 w-52 lg:w-57 shrink-0">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="rgba(0,0,0,0.45)">
                      <path d="M21.7 20.3l-5.4-5.4A8 8 0 1010 18a8 8 0 004.9-1.7l5.4 5.4 1.4-1.4zM4 10a6 6 0 1112 0A6 6 0 014 10z" />

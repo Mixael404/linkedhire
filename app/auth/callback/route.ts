@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Registration flow: profileId passed — save email to that profile
+  // Registration flow: profileId passed - save email to that profile
   if (profileId) {
     await admin
       .from("profiles")

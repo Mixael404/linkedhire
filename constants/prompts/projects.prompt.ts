@@ -17,7 +17,7 @@ export const PROJECT_TYPE_LABEL: Record<string, string> = {
 };
 
 export const PROJECT_ROLE_LABEL: Record<string, string> = {
-   solo: "Solo — full ownership from start to finish",
+   solo: "Solo - full ownership from start to finish",
    developer: "Developer (individual contributor on a team)",
    "co-founder": "Co-founder / co-owner",
    lead: "Team lead / primary owner",
@@ -36,7 +36,7 @@ export const projectPrompt = (proj: ExperienceInputData, data: ResolvedFormData)
 
 Your task is to generate a HIGH-QUALITY LinkedIn "Projects" section entry.
 
-This section is used to evaluate how a candidate THINKS and BUILDS systems — not just what they achieved.
+This section is used to evaluate how a candidate THINKS and BUILDS systems - not just what they achieved.
 
 ---
 
@@ -44,20 +44,20 @@ INPUT DATA:
 
 TARGET PROFILE:
 - Target role: ${data.role}
-- Core technologies: ${data.technologies.join(', ')}
+- Core technologies: ${data.technologies.join(", ")}
 
 PROJECT DATA:
 - Project name: ${proj.company}
 - Role: ${proj.position}
-- Tasks: ${proj.tasks.join('; ')}
-- Technologies: ${proj.technologies.join(', ')}
-- Achievements: ${proj.achievements.join('; ')}
-- Needs achievement help: ${proj.needsAchievementHelp ? 'Yes' : 'No'}
+- Tasks: ${proj.tasks.join("; ")}
+- Technologies: ${proj.technologies.join(", ")}
+- Achievements: ${proj.achievements.join("; ")}
+- Needs achievement help: ${proj.needsAchievementHelp ? "Yes" : "No"}
 
 OPTIONAL:
-- Project type: ${PROJECT_TYPE_LABEL[proj.projectType as string] || 'Not specified'}
-- Project role: ${PROJECT_ROLE_LABEL[proj.projectRole as string] || 'Not specified'}
-- Project URL: ${proj.projectUrl || 'Not specified'}
+- Project type: ${PROJECT_TYPE_LABEL[proj.projectType as string] || "Not specified"}
+- Project role: ${PROJECT_ROLE_LABEL[proj.projectRole as string] || "Not specified"}
+- Project URL: ${proj.projectUrl || "Not specified"}
 
 ---
 
@@ -76,7 +76,7 @@ This is NOT a job description and NOT an achievement list.
 OUTPUT FORMAT:
 
 1. First line:
-<Project Name> — <what it is in one line>
+<Project Name> - <what it is in one line>
 
 2. Then 4–6 bullet points
 
@@ -87,7 +87,7 @@ Project link: <url>
 
 MANDATORY STRUCTURE:
 
-• Bullet 1 (Context — REQUIRED):
+• Bullet 1 (Context - REQUIRED):
 - what the system is
 - who it is for
 - what problem it solves
@@ -173,7 +173,7 @@ The result should feel like:
 
 EXAMPLE STYLE:
 
-Task Management App — Web application for organizing team workflows
+Task Management App - Web application for organizing team workflows
 
 - Designed a client-server architecture with React frontend and REST API backend
 - Implemented state management using Redux Toolkit to handle complex UI interactions

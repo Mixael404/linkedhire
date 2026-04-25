@@ -29,7 +29,7 @@ function parseDate(d: string | null): { month: string; year: string } | null {
    return { month: MONTH_NAMES[date.getUTCMonth()], year: String(date.getUTCFullYear()) };
 }
 
-const normalize = (s: string) => s.replaceAll("–", "-").replaceAll("—", "-");
+const normalize = (s: string) => s.replaceAll("–", "-").replaceAll("-", "-");
 
 async function ask(messages: ChatCompletionMessageParam[], userPrompt: string): Promise<string> {
    messages.push({ role: "user", content: userPrompt });
@@ -157,7 +157,7 @@ export async function generateProfileContent(
    );
    const about = await ask(messages, aboutPrompt(formDataLike));
 
-   // Generate all descriptions in parallel. Promise.all preserves result order — exps[i]
+   // Generate all descriptions in parallel. Promise.all preserves result order - exps[i]
    // always maps to expDescriptions[i] and projDescriptions[i].
    const [expDescriptions, projDescriptions, resumeSummary] = await Promise.all([
       Promise.all(
