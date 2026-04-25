@@ -50,7 +50,9 @@ const s = StyleSheet.create({
 
   // ── Body text ────────────────────────────────────────────
   bodyText: { fontSize: 10, color: "#334155", lineHeight: 1.55 },
-  skillsText: { fontSize: 10, color: "#334155", lineHeight: 1.5 },
+  skillRow: { flexDirection: "row", marginBottom: 3 },
+  skillLabel: { fontSize: 10, fontWeight: 600, color: "#0f172a", width: 72 },
+  skillValue: { fontSize: 10, color: "#334155", flex: 1, lineHeight: 1.45 },
 
   // ── Experience / Projects ────────────────────────────────
   item: { marginBottom: 13 },
@@ -140,20 +142,32 @@ export default function ResumePdf({ profile, extraData }: Props) {
         )}
 
         {/* ── Summary ── */}
-        {profile.about ? (
+        {(profile.resume_summary || profile.about) ? (
           <>
             <Text style={s.sectionTitle}>Summary</Text>
-            <Text style={s.bodyText}>{profile.about}</Text>
+            <Text style={s.bodyText}>{profile.resume_summary || profile.about}</Text>
           </>
         ) : null}
 
         {/* ── Core Skills ── */}
-        {profile.skills.length > 0 && (
+        {profile.skills_json && Object.keys(profile.skills_json).length > 0 ? (
           <>
             <Text style={s.sectionTitle}>Core Skills</Text>
-            <Text style={s.skillsText}>{profile.skills.join(" · ")}</Text>
+            {Object.entries(profile.skills_json).map(([group, items]) => (
+              <View key={group} style={s.skillRow}>
+                <Text style={s.skillLabel}>{group}:</Text>
+                <Text style={s.skillValue}>{items.join(", ")}</Text>
+              </View>
+            ))}
           </>
-        )}
+        ) : profile.skills.length > 0 ? (
+          <>
+            <Text style={s.sectionTitle}>Core Skills</Text>
+            <View style={s.skillRow}>
+              <Text style={s.skillValue}>{profile.skills.join(", ")}</Text>
+            </View>
+          </>
+        ) : null}
 
         {/* ── Experience ── */}
         {profile.workExperiences.length > 0 && (

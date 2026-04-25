@@ -105,7 +105,7 @@ export const TECH_GROUPS: TechGroup[] = [
     items: [
       "Git", "GitHub", "GitLab", "Bitbucket",
       "REST API", "GraphQL", "gRPC", "WebSockets", "tRPC",
-      "RabbitMQ", "Kafka", "NATS", "SQS / SNS",
+      "NATS", "SQS / SNS",
       "Microservices", "Event Sourcing", "CQRS", "DDD", "Clean Architecture",
       "TDD", "BDD", "SOLID", "Design Patterns",
       "CI/CD", "GitOps", "Agile / Scrum", "Kanban",

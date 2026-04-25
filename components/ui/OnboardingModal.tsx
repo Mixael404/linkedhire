@@ -5,6 +5,8 @@ import { HiCheck, HiClipboard, HiLink } from "react-icons/hi2";
 import Modal from "@/components/ui/Modal";
 import EmailOtpForm from "@/components/ui/EmailOtpForm";
 import posthog from "posthog-js";
+import SimpleBar from "simplebar-react";
+import "simplebar-react/dist/simplebar.min.css";
 
 type Props = {
    isOpen: boolean;
@@ -30,6 +32,7 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
 
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
+         <SimpleBar style={{ maxHeight: "85dvh" }}>
          <div className="p-4 sm:p-5">
             {/* Header */}
             <div className="mb-3 sm:mb-5">
@@ -112,6 +115,7 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
                )}
             </div>
          </div>
+         </SimpleBar>
       </Modal>
    );
 }

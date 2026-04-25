@@ -6,6 +6,7 @@ import { headlinePrompt } from "@/constants/prompts/headline";
 import { aboutPrompt } from "@/constants/prompts/about.prompt";
 import { experiencePrompt } from "@/constants/prompts/experience.prompt";
 import { projectPrompt } from "@/constants/prompts/projects.prompt";
+import { resumeSummaryPrompt } from "@/constants/prompts/resume-summary.prompt";
 
 const MONTH_NAMES = [
    "January",
@@ -27,6 +28,8 @@ function parseDate(d: string | null): { month: string; year: string } | null {
    const date = new Date(d);
    return { month: MONTH_NAMES[date.getUTCMonth()], year: String(date.getUTCFullYear()) };
 }
+
+const normalize = (s: string) => s.replaceAll("–", "-").replaceAll("—", "-");
 
 async function ask(messages: ChatCompletionMessageParam[], userPrompt: string): Promise<string> {
    messages.push({ role: "user", content: userPrompt });
@@ -156,7 +159,7 @@ export async function generateProfileContent(
 
    // Generate all descriptions in parallel. Promise.all preserves result order — exps[i]
    // always maps to expDescriptions[i] and projDescriptions[i].
-   const [expDescriptions, projDescriptions] = await Promise.all([
+   const [expDescriptions, projDescriptions, resumeSummary] = await Promise.all([
       Promise.all(
          exps.map((exp) =>
             askSingle(
@@ -185,6 +188,7 @@ export async function generateProfileContent(
             ),
          ),
       ),
+      askSingle(resumeSummaryPrompt(formDataLike)),
    ]);
 
    // Match each exp to its DB row by company + position + start_date.
@@ -207,14 +211,19 @@ export async function generateProfileContent(
    }
 
    await Promise.all([
-      supabase.from("profiles").update({ headline, about, is_generated: true }).eq("id", profileId),
+      supabase.from("profiles").update({
+         headline: normalize(headline),
+         about: normalize(about),
+         resume_summary: normalize(resumeSummary),
+         is_generated: true,
+      }).eq("id", profileId),
 
       ...exps.map((exp, i) => {
          const row = findRow((workExpRows ?? []) as TargetRow[], exp, i);
          if (!row) return Promise.resolve();
          return supabase
             .from("work_experiences")
-            .update({ description: expDescriptions[i] ?? "" })
+            .update({ description: normalize(expDescriptions[i] ?? "") })
             .eq("id", row.id);
       }),
 
@@ -223,7 +232,7 @@ export async function generateProfileContent(
          if (!row) return Promise.resolve();
          return supabase
             .from("projects")
-            .update({ description: projDescriptions[i] ?? "" })
+            .update({ description: normalize(projDescriptions[i] ?? "") })
             .eq("id", row.id);
       }),
    ]);

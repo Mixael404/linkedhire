@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { openai, OPENAI_MODEL } from "../../../lib/openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { firstProfileAnalyze } from "@/utils/firstProfileAnalyze";
+import { TECH_GROUPS } from "@/constants/onboarding/technologies";
 
 // Mirrors the shape returned by resolveFormData() on the client
 export interface ResolvedFormData {
@@ -92,6 +93,8 @@ export interface GeneratedProfile {
   is_generated: boolean;
   email?: string | null;
   english_grade?: string | null;
+  skills_json?: Record<string, string[]> | null;
+  resume_summary?: string | null;
 }
 
 const MAX_SKILLS = 100;
@@ -129,6 +132,22 @@ const MONTHS: Record<string, string> = {
   November: "11",
   December: "12",
 };
+
+function groupTechnologies(selected: string[]): Record<string, string[]> {
+  const set = new Set(selected);
+  const result: Record<string, string[]> = {};
+
+  for (const group of TECH_GROUPS) {
+    const matched = group.items.filter((t) => set.has(t));
+    if (matched.length > 0) result[group.group] = matched;
+  }
+
+  const grouped = new Set(Object.values(result).flat());
+  const other = selected.filter((t) => !grouped.has(t));
+  if (other.length > 0) result["Other"] = other;
+
+  return result;
+}
 
 function toDate(month: string, year: string): string | null {
   const m = MONTHS[month];
@@ -289,6 +308,7 @@ export async function POST(req: NextRequest) {
       headline: response.headline,
       about: response.about,
       skills: formData.technologies,
+      skills_json: groupTechnologies(formData.technologies),
       target_country: formData.targetRegion,
       is_generated: false,
       english_grade: formData.englishLevel || null,

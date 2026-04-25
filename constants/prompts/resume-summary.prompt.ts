@@ -29,7 +29,7 @@ Project type: ${exp.projectType || 'Not specified'}`).join('\n')}
 ## STRICT REQUIREMENTS
 
 1. Output ONLY the summary text. No explanations, no formatting notes.
-2. Length: 3–6 sentences maximum.
+2. Length: 3–5 sentences maximum.
 3. Language: English only.
 4. Tone: professional, confident, concise (no fluff, no storytelling).
 5. Do NOT repeat the input literally — synthesize and generalize.
