@@ -20,7 +20,7 @@ export default function EducationSection() {
                   Bachelor&apos;s degree, Computer Science
                </p>
                <p className="text-[12px] text-[rgba(0,0,0,0.55)] mt-0.5">
-                  сент. 2022 г. – настоящее время
+                  дата начала обучения  – дата окончания обучения
                </p>
             </div>
          </div>

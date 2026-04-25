@@ -91,6 +91,7 @@ export interface GeneratedProfile {
   is_purchased: boolean;
   is_generated: boolean;
   email?: string | null;
+  english_grade?: string | null;
 }
 
 const MAX_SKILLS = 100;
@@ -290,6 +291,7 @@ export async function POST(req: NextRequest) {
       skills: formData.technologies,
       target_country: formData.targetRegion,
       is_generated: false,
+      english_grade: formData.englishLevel || null,
     })
     .select("*")
     .single();
