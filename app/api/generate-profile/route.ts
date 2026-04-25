@@ -118,21 +118,6 @@ const MAX_BLOCKERS_OTHER_LENGTH = 300;
 const MAX_TASK_TYPES = 5;
 const MAX_TASK_TYPE_LENGTH = 100;
 
-const MONTHS: Record<string, string> = {
-  January: "01",
-  February: "02",
-  March: "03",
-  April: "04",
-  May: "05",
-  June: "06",
-  July: "07",
-  August: "08",
-  September: "09",
-  October: "10",
-  November: "11",
-  December: "12",
-};
-
 function groupTechnologies(selected: string[]): Record<string, string[]> {
   const set = new Set(selected);
   const result: Record<string, string[]> = {};
@@ -150,9 +135,8 @@ function groupTechnologies(selected: string[]): Record<string, string[]> {
 }
 
 function toDate(month: string, year: string): string | null {
-  const m = MONTHS[month];
-  if (!m || !year) return null;
-  return `${year}-${m}-01`;
+  if (!month || !year) return null;
+  return `${year}-${month}-01`;
 }
 
 function precheck(formData: ResolvedFormData): string | null {

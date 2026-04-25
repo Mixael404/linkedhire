@@ -79,11 +79,19 @@ const s = StyleSheet.create({
    eduDegree: { fontSize: 10, color: "#475569", marginTop: 1 },
 });
 
-function formatDate(dateStr: string | null, isCurrent: boolean): string {
-   if (isCurrent) return "Present";
+function formatDate(dateStr: string | null): string {
    if (!dateStr) return "";
    const d = new Date(dateStr);
    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+}
+
+function formatDateRange(start: string | null, finish: string | null, isCurrent: boolean): string {
+   const startStr = formatDate(start);
+   const endStr = isCurrent ? "Present" : formatDate(finish);
+   if (!startStr && !endStr) return "";
+   if (!startStr) return endStr;
+   if (!endStr) return startStr;
+   return `${startStr} – ${endStr}`;
 }
 
 function parseBullets(description: string): string[] {
@@ -216,8 +224,7 @@ function ExperienceItem({ exp }: { exp: ExpItem }) {
             </Text>
             {"  "}
             <Text style={{ color: "#555" }}>
-               {formatDate(exp.start_date, false)} –{" "}
-               {formatDate(exp.finish_date, exp.is_current)}
+               {formatDateRange(exp.start_date, exp.finish_date, exp.is_current)}
             </Text>
 
             {"\n"}
@@ -266,7 +273,14 @@ function englishGradeDisplay(grade: string | null | undefined): string | null {
 }
 
 export default function ResumePdf({ profile, extraData }: Props) {
-   const role = profile.workExperiences[0]?.position ?? null;
+   const sortedExperiences = [...profile.workExperiences].sort((a, b) => {
+      if (!a.start_date && !b.start_date) return 0;
+      if (!a.start_date) return 1;
+      if (!b.start_date) return -1;
+      return b.start_date.localeCompare(a.start_date);
+   });
+
+   const role = sortedExperiences[0]?.position ?? null;
 
    const subheaderParts: string[] = [];
    if (role) subheaderParts.push(role);
@@ -335,12 +349,12 @@ export default function ResumePdf({ profile, extraData }: Props) {
             ) : null}
 
             {/* ── Experience ── */}
-            {profile.workExperiences.length > 0 && (
+            {sortedExperiences.length > 0 && (
                <>
                   <Text style={s.sectionTitle} minPresenceAhead={60}>
                      Experience
                   </Text>
-                  {profile.workExperiences.map((exp) => (
+                  {sortedExperiences.map((exp) => (
                      <ExperienceItem key={exp.id} exp={exp} />
                   ))}
                </>

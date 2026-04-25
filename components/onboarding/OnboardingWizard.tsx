@@ -22,7 +22,7 @@ import Step4Goals, {
    BLOCKER_OPTIONS,
    APPLICATIONS_OPTIONS,
 } from "./steps/Step4Goals";
-import Step5WorkExperience, { MONTHS } from "./steps/Step5WorkExperience";
+import Step5WorkExperience from "./steps/Step5WorkExperience";
 import Step6Target, { ENGLISH_LEVELS } from "./steps/Step6Target";
 import { ROLES } from "../../constants/onboarding/roles";
 import { EXPERIENCE_OPTIONS } from "../../constants/onboarding/experience";
@@ -65,10 +65,8 @@ function resolveFormData(data: OnboardingData) {
 
    const workExperiences = data.workExperiences.map((exp) => ({
       ...exp,
-      startMonth: MONTHS.find((m) => m.value === exp.startMonth)?.label ?? exp.startMonth,
-      endMonth: exp.isCurrent
-         ? "По настоящее время"
-         : (MONTHS.find((m) => m.value === exp.endMonth)?.label ?? exp.endMonth),
+      startMonth: exp.startMonth,
+      endMonth: exp.isCurrent ? "" : exp.endMonth,
       tasks: exp.tasks.filter((t) => t.trim()),
       achievements: exp.achievements.filter((a) => a.trim()),
    }));
