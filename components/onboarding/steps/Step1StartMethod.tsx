@@ -1,130 +1,10 @@
 "use client";
 
-import { useState, useRef, DragEvent, ChangeEvent } from "react";
+import { useState } from "react";
 import { useFormContext } from "react-hook-form";
-import {
-   HiDocumentArrowUp,
-   HiPencilSquare,
-   HiCheckCircle,
-   HiArrowUpTray,
-   HiEnvelope,
-   HiPaperAirplane,
-} from "react-icons/hi2";
+import { HiPencilSquare, HiEnvelope, HiPaperAirplane } from "react-icons/hi2";
 import { OnboardingData } from "../../../types/onboarding";
 
-type UploadState = "idle" | "uploading" | "done";
-
-const mockUploadFile = async (file: File): Promise<void> => {
-   await new Promise((resolve) => setTimeout(resolve, 1500));
-   console.log(`Файл загружен: ${file.name} (${file.size} bytes)`);
-};
-
-function FileUploader() {
-   const { setValue, getValues } = useFormContext<OnboardingData>();
-   const existing = getValues("resumeFile");
-   const [uploadState, setUploadState] = useState<UploadState>(existing ? "done" : "idle");
-   const [fileName, setFileName] = useState<string>(existing ?? "");
-   const [dragging, setDragging] = useState(false);
-   const inputRef = useRef<HTMLInputElement>(null);
-
-   const handleFile = async (file: File) => {
-      setFileName(file.name);
-      setUploadState("uploading");
-      await mockUploadFile(file);
-      setValue("resumeFile", file.name, { shouldValidate: true });
-      setUploadState("done");
-   };
-
-   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) handleFile(file);
-   };
-
-   const onDrop = (e: DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      setDragging(false);
-      const file = e.dataTransfer.files?.[0];
-      if (file) handleFile(file);
-   };
-
-   const onDragOver = (e: DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      setDragging(true);
-   };
-
-   const onDragLeave = () => setDragging(false);
-
-   const reset = () => {
-      setUploadState("idle");
-      setFileName("");
-      setValue("resumeFile", "");
-      if (inputRef.current) inputRef.current.value = "";
-   };
-
-   return (
-      <div className="mt-5 max-w-xl mx-auto">
-         {uploadState === "done" ? (
-            <div className="flex items-center gap-3 p-4 rounded-2xl border border-green-500/30 bg-green-500/10">
-               <HiCheckCircle size={22} className="text-green-400 shrink-0" />
-               <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">{fileName}</p>
-                  <p className="text-green-400 text-xs mt-0.5">Файл загружен успешно</p>
-               </div>
-               <button
-                  type="button"
-                  onClick={reset}
-                  className="text-[#64748B] hover:text-white text-xs transition-colors cursor-pointer shrink-0"
-               >
-                  Заменить
-               </button>
-            </div>
-         ) : (
-            <div
-               onDrop={onDrop}
-               onDragOver={onDragOver}
-               onDragLeave={onDragLeave}
-               onClick={() => uploadState === "idle" && inputRef.current?.click()}
-               className={`relative flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-dashed transition-all duration-200
-            ${dragging ? "border-[#2563EB] bg-[#2563EB]/10" : "border-[#1B2847] bg-[#0D1426] hover:border-[#2563EB]/50 hover:bg-[#111D35]"}
-            ${uploadState === "idle" ? "cursor-pointer" : "cursor-default"}`}
-            >
-               <input
-                  ref={inputRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  className="hidden"
-                  onChange={onFileChange}
-               />
-
-               {uploadState === "uploading" ? (
-                  <>
-                     <div className="w-8 h-8 rounded-full border-2 border-[#2563EB] border-t-transparent animate-spin" />
-                     <div className="text-center">
-                        <p className="text-white text-sm font-medium">Загружаем файл…</p>
-                        <p className="text-[#64748B] text-xs mt-0.5 truncate max-w-50">
-                           {fileName}
-                        </p>
-                     </div>
-                  </>
-               ) : (
-                  <>
-                     <div className="w-12 h-12 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#3B82F6]">
-                        <HiArrowUpTray size={22} />
-                     </div>
-                     <div className="text-center">
-                        <p className="text-white text-sm font-medium">
-                           Перетащи файл или{" "}
-                           <span className="text-[#3B82F6]">выбери с компьютера</span>
-                        </p>
-                        <p className="text-[#64748B] text-xs mt-1">PDF, DOC, DOCX - до 10 МБ</p>
-                     </div>
-                  </>
-               )}
-            </div>
-         )}
-      </div>
-   );
-}
 
 type MagicLinkState = "idle" | "sending" | "sent";
 
@@ -209,13 +89,6 @@ function ExistingProfileForm() {
 
 const OPTIONS = [
    {
-      value: "resume" as const,
-      icon: <HiDocumentArrowUp size={28} />,
-      title: "Загрузить резюме",
-      subtitle: "Быстрее - мы всё заполним сами",
-      badge: "Рекомендуем",
-   },
-   {
       value: "manual" as const,
       icon: <HiPencilSquare size={28} />,
       title: "Заполнить вручную",
@@ -255,7 +128,7 @@ export default function Step1StartMethod() {
             <p className="text-[#64748B] text-base">Выбери формат - мы подстроимся под него</p>
          </div>
 
-         <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+         <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
             {OPTIONS.map((opt) => {
                const isSelected = selected === opt.value;
                return (
@@ -308,7 +181,6 @@ export default function Step1StartMethod() {
             })}
          </div>
 
-         {selected === "resume" && <FileUploader />}
          {selected === "existing" && <ExistingProfileForm />}
 
          {errors.startMethod && (

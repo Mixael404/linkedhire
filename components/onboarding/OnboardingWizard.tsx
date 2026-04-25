@@ -168,6 +168,8 @@ export default function OnboardingWizard() {
       setStepError(null);
    };
 
+   const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
    const advanceStep = () => {
       setStepError(null);
       posthog.capture("onboarding_step_completed", {
@@ -175,6 +177,7 @@ export default function OnboardingWizard() {
          step_name: STEPS[currentStep]?.label,
       });
       setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+      scrollToTop();
    };
 
    const goNext = async () => {
