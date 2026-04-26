@@ -3,6 +3,9 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
    title: "Политика конфиденциальности | LinkedHire",
+   description:
+      "Политика обработки персональных данных сервиса LinkedHire — как мы собираем, храним и защищаем ваши данные.",
+   alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

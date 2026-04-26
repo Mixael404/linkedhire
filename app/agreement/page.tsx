@@ -3,6 +3,9 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Пользовательское соглашение | LinkedHire",
+  description:
+    "Пользовательское соглашение сервиса LinkedHire — условия использования платформы оптимизации LinkedIn профиля для IT-специалистов.",
+  alternates: { canonical: "/agreement" },
 };
 
 export default function AgreementPage() {

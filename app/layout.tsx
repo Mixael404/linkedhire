@@ -19,6 +19,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://linkedhire.io"),
   title:
     "Работа в IT за рубежом | Удалёнка в USD/EUR для программистов | LinkedHire",
   description:
@@ -31,7 +32,46 @@ export const metadata: Metadata = {
       "Не можешь найти работу программистом? Выходи на международный рынок. Оптимизируем LinkedIn для получения офферов из США, Германии, Нидерландов. Для разработчиков из России, Беларуси, Казахстана.",
     type: "website",
     locale: "ru_RU",
+    url: "https://linkedhire.io",
+    siteName: "LinkedHire",
+    images: [{ url: "/socials.webp", alt: "LinkedHire — работа в IT за рубежом" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Работа в IT за рубежом — LinkedHire",
+    description:
+      "Оптимизируем LinkedIn для получения офферов из США, Германии, Нидерландов. Для разработчиков из России, Беларуси, Казахстана.",
+    images: ["/socials.webp"],
+  },
+  icons: {
+    apple: "/fav/apple-touch-icon.png",
+    other: [
+      { rel: "icon", sizes: "192x192", url: "/fav/android-chrome-192x192.png" },
+      { rel: "icon", sizes: "512x512", url: "/fav/android-chrome-512x512.png" },
+    ],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://linkedhire.io/#organization",
+      name: "LinkedHire",
+      url: "https://linkedhire.io",
+      description:
+        "Сервис оптимизации LinkedIn профиля для IT-специалистов, ищущих удалённую работу за рубежом в USD/EUR.",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://linkedhire.io/#website",
+      url: "https://linkedhire.io",
+      name: "LinkedHire",
+      publisher: { "@id": "https://linkedhire.io/#organization" },
+      inLanguage: "ru-RU",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -49,6 +89,10 @@ export default function RootLayout({
           {children}
           <ToastProvider />
         </PostHogProvider>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </body>
     </html>
   );
