@@ -10,7 +10,7 @@ export default function AuthErrorToast() {
   useEffect(() => {
     if (searchParams.get("error") === "profile_not_found") {
       toast.error(
-        "Профиль с таким email не найден. Создайте новый или проверьте адрес почты.",
+        "Произошло неожиданная ошибка. Попробуйте через 5 минут или проверьте адрес почты.",
         { autoClose: 6000 },
       );
     }

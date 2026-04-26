@@ -33,10 +33,10 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
    return (
       <Modal isOpen={isOpen} onClose={onClose}>
          <SimpleBar style={{ maxHeight: "85dvh" }}>
-            <div className="p-4 sm:p-5">
+            <div className="p-3 sm:p-5">
                {/* Header */}
-               <div className="mb-3 sm:mb-5">
-                  <div className="flex items-center gap-2 mb-2 sm:mb-3">
+               <div className="mb-2 sm:mb-5">
+                  <div className="flex items-center gap-2 mb-1 sm:mb-3">
                      <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-linear-to-br from-[#2563EB] to-[#06B6D4] flex items-center justify-center text-white font-bold text-xs sm:text-sm shrink-0">
                         L
                      </div>
@@ -51,7 +51,7 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
 
                {/* What is this page */}
                <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-[#f0f7ff] rounded-xl border border-[#c8dff8]">
-                  <p className="text-xs sm:text-sm text-[rgba(0,0,0,0.75)] leading-relaxed">
+                  <p className="text-[10px] sm:text-sm text-[rgba(0,0,0,0.75)] leading-relaxed">
                      Эта страница - аналог вашего профиля в LinkedIn. Каждый раздел содержит готовый
                      текст, оптимизированный под вашу специальность и целевой рынок.
                   </p>
@@ -60,12 +60,12 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
                {/* How to use */}
                <div className="mb-3 sm:mb-5 space-y-2">
                   <p className="text-[10px] sm:text-[13px] font-semibold text-[rgba(0,0,0,0.5)] uppercase tracking-wide">
-                     Как использовать
+                     Как использовать этот профиль
                   </p>
                   {[
-                     "Откройте LinkedIn и перейдите в редактирование соответсвующего раздела вашего профиля.",
-                     "Нажмите на блок с текстом здесь - он скопируется в буфер",
-                     "Вставьте текст в соответствующий раздел LinkedIn",
+                     "Закройте данное окошко, кликнув по крестику",
+                     "Копируйте текст из каждого раздела и вставляйте в тот-же раздел вашего профиля LinkedIn",
+                     "Нажмите кнопку \"Скачать резюме\" - вы получите PDF-файл с вашим резюме, он нужен для откликов в LinkedIn и для отправки рекрутерам напрямую",
                   ].map((step, i) => (
                      <div key={i} className="flex items-start gap-2.5">
                         <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#0a66c2] text-white text-[10px] sm:text-[11px] font-bold flex items-center justify-center shrink-0 mt-0.5">
@@ -75,6 +75,9 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
                      </div>
                   ))}
                </div>
+
+               {/* Divider */}
+               <div className="border-t border-[#e8f0f8] my-4" />
 
                {/* Copy link area */}
                <div
@@ -95,14 +98,18 @@ export default function OnboardingModal({ isOpen, onClose, profileId }: Props) {
                      <HiClipboard size={14} className="text-[rgba(0,0,0,0.35)] shrink-0" />
                   )}
                </div>
-               {copied && (
+               {copied ? (
                   <p className="text-[11px] text-green-600 mt-1.5 text-center">
                      Ссылка скопирована!
+                  </p>
+               ) : (
+                  <p className="text-[10px] text-[rgba(0,0,0,0.4)] mt-1.5">
+                     Это ссылка на ваш профиль - сохраните её, чтобы вернуться в будущем
                   </p>
                )}
 
                {/* Email registration section */}
-               <div className="mt-4 pt-4 border-t border-[#e8f0f8]">
+               <div className="mt-2 pt-2 border-t border-[#e8f0f8]">
                   <p className="text-[10px] sm:text-[13px] font-semibold text-[rgba(0,0,0,0.5)] uppercase tracking-wide mb-3">
                      Сохраните доступ к профилю
                   </p>

@@ -16,6 +16,7 @@ import OnboardingModal from "@/components/ui/OnboardingModal";
 import PaywallModal from "@/components/ui/PaywallModal";
 import GeneratingLoader from "@/components/onboarding/GeneratingLoader";
 import posthog from "posthog-js";
+import { DEFAULT_PROFILE_PRICE } from "@/lib/constants";
 
 export default function ProfilePage() {
    const { profileId } = useParams<{ profileId: string }>();
@@ -157,6 +158,7 @@ export default function ProfilePage() {
             isOpen={paywallOpen}
             onClose={() => setPaywallOpen(false)}
             profileId={profileId}
+            price={profile.price ?? DEFAULT_PROFILE_PRICE}
          />
       </div>
    );

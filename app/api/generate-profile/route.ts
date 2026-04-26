@@ -91,6 +91,7 @@ export interface GeneratedProfile {
   target_country: string;
   is_purchased: boolean;
   is_generated: boolean;
+  price: number;
   email?: string | null;
   english_grade?: string | null;
   skills_json?: Record<string, string[]> | null;

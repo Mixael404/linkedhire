@@ -39,6 +39,8 @@ export async function POST(request: NextRequest) {
     options: { emailRedirectTo: redirectTo, shouldCreateUser: false },
   });
 
+  console.log(error);
+
   if (error) {
     return NextResponse.json(
       { error: "Не удалось отправить письмо. Попробуйте позже." },

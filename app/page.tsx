@@ -6,6 +6,8 @@ import LinkedInBarriers from "../components/LinkedInBarriers";
 import Solution from "../components/Solution";
 import HowItWorks from "../components/HowItWorks";
 import BeforeAfter from "../components/BeforeAfter";
+import ForWho from "../components/ForWho";
+import FAQ from "../components/FAQ";
 import FinalCTA from "../components/FinalCTA";
 import Footer from "../components/Footer";
 import ScrollToTop from "../components/ui/ScrollToTop";
@@ -26,7 +28,9 @@ export default function Home() {
         <LinkedInBarriers />
         <Solution />
         <HowItWorks />
+        <ForWho />
         <BeforeAfter />
+        <FAQ />
         <FinalCTA />
       </main>
       <Footer />
