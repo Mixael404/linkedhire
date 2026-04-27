@@ -9,7 +9,7 @@ services:
         NEXT_PUBLIC_SUPABASE_ANON_KEY:     ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
         NEXT_PUBLIC_POSTHOG_KEY:           ${NEXT_PUBLIC_POSTHOG_KEY}
         NEXT_PUBLIC_POSTHOG_HOST:          ${NEXT_PUBLIC_POSTHOG_HOST}
-    env_file: .env
+    env_file: .env.local
     ports:
       - "127.0.0.1:3000:3000"
     restart: unless-stopped

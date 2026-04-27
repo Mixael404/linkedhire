@@ -2,7 +2,7 @@
 set -e
 
 # ── Проверка .env ─────────────────────────────────────────────────────────────
-if [ ! -f .env ]; then
+if [ ! -f .env.local ]; then
   echo "Файл .env не найден. Создаю из .env.example..."
   cp .env.example .env
   echo "Заполни .env и запусти скрипт снова."
