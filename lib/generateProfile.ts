@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { openai, OPENAI_MODEL } from "@/lib/openai";
+import { getOpenAI, OPENAI_MODEL } from "@/lib/openai";
 import { FIRST_SYSTEM_PROMPT } from "@/constants/prompts/first-system";
 import { headlinePrompt } from "@/constants/prompts/headline";
 import { aboutPrompt } from "@/constants/prompts/about.prompt";
@@ -33,7 +33,7 @@ const normalize = (s: string) => s.replaceAll("–", "-").replaceAll("-", "-");
 
 async function ask(messages: ChatCompletionMessageParam[], userPrompt: string): Promise<string> {
    messages.push({ role: "user", content: userPrompt });
-   const completion = await openai.chat.completions.create({
+   const completion = await getOpenAI().chat.completions.create({
       model: OPENAI_MODEL,
       messages,
       temperature: 0.7,
@@ -44,7 +44,7 @@ async function ask(messages: ChatCompletionMessageParam[], userPrompt: string): 
 }
 
 async function askSingle(userPrompt: string): Promise<string> {
-   const completion = await openai.chat.completions.create({
+   const completion = await getOpenAI().chat.completions.create({
       model: OPENAI_MODEL,
       messages: [
          { role: "system", content: FIRST_SYSTEM_PROMPT.trim() },

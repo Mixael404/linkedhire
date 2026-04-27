@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { openai, OPENAI_MODEL } from "../../../lib/openai";
+import { getOpenAI, OPENAI_MODEL } from "../../../lib/openai";
 
 export interface OpenAIRequestBody {
   messages: { role: "system" | "user" | "assistant"; content: string }[];
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: OPENAI_MODEL,
       messages: body.messages,
       temperature: body.temperature ?? 0.6,

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { openai, OPENAI_MODEL } from "../../../lib/openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { firstProfileAnalyze } from "@/utils/firstProfileAnalyze";
 import { TECH_GROUPS } from "@/constants/onboarding/technologies";
