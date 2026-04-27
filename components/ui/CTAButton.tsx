@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import posthog from "posthog-js";
 
 interface CTAButtonProps {
   href: string;
@@ -36,6 +39,9 @@ export default function CTAButton({
   return (
     <a
       href={href}
+      onClick={() =>
+        posthog.capture("landing_CTA_clicked", { href, variant })
+      }
       className={`${base} ${variantClass} ${sizeClass} ${className}`.trim()}
     >
       {children}
