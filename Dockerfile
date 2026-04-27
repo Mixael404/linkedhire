@@ -2,8 +2,8 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
 # ─── Stage 2: build ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS builder
@@ -27,7 +27,7 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
 ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
 
-RUN npm run build
+RUN yarn build
 
 # ─── Stage 3: production runner ───────────────────────────────────────────────
 FROM node:20-alpine AS runner
