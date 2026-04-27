@@ -1,0 +1,11 @@
+node_modules
+.next
+.env.local
+.env*.local
+yarn.lock
+*.log
+.git
+.gitignore
+README.md
+AGENTS.md
+CLAUDE.md
