@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geologica, Manrope } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import ToastProvider from "@/components/ToastProvider";
 import PostHogProvider from "@/components/PostHogProvider";
-import { Analytics } from "@vercel/analytics/next";
 
 const geologica = Geologica({
   subsets: ["latin", "cyrillic"],
@@ -90,7 +90,14 @@ export default function RootLayout({
           {children}
           <ToastProvider />
         </PostHogProvider>
-        <Analytics />
+        {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+          <Script
+            async
+            src={`${process.env.NEXT_PUBLIC_UMAMI_URL}/script.js`}
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            strategy="afterInteractive"
+          />
+        )}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

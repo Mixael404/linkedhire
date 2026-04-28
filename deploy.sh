@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-if [ ! -f .env ]; then
-  echo "Файл .env не найден. Создаю из .env.example..."
-  cp .env.example .env
-  echo "Заполни .env и запусти скрипт снова."
+if [ ! -f .env.local ]; then
+  echo "Файл .env.local не найден. Создаю из .env.example..."
+  cp .env.example .env.local
+  echo "Заполни .env.local и запусти скрипт снова."
   exit 1
 fi
 

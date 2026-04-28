@@ -14,6 +14,8 @@ docker build \
   --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
   --build-arg NEXT_PUBLIC_POSTHOG_KEY="$NEXT_PUBLIC_POSTHOG_KEY" \
   --build-arg NEXT_PUBLIC_POSTHOG_HOST="$NEXT_PUBLIC_POSTHOG_HOST" \
+  --build-arg NEXT_PUBLIC_UMAMI_URL="$NEXT_PUBLIC_UMAMI_URL" \
+  --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="$NEXT_PUBLIC_UMAMI_WEBSITE_ID" \
   -t linkedhire:latest .
 
 echo "Saving image to linkedhire.tar.gz..."
