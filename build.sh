@@ -8,7 +8,7 @@ export $(grep -v '^#' .env.local | grep 'NEXT_PUBLIC' | xargs)
 
 echo "Building Docker image..."
 docker build \
-  --build-arg NEXT_PUBLIC_APP_URL="${NEXT_PUBLIC_APP_URL:-https://linkedhire.io}" \
+  --build-arg NEXT_PUBLIC_APP_URL="https://linkedhire.io" \
   --build-arg NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
   --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" \
   --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
