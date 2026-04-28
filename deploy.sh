@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+DC="docker compose --env-file .env.local"
+
 if [ ! -f .env.local ]; then
   echo "Файл .env.local не найден. Создаю из .env.example..."
   cp .env.example .env.local
@@ -17,9 +19,9 @@ echo "Loading Docker image..."
 docker load < linkedhire.tar.gz
 
 echo "Starting..."
-docker compose up -d
+$DC up -d
 
 echo ""
-docker compose ps
+$DC ps
 echo ""
-echo "Логи: docker compose logs -f"
+echo "Логи: docker compose --env-file .env.local logs -f"
