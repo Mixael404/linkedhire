@@ -58,7 +58,7 @@ export interface OnboardingData {
 }
 
 export const defaultOnboardingData: OnboardingData = {
-  startMethod: "",
+  startMethod: "manual",
   resumeFile: "",
   role: "",
   customRole: "",
@@ -83,10 +83,9 @@ export interface StoredOnboarding {
 export const ONBOARDING_STORAGE_KEY = "linkedhire_onboarding";
 
 export const STEP_FIELDS: Record<number, (keyof OnboardingData)[]> = {
-  0: ["startMethod"],
-  1: ["role", "experience"],
-  2: [],
-  3: ["goal", "applicationsCount"],
-  4: [],
-  5: ["targetRegion", "englishLevel"],
+  0: ["role", "experience"],
+  1: [],
+  2: ["goal", "applicationsCount"],
+  3: [],
+  4: ["targetRegion", "englishLevel"],
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, FormProvider, FieldPath } from "react-hook-form";
 import { HiArrowRight, HiArrowLeft, HiExclamationTriangle, HiXMark } from "react-icons/hi2";
@@ -14,7 +14,7 @@ import {
 } from "../../types/onboarding";
 import GeneratingLoader from "./GeneratingLoader";
 import ProgressBar from "./ProgressBar";
-import Step1StartMethod from "./steps/Step1StartMethod";
+import LoginModal from "./LoginModal";
 import Step2BasicInfo from "./steps/Step2BasicInfo";
 import Step3Technologies from "./steps/Step3Technologies";
 import Step4Goals, {
@@ -89,7 +89,6 @@ function resolveFormData(data: OnboardingData) {
 }
 
 const STEPS = [
-   { label: "С чего начнём", component: Step1StartMethod },
    { label: "О тебе", component: Step2BasicInfo },
    { label: "Стек технологий", component: Step3Technologies },
    { label: "Твои цели", component: Step4Goals },
@@ -129,7 +128,7 @@ export default function OnboardingWizard() {
    }>({ open: false, warnings: [] });
    const [stepError, setStepError] = useState<string | null>(null);
    const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-   const lastParsedFile = useRef<string>("");
+   const [loginModalOpen, setLoginModalOpen] = useState(false);
 
    const methods = useForm<OnboardingData>({
       defaultValues: defaultOnboardingData,
@@ -161,6 +160,17 @@ export default function OnboardingWizard() {
       saveToStorage(currentStep, methods.getValues());
    }, [currentStep, hydrated]);
 
+   useEffect(() => {
+      const handleBeforeUnload = () => {
+         posthog.capture("onboarding_page_closed", {
+            step: currentStep + 1,
+            step_name: STEPS[currentStep]?.label,
+         });
+      };
+      window.addEventListener("beforeunload", handleBeforeUnload);
+      return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+   }, [currentStep]);
+
    const resetForm = () => {
       localStorage.removeItem(ONBOARDING_STORAGE_KEY);
       methods.reset(defaultOnboardingData);
@@ -172,8 +182,7 @@ export default function OnboardingWizard() {
 
    const advanceStep = () => {
       setStepError(null);
-      posthog.capture("onboarding_step_completed", {
-         step_index: currentStep,
+      posthog.capture(`completed_step_${currentStep + 1}`, {
          step_name: STEPS[currentStep]?.label,
       });
       setCurrentStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
@@ -185,20 +194,7 @@ export default function OnboardingWizard() {
       const isValid = await methods.trigger(fields);
       if (!isValid) return;
 
-      if (currentStep === 0) {
-         const { startMethod, resumeFile } = methods.getValues();
-         if (startMethod === "resume") {
-            const needsParsing = resumeFile !== lastParsedFile.current;
-            console.log(
-               needsParsing
-                  ? `[Resume] Парсинг нужен: ${resumeFile}`
-                  : `[Resume] Файл не изменился, парсинг не нужен`,
-            );
-            if (needsParsing) lastParsedFile.current = resumeFile;
-         }
-      }
-
-      if (currentStep === 4) {
+      if (currentStep === 3) {
          const experiences = methods.getValues("workExperiences");
          methods.clearErrors("workExperiences");
 
@@ -313,17 +309,12 @@ export default function OnboardingWizard() {
          if (Array.isArray(val)) return val.length > 0;
          return !!val;
       });
-      if (step === 0 && watchedValues.startMethod === "resume") {
-         return baseValid && !!watchedValues.resumeFile;
-      }
       return baseValid;
    };
 
    const CurrentStepComponent = STEPS[currentStep].component;
    const isLastStep = currentStep === TOTAL_STEPS - 1;
    const canAdvance = isStepComplete(currentStep);
-   const isExistingFlow = currentStep === 0 && methods.watch("startMethod") === "existing";
-
    if (!hydrated) return null; // prevent SSR flash
    if (isGenerating) return <GeneratingLoader />;
 
@@ -375,28 +366,34 @@ export default function OnboardingWizard() {
                         <div />
                      )}
 
-                     {!isExistingFlow && (
-                        <button
-                           type="button"
-                           onClick={isLastStep ? onSubmit : goNext}
-                           disabled={!canAdvance}
-                           className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
+                     <button
+                        type="button"
+                        onClick={isLastStep ? onSubmit : goNext}
+                        disabled={!canAdvance}
+                        className={`btn-glow inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold transition-all duration-200
                   ${
                      canAdvance
                         ? "bg-[#2563EB] hover:bg-[#1D4ED8] text-white cursor-pointer"
                         : "bg-[#2563EB]/40 text-white/50 cursor-not-allowed"
                   }`}
-                        >
-                           {isLastStep ? "Собрать мой профиль" : "Далее"}
-                           <HiArrowRight size={16} />
-                        </button>
-                     )}
+                     >
+                        {isLastStep ? "Собрать мой профиль" : "Далее"}
+                        <HiArrowRight size={16} />
+                     </button>
                   </div>
-                  <div className="flex justify-end mt-5">
+                  <div className="flex items-center justify-between mt-5">
+                     <button
+                        type="button"
+                        onClick={() => setLoginModalOpen(true)}
+                        className="text-[#475569] text-[11px] sm:text-[14px] hover:text-[#64748B] text-sm transition-colors cursor-pointer"
+                     >
+                        Уже регистрировались?{" "}
+                        <span className="text-[#3B82F6] ml-0 sm:ml-1">Войти по email</span>
+                     </button>
                      <button
                         type="button"
                         onClick={() => setResetConfirmOpen(true)}
-                        className="text-[#828891] hover:text-[#64748B] text-sm transition-colors cursor-pointer"
+                        className="text-[#828891] text-[12px] sm:text-[14px] hover:text-[#64748B] text-sm transition-colors cursor-pointer"
                      >
                         Начать заново
                      </button>
@@ -515,6 +512,8 @@ export default function OnboardingWizard() {
                </div>
             )}
          </form>
+
+         {loginModalOpen && <LoginModal onClose={() => setLoginModalOpen(false)} />}
       </FormProvider>
    );
 }
