@@ -1,6 +1,6 @@
 services:
   app:
-    image: linkedhire:latest
+    image: mikhailslutskii/linkedhire:latest
     env_file: .env.local
     ports:
       - "127.0.0.1:3000:3000"

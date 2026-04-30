@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-SERVER=${SERVER:-"ubuntu@213.155.21.43"}
+IMAGE="mikhailslutskii/linkedhire:latest"
 
 # Read NEXT_PUBLIC_* from .env.local for the build
 export $(grep -v '^#' .env.local | grep 'NEXT_PUBLIC' | xargs)
@@ -16,13 +16,10 @@ docker build \
   --build-arg NEXT_PUBLIC_POSTHOG_HOST="$NEXT_PUBLIC_POSTHOG_HOST" \
   --build-arg NEXT_PUBLIC_UMAMI_URL="$NEXT_PUBLIC_UMAMI_URL" \
   --build-arg NEXT_PUBLIC_UMAMI_WEBSITE_ID="$NEXT_PUBLIC_UMAMI_WEBSITE_ID" \
-  -t linkedhire:latest .
+  -t "$IMAGE" .
 
-echo "Saving image to linkedhire.tar.gz..."
-docker save linkedhire:latest | gzip > linkedhire.tar.gz
-
-echo "Uploading to $SERVER..."
-scp linkedhire.tar.gz $SERVER:~/linkedhire/
+echo "Pushing to Docker Hub..."
+docker push "$IMAGE"
 
 echo ""
 echo "Готово! Теперь на сервере запусти: ./deploy.sh"
