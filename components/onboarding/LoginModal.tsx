@@ -73,7 +73,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
                         <p className="text-white text-sm font-semibold mb-1">Ссылка отправлена!</p>
                         <p className="text-[#64748B] text-xs leading-relaxed">
                            Проверьте почту{" "}
-                           <span className="text-[#94A3B8]">{email}</span> — там ссылка для входа
+                           <span className="text-[#94A3B8]">{email}</span> - там ссылка для входа
                            в ваш профиль.
                         </p>
                      </div>

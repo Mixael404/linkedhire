@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# NEXT_PUBLIC_* vars are inlined at build time — pass them as build args
+# NEXT_PUBLIC_* vars are inlined at build time - pass them as build args
 ARG NEXT_PUBLIC_APP_URL=https://linkedhire.io
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
@@ -45,7 +45,7 @@ ENV HOSTNAME=0.0.0.0
 RUN addgroup --system --gid 1001 nodejs \
  && adduser  --system --uid 1001 nextjs
 
-# standalone bundle is self-contained — no node_modules needed
+# standalone bundle is self-contained - no node_modules needed
 COPY --from=builder /app/public                    ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static     ./.next/static

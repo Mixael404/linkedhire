@@ -18,6 +18,8 @@ import {
    HiPuzzlePiece,
    HiCheckCircle,
 } from "react-icons/hi2";
+import ArticleNavbar from "@/components/article/ArticleNavbar";
+import ClusterLinks from "@/components/article/ClusterLinks";
 
 export const metadata: Metadata = {
    title: "Почему сложно найти работу в IT в 2026 году",
@@ -129,35 +131,13 @@ const whyAchievable = [
 export default function WhyHardToFindJob() {
    return (
       <div className="min-h-screen bg-[#07091A]">
-         {/* Navbar */}
-         <header className="sticky top-0 z-50 border-b border-[#1B2847]/60 bg-[#07091A]/80 backdrop-blur-md">
-            <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-               <Link href="/" className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-linear-to-br from-[#2563EB] to-[#06B6D4] flex items-center justify-center text-white font-bold text-sm">
-                     L
-                  </div>
-                  <span
-                     className="font-bold text-white text-[17px] tracking-tight"
-                     style={{ fontFamily: "var(--font-geologica)" }}
-                  >
-                     Linked<span className="text-[#3B82F6]">Hire</span>
-                  </span>
-               </Link>
-
-               <nav className="hidden md:flex items-center gap-8 text-sm text-[#94A3B8]">
-                  <a href="#rynok" className="hover:text-white transition-colors">Рынок</a>
-                  <a href="#linkedin" className="hover:text-white transition-colors">LinkedIn</a>
-                  <a href="#mezhdunarodny" className="hover:text-white transition-colors">Международный рынок</a>
-               </nav>
-
-               <Link
-                  href="/onboarding"
-                  className="btn-glow bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors"
-               >
-                  Найти работу за границей
-               </Link>
-            </div>
-         </header>
+         <ArticleNavbar
+            anchors={[
+               { href: "#rynok", label: "Рынок" },
+               { href: "#linkedin", label: "LinkedIn" },
+               { href: "#mezhdunarodny", label: "Международный рынок" },
+            ]}
+         />
 
          <main className="max-w-4xl mx-auto px-6 py-16">
             {/* Hero */}
@@ -382,6 +362,8 @@ export default function WhyHardToFindJob() {
                   <HiArrowRight size={16} />
                </Link>
             </div>
+
+            <ClusterLinks currentHref="/pochemu-slozhno-nayti-rabotu" />
          </main>
       </div>
    );

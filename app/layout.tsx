@@ -35,11 +35,11 @@ export const metadata: Metadata = {
     locale: "ru_RU",
     url: "https://linkedhire.io",
     siteName: "LinkedHire",
-    images: [{ url: "/socials.webp", alt: "LinkedHire — работа в IT за рубежом" }],
+    images: [{ url: "/socials.webp", alt: "LinkedHire - работа в IT за рубежом" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Работа в IT за рубежом — LinkedHire",
+    title: "Работа в IT за рубежом - LinkedHire",
     description:
       "Оптимизируем LinkedIn для получения офферов из США, Германии, Нидерландов. Для разработчиков из России, Беларуси, Казахстана.",
     images: ["/socials.webp"],
