@@ -13,6 +13,7 @@ import Market from "../components/Market";
 import LinkedInBarriers from "../components/LinkedInBarriers";
 import Solution from "../components/Solution";
 import HowItWorks from "../components/HowItWorks";
+import Testimonials from "../components/Testimonials";
 import BeforeAfter from "../components/BeforeAfter";
 import ForWho from "../components/ForWho";
 import FAQ from "../components/FAQ";
@@ -38,6 +39,7 @@ export default function Home() {
         <Market />
         <LinkedInBarriers />
         <HowItWorks />
+        <Testimonials />
         {/* <ForWho /> */}
         <FAQ />
         <FinalCTA />

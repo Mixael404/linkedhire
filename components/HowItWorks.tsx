@@ -1,4 +1,4 @@
-import { HiArrowRight, HiCheckCircle } from "react-icons/hi2";
+import { HiArrowRight } from "react-icons/hi2";
 import CTAButton from "./ui/CTAButton";
 
 const steps = [
@@ -7,7 +7,7 @@ const steps = [
       time: "~5 минут",
       title: "Проходишь анкетирование по опыту и стеку",
       bullets: [
-         "Ничего не нужно переписывать самому",
+         "Мы вытаскиваем твои: стек, проекты, результаты, достижения, метрики",
          "Даже если опыт «сыроват» - мы разберёмся",
          "Просто отвечаешь на вопросы на русском",
       ],
@@ -17,13 +17,27 @@ const steps = [
       time: "~30 секунд",
       title: "Получаешь готовый LinkedIn-профиль под международный рынок",
       bullets: [
-         "Headline, About, Experience - уже написаны",
-         "С цифрами, метриками и ключевыми словами",
-         "Под конкретный рынок: USA / EU / UK",
+         "Headline → под поиск рекрутеров",
+         "About → с цифрами и результатами",
+         "Experience → как “кейсы”, а не обязанности",
+         "Recommendations → рекомендации от коллег и руководителей",
+         "Skills → ATS-оптимизированные теги",
+         "PDF-резюме → готово к отправке",
       ],
    },
    {
       n: "03",
+      time: "~30 секунд",
+      title: "Добавляем ключевые слова:",
+      bullets: [
+         "Python developer remote",
+         "Backend engineer EU",
+         "Fintech APIs",
+         "👉 чтобы тебя начали находить",
+      ],
+   },
+   {
+      n: "04",
       time: "~5 минут",
       title: "Тебе показывают, куда это вставить в LinkedIn",
       bullets: [
@@ -33,7 +47,7 @@ const steps = [
       ],
    },
    {
-      n: "04",
+      n: "05",
       time: "сразу после",
       title: "Начинаешь появляться в поиске рекрутеров",
       bullets: [
@@ -42,13 +56,6 @@ const steps = [
          "Принимаешь входящие от рекрутеров",
       ],
    },
-];
-
-const OUTPUT = [
-   "Готовый LinkedIn-профиль",
-   "Готовое PDF-резюме",
-   "Инструкция по вставке",
-   "Понимание, как это работает",
 ];
 
 const NO_NEED = [
@@ -122,19 +129,33 @@ export default function HowItWorks() {
                ))}
             </div>
 
-            {/* Output + CTA */}
+            {/* After results */}
             <div className="card p-7 mb-6">
                <p
-                  className="text-white font-bold text-lg mb-5"
+                  className="text-white font-bold text-lg mb-6"
                   style={{ fontFamily: "var(--font-geologica)" }}
                >
-                  На выходе ты получаешь:
+                  Что происходит после
                </p>
-               <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                  {OUTPUT.map((item) => (
-                     <div key={item} className="flex items-center gap-3">
-                        <HiCheckCircle className="text-green-400 shrink-0" size={18} />
-                        <span className="text-[#94A3B8] text-sm">{item}</span>
+               <div className="space-y-0 mb-8">
+                  {[
+                     { range: "1–3 дня", event: "появляются просмотры профиля" },
+                     { range: "3–7 дней", event: "первые сообщения от рекрутеров" },
+                     { range: "1–2 недели", event: "первые технические интервью" },
+                  ].map(({ range, event }, i, arr) => (
+                     <div key={range} className="flex gap-4 items-start">
+                        <div className="flex flex-col items-center">
+                           <div className="w-2.5 h-2.5 rounded-full bg-[#2563EB] mt-1 shrink-0" />
+                           {i < arr.length - 1 && (
+                              <div className="w-px flex-1 bg-[#1B2847] my-1 min-h-7" />
+                           )}
+                        </div>
+                        <div className="pb-5">
+                           <span className="text-xs font-bold text-[#3B82F6] uppercase tracking-wider">
+                              Через {range}
+                           </span>
+                           <p className="text-[#94A3B8] text-sm mt-0.5">{event}</p>
+                        </div>
                      </div>
                   ))}
                </div>
