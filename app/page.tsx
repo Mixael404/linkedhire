@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   },
 };
 import Hero from "../components/Hero";
+import WhatYouGet from "../components/WhatYouGet";
 import Problem from "../components/Problem";
 import Market from "../components/Market";
 import LinkedInBarriers from "../components/LinkedInBarriers";
@@ -31,12 +32,13 @@ export default function Home() {
       <main>
         <Hero />
         <Problem />
+        <Solution />
+        <WhatYouGet />
+        <BeforeAfter />
         <Market />
         <LinkedInBarriers />
-        <Solution />
         <HowItWorks />
-        <ForWho />
-        <BeforeAfter />
+        {/* <ForWho /> */}
         <FAQ />
         <FinalCTA />
       </main>

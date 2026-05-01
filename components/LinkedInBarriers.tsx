@@ -3,8 +3,6 @@ import {
   HiDocumentMagnifyingGlass,
   HiMagnifyingGlass,
   HiClipboardDocumentList,
-  HiPuzzlePiece,
-  HiCheckCircle,
 } from "react-icons/hi2";
 import { ReactNode } from "react";
 
@@ -33,9 +31,9 @@ const barriers: { icon: ReactNode; title: string; desc: string }[] = [
 
 export default function LinkedInBarriers() {
   return (
-    <section id="linkedin-barriers" className="py-20 relative bg-[#0A0D1F]">
+    <section id="linkedin-barriers" className="py-10 relative bg-[#0A0D1F]">
       <div className="absolute top-0 left-0 right-0 h-px divider" />
-      <div className="absolute bottom-0 left-0 right-0 h-px divider" />
+      {/* <div className="absolute bottom-0 left-0 right-0 h-px divider" /> */}
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-14">
           <span className="section-label mb-4 inline-flex">
@@ -74,51 +72,12 @@ export default function LinkedInBarriers() {
           ))}
         </div>
 
-        {/* Context block */}
-        <div className="grid sm:grid-cols-2 gap-5 mb-10">
-          <div className="card p-6">
-            <h4
-              className="text-white font-bold text-base mb-3 flex items-center gap-2"
-              style={{ fontFamily: "var(--font-geologica)" }}
-            >
-              <HiPuzzlePiece className="text-[#3B82F6] shrink-0" size={18} />
-              Почему это происходит
-            </h4>
-            <p className="text-[#64748B] text-sm leading-relaxed">
-              LinkedIn - это не просто сайт с резюме. Это платформа с
-              собственным алгоритмом поиска, рекрутерскими фильтрами и
-              стандартами форматирования, сложившимися на западном рынке.
-              Профиль, написанный «как у нас принято» - просто не работает там.
-            </p>
-          </div>
-          <div className="card p-6">
-            <h4
-              className="text-white font-bold text-base mb-3 flex items-center gap-2"
-              style={{ fontFamily: "var(--font-geologica)" }}
-            >
-              <HiCheckCircle className="text-green-400 shrink-0" size={18} />
-              Это решаемо
-            </h4>
-            <p className="text-[#64748B] text-sm leading-relaxed">
-              Каждый из этих барьеров имеет конкретное решение: правильный
-              headline, About с достижениями, SEO-слова в нужных местах, опыт
-              через метрики. LinkedHire помогает пройти через этот процесс
-              быстро и без лишних догадок.
-            </p>
-          </div>
-        </div>
-
-        <div className="text-center">
-          <p className="text-[#94A3B8] text-sm">
-            Если хоть один пункт - про тебя,{" "}
-            <a
-              href="#features"
-              className="text-[#3B82F6] hover:underline font-medium"
-            >
-              LinkedHire разберётся с этим за 10 минут
-            </a>
-          </p>
-        </div>
+        <p className="text-[#64748B] text-sm text-center mt-2">
+          LinkedIn работает по другим правилам. Профиль, написанный «как у нас принято», там просто не работает.{" "}
+          <a href="#features" className="text-[#3B82F6] hover:underline font-medium">
+            LinkedHire исправит это за 10 минут
+          </a>
+        </p>
       </div>
     </section>
   );

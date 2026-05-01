@@ -23,7 +23,7 @@ const groups = [
 
 export default function ForWho() {
    return (
-      <section className="py-20 bg-[#0A0D1F]">
+      <section className="py-10 bg-[#0A0D1F]">
          <div className="max-w-5xl mx-auto px-6">
             <div className="text-center mb-14">
                <span className="section-label mb-4 inline-flex">Для кого</span>
@@ -34,8 +34,8 @@ export default function ForWho() {
                   Кому подходит LinkedHire
                </h2>
                <p className="text-[#64748B] text-lg max-w-xl mx-auto">
-                  Если вы IT-специалист из России, Беларуси или Казахстана и хотите
-                  выйти на международный рынок - этот инструмент для вас.
+                  Если вы IT-специалист из России, Беларуси или Казахстана и хотите выйти на
+                  международный рынок - этот инструмент для вас.
                </p>
             </div>
 
