@@ -26,9 +26,9 @@ export default function AboutSection({ about, skills, onBlurClick, is_purchased 
             </Tooltip>
          </div>
          <CopyCard
-            text={is_purchased ? about : padWithFakeWords(about, 1000)}
+            text={is_purchased ? about : padWithFakeWords(about.slice(0, 30), 1000)}
             onBlurClick={() => onBlurClick("about")}
-            visibleCharCount={about.length}
+            visibleCharCount={is_purchased ? about.length : 30}
             isBlurred={!is_purchased}
             variant="light"
          />

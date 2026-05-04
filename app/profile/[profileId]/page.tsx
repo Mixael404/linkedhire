@@ -14,6 +14,7 @@ import SkillsSection from "@/components/profile/SkillsSection";
 import ProfileSidebar from "@/components/profile/ProfileSidebar";
 import OnboardingModal from "@/components/ui/OnboardingModal";
 import PaywallModal from "@/components/ui/PaywallModal";
+import AddExperienceModal from "@/components/ui/AddExperienceModal";
 import GeneratingLoader from "@/components/onboarding/GeneratingLoader";
 import posthog from "posthog-js";
 import { DEFAULT_PROFILE_PRICE } from "@/lib/constants";
@@ -28,6 +29,7 @@ export default function ProfilePage() {
       () => searchParams.get("iniciator") === "onboarding"
    );
    const [paywallOpen, setPaywallOpen] = useState(false);
+   const [addExperienceOpen, setAddExperienceOpen] = useState(false);
    const [isGenerating, setIsGenerating] = useState(false);
 
    useEffect(() => {
@@ -126,6 +128,7 @@ export default function ProfilePage() {
                <ExperienceSection
                   workExperiences={profile.workExperiences}
                   onBlurClick={onBlurClick}
+                  onAddExperienceClick={() => setAddExperienceOpen(true)}
                   is_purchased={profile.is_purchased}
                   targetCountry={profile.target_country}
                />
@@ -159,6 +162,11 @@ export default function ProfilePage() {
             onClose={() => setPaywallOpen(false)}
             profileId={profileId}
             price={profile.price ?? DEFAULT_PROFILE_PRICE}
+         />
+         <AddExperienceModal
+            isOpen={addExperienceOpen}
+            onClose={() => setAddExperienceOpen(false)}
+            profileId={profileId}
          />
       </div>
    );
