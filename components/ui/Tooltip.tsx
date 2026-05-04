@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import * as RadixTooltip from "@radix-ui/react-tooltip";
 
 type Props = {
@@ -10,16 +10,27 @@ type Props = {
 
 export default function Tooltip({ content, children }: Props) {
    const [open, setOpen] = useState(false);
+   const touchRef = useRef(false);
 
    return (
       <RadixTooltip.Provider delayDuration={50}>
-         <RadixTooltip.Root open={open} onOpenChange={setOpen}>
+         <RadixTooltip.Root
+            open={open}
+            onOpenChange={(o) => {
+               // On touch: block Radix auto-close (pointer leave after tap), only close via onPointerDownOutside
+               if (touchRef.current && !o) return;
+               setOpen(o);
+            }}
+         >
             <RadixTooltip.Trigger
                asChild
                onPointerDown={(e) => {
                   if (e.pointerType === "touch") {
-                     e.preventDefault(); // block emulated mouse events
+                     touchRef.current = true;
+                     e.preventDefault();
                      setOpen((o) => !o);
+                  } else {
+                     touchRef.current = false;
                   }
                }}
             >
@@ -30,7 +41,10 @@ export default function Tooltip({ content, children }: Props) {
                   side="top"
                   sideOffset={6}
                   className="z-50 rounded-md bg-[rgba(0,0,0,0.78)] px-2.5 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 max-w-55 wrap-break-word"
-                  onPointerDownOutside={() => setOpen(false)}
+                  onPointerDownOutside={() => {
+                     setOpen(false);
+                     touchRef.current = false;
+                  }}
                >
                   {content}
                   <RadixTooltip.Arrow className="fill-[rgba(0,0,0,0.78)]" />
