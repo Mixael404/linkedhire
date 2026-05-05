@@ -11,13 +11,16 @@ import { defaultWorkExperience } from "@/types/onboarding";
 import { ALL_TECHS } from "@/constants/onboarding/technologies";
 import { ROLES } from "@/constants/onboarding/roles";
 import {
-   MONTHS,
    MAX_WORK_EXPERIENCES, MAX_TASKS, MAX_ACHIEVEMENTS,
    MAX_SKILLS_PER_EXP, MAX_COMPANY_LENGTH, MAX_POSITION_LENGTH,
    MAX_TASK_LENGTH, MAX_ACHIEVEMENT_LENGTH,
-} from "@/components/onboarding/steps/Step5WorkExperience";
+} from "@/constants/onboarding/experience";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
+import { FieldLabel } from "./FieldLabel";
+import { SelectField } from "./SelectField";
+import { MONTHS } from "@/constants/onboarding/experience";
+import { CharCount } from "./CharCount";
 
 type Props = { isOpen: boolean; onClose: () => void; profileId: string };
 
@@ -44,71 +47,6 @@ const ACHIEVEMENT_PLACEHOLDERS = [
    "Увеличил покрытие тестами до 80%",
 ];
 
-// ─── Shared sub-components ───────────────────────────────────────────────────
-function FieldLabel({ children }: { children: React.ReactNode }) {
-   return <span className="text-[#6b7280] text-xs mb-1.5 block">{children}</span>;
-}
-
-function CharCount({ current, max }: { current: number; max: number }) {
-   const pct = current / max;
-   const color = pct >= 1 ? "text-red-500" : pct >= 0.8 ? "text-amber-500" : "text-[#9ca3af]";
-   return (
-      <span className={`absolute bottom-2.5 right-3 text-[10px] pointer-events-none select-none tabular-nums ${color}`}>
-         {current}/{max}
-      </span>
-   );
-}
-
-function SelectField({
-   value, onChange, options, placeholder = "Выбрать", className = "", error,
-}: {
-   value: string;
-   onChange: (val: string) => void;
-   options: { value: string; label: string }[];
-   placeholder?: string;
-   className?: string;
-   error?: boolean;
-}) {
-   const [open, setOpen] = useState(false);
-   const selected = options.find((o) => o.value === value);
-
-   return (
-      <div className={`relative ${className}`}>
-         {open && <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />}
-         <button
-            type="button"
-            onClick={() => setOpen((o) => !o)}
-            className={`w-full flex items-center justify-between gap-2 bg-white border rounded-xl px-3 py-2.5 text-sm outline-none transition-colors cursor-pointer
-               ${error ? "border-red-400/60 hover:border-red-500" : "border-[#e2e8f0] hover:border-[#2563EB]/50"}`}
-         >
-            <span className={selected ? "text-[rgba(0,0,0,0.85)]" : "text-[#9ca3af]"}>
-               {selected ? selected.label : placeholder}
-            </span>
-            <HiChevronDown size={13} className={`text-[#9ca3af] transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`} />
-         </button>
-
-         {open && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#e2e8f0] rounded-xl overflow-hidden z-20 shadow-xl">
-               <SimpleBar style={{ maxHeight: 200 }}>
-                  {options.map((opt) => (
-                     <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => { onChange(opt.value); setOpen(false); }}
-                        className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer
-                           ${opt.value === value
-                              ? "text-[#2563EB] bg-[#eff6ff]"
-                              : "text-[rgba(0,0,0,0.65)] hover:bg-[#f8fafc] hover:text-[rgba(0,0,0,0.9)]"}`}
-                     >
-                        {opt.label}
-                     </button>
-                  ))}
-               </SimpleBar>
-            </div>
-         )}
-      </div>
-   );
-}
 
 // ─── Work experience card (light theme) ──────────────────────────────────────
 function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () => void }) {
