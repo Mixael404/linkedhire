@@ -26,6 +26,7 @@ export async function GET(
     { data: workExperiences },
     { data: projects },
     { data: educations },
+    { data: recommendations },
     { data: good },
   ] = await Promise.all([
     supabase
@@ -43,6 +44,11 @@ export async function GET(
       .select("*")
       .eq("profile_id", profileId)
       .order("start_date", { ascending: false }),
+    supabase
+      .from("recommendations")
+      .select("*")
+      .eq("profile_id", profileId)
+      .order("id", { ascending: true }),
     supabase.from("goods").select("price").eq("name", "profile").single(),
   ]);
 
@@ -55,5 +61,6 @@ export async function GET(
     workExperiences: workExperiences ?? [],
     projects: projects ?? [],
     educations: educations ?? [],
+    recommendations: recommendations ?? [],
   });
 }

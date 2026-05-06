@@ -80,12 +80,20 @@ export interface GeneratedProject {
   is_current: boolean;
 }
 
+export interface GeneratedRecommendation {
+  id: number;
+  created_at: string;
+  text: string | null;
+  profile_id: string | null;
+}
+
 export interface GeneratedProfile {
   id: string;
   headline: string;
   about: string;
   workExperiences: GeneratedWorkExperience[];
   projects: GeneratedProject[];
+  recommendations: GeneratedRecommendation[];
   skills: string[];
   target_country: string;
   is_purchased: boolean;
@@ -367,26 +375,12 @@ export async function POST(req: NextRequest) {
     .from("projects")
     .insert(workExperiencesRows) // For simplicity, using the same data shape for projects; adjust as needed
 
+  const recCount = Math.max(2, formData.workExperiences.length);
+  const recStubs = Array.from({ length: recCount }, () => ({
+    profile_id: createdProfile.id,
+    text: "",
+  }));
+  await supabase.from("recommendations").insert(recStubs);
+
   return NextResponse.json(createdProfile);
-}
-
-function getExperienceSummary(formData: ResolvedFormData) {
-  return formData.workExperiences
-    .slice(0, 2)
-    .map(
-      (w) =>
-        `${w.position} at ${w.company} (${w.startMonth} ${w.startYear} - ${
-          w.isCurrent ? "Present" : `${w.endMonth} ${w.endYear}`
-        })`,
-    )
-    .join("\n");
-}
-
-function getUniqueTechnologies(formData: ResolvedFormData) {
-  return [
-    ...new Set([
-      ...formData.technologies,
-      ...formData.workExperiences.flatMap((w) => w.technologies),
-    ]),
-  ];
 }

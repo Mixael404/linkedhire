@@ -8,6 +8,7 @@ import ProfileHeader from "@/components/profile/header/ProfileHeader";
 import ProfileCard from "@/components/profile/ProfileCard";
 import AboutSection from "@/components/profile/AboutSection";
 import ExperienceSection from "@/components/profile/ExperienceSection";
+import RecommendationsSection from "@/components/profile/RecommendationsSection";
 import EducationSection from "@/components/profile/EducationSection";
 import ProjectsSection from "@/components/profile/ProjectsSection";
 import SkillsSection from "@/components/profile/SkillsSection";
@@ -92,7 +93,6 @@ export default function ProfilePage() {
    const roleTitle = profile.workExperiences[0]?.position ?? "Developer";
    const companyName = profile.workExperiences[0]?.company ?? "";
    const companyInitials = getInitials(companyName);
-	 console.log(profile);
 
    return (
       <div
@@ -131,6 +131,12 @@ export default function ProfilePage() {
                   onAddExperienceClick={() => setAddExperienceOpen(true)}
                   is_purchased={profile.is_purchased}
                   targetCountry={profile.target_country}
+               />
+
+               <RecommendationsSection
+                  recommendations={profile.recommendations ?? []}
+                  onBlurClick={onBlurClick}
+                  is_purchased={profile.is_purchased}
                />
 
                <EducationSection />

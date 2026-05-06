@@ -7,6 +7,11 @@ import { aboutPrompt } from "@/constants/prompts/about.prompt";
 import { experiencePrompt } from "@/constants/prompts/experience.prompt";
 import { projectPrompt } from "@/constants/prompts/projects.prompt";
 import { resumeSummaryPrompt } from "@/constants/prompts/resume-summary.prompt";
+import {
+   recommendationFromExpPrompt,
+   recommendationFromSkillsPrompt,
+   type RecommendationExpInput,
+} from "@/constants/prompts/recommendations.prompt";
 
 const MONTH_NAMES = [
    "January",
@@ -159,37 +164,33 @@ export async function generateProfileContent(
 
    // Generate all descriptions in parallel. Promise.all preserves result order - exps[i]
    // always maps to expDescriptions[i] and projDescriptions[i].
-   const [expDescriptions, projDescriptions, resumeSummary] = await Promise.all([
-      Promise.all(
-         exps.map((exp) =>
-            askSingle(
-               experiencePrompt(
-                  {
-                     ...exp,
-                     overallExperience: resume.experience as string,
-                     targetRole: resume.role as string,
-                  },
-                  formDataLike,
-               ),
-            ),
-         ),
-      ),
-      Promise.all(
-         exps.map((exp) =>
-            askSingle(
-               projectPrompt(
-                  {
-                     ...exp,
-                     overallExperience: resume.experience as string,
-                     targetRole: resume.role as string,
-                  },
-                  formDataLike,
-               ),
-            ),
-         ),
-      ),
+   const expInput = (exp: (typeof exps)[0]): RecommendationExpInput => ({
+      ...exp,
+      overallExperience: resume.experience as string,
+      targetRole: resume.role as string,
+   });
+
+   // Recommendations: 1 per work experience, minimum 2. Extra slots use skills-only prompt.
+   const skillsOnlyCount = Math.max(0, 2 - exps.length);
+
+   // All promises are fired concurrently — Promise.all just awaits them together.
+   const [expDescriptions, projDescriptions, resumeSummary, recommendations] = await Promise.all([
+      Promise.all(exps.map((exp) => askSingle(experiencePrompt(expInput(exp), formDataLike)))),
+      Promise.all(exps.map((exp) => askSingle(projectPrompt(expInput(exp), formDataLike)))),
       askSingle(resumeSummaryPrompt(formDataLike)),
+      Promise.all([
+         ...exps.map((exp) => askSingle(recommendationFromExpPrompt(expInput(exp), formDataLike))),
+         ...Array.from({ length: skillsOnlyCount }, () =>
+            askSingle(recommendationFromSkillsPrompt(formDataLike)),
+         ),
+      ]),
    ]);
+
+   const { data: recStubs } = await supabase
+      .from("recommendations")
+      .select("id")
+      .eq("profile_id", profileId)
+      .order("id", { ascending: true });
 
    // Match each exp to its DB row by company + position + start_date.
    // This is robust against any ID ordering differences between tables.
@@ -209,6 +210,19 @@ export async function generateProfileContent(
       );
       return byContent ?? rows[fallbackIdx] ?? null;
    }
+
+   const recSaveOps = recommendations.map((text, i) => {
+      const stub = (recStubs ?? [])[i];
+      if (stub) {
+         return supabase
+            .from("recommendations")
+            .update({ text: normalize(text) })
+            .eq("id", stub.id);
+      }
+      return supabase
+         .from("recommendations")
+         .insert({ text: normalize(text), profile_id: profileId });
+   });
 
    await Promise.all([
       supabase.from("profiles").update({
@@ -235,5 +249,7 @@ export async function generateProfileContent(
             .update({ description: normalize(projDescriptions[i] ?? "") })
             .eq("id", row.id);
       }),
+
+      ...recSaveOps,
    ]);
 }

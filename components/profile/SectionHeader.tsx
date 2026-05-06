@@ -1,8 +1,7 @@
-import { HiPencilSquare } from "react-icons/hi2";
 import { FaQuestion } from "react-icons/fa";
 import Tooltip from "../ui/Tooltip";
 
-export default function SectionHeader({ title }: { title: string }) {
+export default function SectionHeader({ title, tooltip }: { title: string; tooltip?: React.ReactElement | string }) {
    return (
       <div className="flex justify-between items-start mb-4">
          <h2 className="text-[18px] font-semibold text-[rgba(0,0,0,0.9)]">{title}</h2>
@@ -20,12 +19,12 @@ export default function SectionHeader({ title }: { title: string }) {
                   <line x1="5" y1="12" x2="19" y2="12" />
                </svg>
             </button>
-            <Tooltip content="Редактирование раздела">
+            {/* <Tooltip content="Редактирование раздела">
                <div className="w-9 h-9 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center text-[rgba(0,0,0,0.55)]">
                   <HiPencilSquare size={18} />
                </div>
-            </Tooltip>
-            <Tooltip content="Добавить новый раздел можно с помощью кнопки «Добавить раздел» вверху профиля">
+            </Tooltip> */}
+            <Tooltip content={tooltip ?? "Добавить новый раздел можно с помощью кнопки «Добавить раздел» вверху профиля"}>
                <div className="w-9 h-9 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center text-[rgba(0,0,0,0.55)]">
                   <FaQuestion size={18} />
                </div>
