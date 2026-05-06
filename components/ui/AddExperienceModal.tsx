@@ -4,16 +4,26 @@ import { useState, useRef, useEffect } from "react";
 import { useForm, FormProvider, useFormContext, useFieldArray } from "react-hook-form";
 import Modal from "@/components/ui/Modal";
 import {
-   HiPencilSquare, HiPlus, HiXMark, HiTrash,
-   HiChevronDown, HiChevronUp, HiBriefcase,
+   HiPencilSquare,
+   HiPlus,
+   HiXMark,
+   HiTrash,
+   HiChevronDown,
+   HiChevronUp,
+   HiBriefcase,
 } from "react-icons/hi2";
 import { defaultWorkExperience } from "@/types/onboarding";
 import { ALL_TECHS } from "@/constants/onboarding/technologies";
 import { ROLES } from "@/constants/onboarding/roles";
 import {
-   MAX_WORK_EXPERIENCES, MAX_TASKS, MAX_ACHIEVEMENTS,
-   MAX_SKILLS_PER_EXP, MAX_COMPANY_LENGTH, MAX_POSITION_LENGTH,
-   MAX_TASK_LENGTH, MAX_ACHIEVEMENT_LENGTH,
+   MAX_WORK_EXPERIENCES,
+   MAX_TASKS,
+   MAX_ACHIEVEMENTS,
+   MAX_SKILLS_PER_EXP,
+   MAX_COMPANY_LENGTH,
+   MAX_POSITION_LENGTH,
+   MAX_TASK_LENGTH,
+   MAX_ACHIEVEMENT_LENGTH,
 } from "@/constants/onboarding/experience";
 import SimpleBar from "simplebar-react";
 import "simplebar-react/dist/simplebar.min.css";
@@ -47,11 +57,15 @@ const ACHIEVEMENT_PLACEHOLDERS = [
    "Увеличил покрытие тестами до 80%",
 ];
 
-
 // ─── Work experience card (light theme) ──────────────────────────────────────
 function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () => void }) {
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-   const { register, watch, setValue, formState: { errors } } = useFormContext<any>();
+   const {
+      register,
+      watch,
+      setValue,
+      formState: { errors },
+   } = useFormContext<any>();
    type CardErrors = {
       company?: { message?: string };
       position?: { message?: string };
@@ -70,37 +84,48 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
 
    useEffect(() => {
       if (techActiveIdx >= 0 && techListRef.current)
-         techListRef.current.querySelectorAll("button")[techActiveIdx]?.scrollIntoView({ block: "nearest" });
+         techListRef.current
+            .querySelectorAll("button")
+            [techActiveIdx]?.scrollIntoView({ block: "nearest" });
    }, [techActiveIdx]);
 
    useEffect(() => {
       if (positionActiveIdx >= 0 && positionListRef.current)
-         positionListRef.current.querySelectorAll("button")[positionActiveIdx]?.scrollIntoView({ block: "nearest" });
+         positionListRef.current
+            .querySelectorAll("button")
+            [positionActiveIdx]?.scrollIntoView({ block: "nearest" });
    }, [positionActiveIdx]);
 
    const base = `workExperiences.${index}` as const;
 
-   const company      = (watch(`${base}.company`) as string) ?? "";
-   const position     = (watch(`${base}.position`) as string) ?? "";
-   const isCurrent    = watch(`${base}.isCurrent`) as boolean;
-   const startMonth   = watch(`${base}.startMonth`) as string;
-   const startYear    = watch(`${base}.startYear`) as string;
-   const endMonth     = watch(`${base}.endMonth`) as string;
-   const endYear      = watch(`${base}.endYear`) as string;
-   const tasks        = (watch(`${base}.tasks`) as string[]) ?? [];
+   const company = (watch(`${base}.company`) as string) ?? "";
+   const position = (watch(`${base}.position`) as string) ?? "";
+   const isCurrent = watch(`${base}.isCurrent`) as boolean;
+   const startMonth = watch(`${base}.startMonth`) as string;
+   const startYear = watch(`${base}.startYear`) as string;
+   const endMonth = watch(`${base}.endMonth`) as string;
+   const endYear = watch(`${base}.endYear`) as string;
+   const tasks = (watch(`${base}.tasks`) as string[]) ?? [];
    const technologies = (watch(`${base}.technologies`) as string[]) ?? [];
    const achievements = (watch(`${base}.achievements`) as string[]) ?? [];
-   const needsHelp    = watch(`${base}.needsAchievementHelp`) as boolean;
-   const projectType  = (watch(`${base}.projectType`) as string) ?? "";
-   const projectRole  = (watch(`${base}.projectRole`) as string) ?? "";
+   const needsHelp = watch(`${base}.needsAchievementHelp`) as boolean;
+   const projectType = (watch(`${base}.projectType`) as string) ?? "";
+   const projectRole = (watch(`${base}.projectRole`) as string) ?? "";
 
-   const positionSuggestions = positionQuery.length > 0
-      ? ROLES.filter((r) => r.label.toLowerCase().includes(positionQuery.toLowerCase())).slice(0, 6)
-      : [];
+   const positionSuggestions =
+      positionQuery.length > 0
+         ? ROLES.filter((r) => r.label.toLowerCase().includes(positionQuery.toLowerCase())).slice(
+              0,
+              6,
+           )
+         : [];
 
-   const suggestions = techQuery.length > 0
-      ? ALL_TECHS.filter((t) => t.toLowerCase().includes(techQuery.toLowerCase()) && !technologies.includes(t)).slice(0, 8)
-      : [];
+   const suggestions =
+      techQuery.length > 0
+         ? ALL_TECHS.filter(
+              (t) => t.toLowerCase().includes(techQuery.toLowerCase()) && !technologies.includes(t),
+           ).slice(0, 8)
+         : [];
 
    const isSkillsAtLimit = technologies.length >= MAX_SKILLS_PER_EXP;
 
@@ -110,7 +135,7 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
       setTechQuery("");
    };
 
-   const setTasks        = (next: string[]) => setValue(`${base}.tasks`, next);
+   const setTasks = (next: string[]) => setValue(`${base}.tasks`, next);
    const setAchievements = (next: string[]) => setValue(`${base}.achievements`, next);
 
    const title = [company, position].filter(Boolean).join(" · ") || `Место работы ${index + 1}`;
@@ -125,10 +150,14 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                className="flex items-center gap-2 flex-1 text-left cursor-pointer min-w-0"
             >
                <HiBriefcase size={15} className="text-[#2563EB] shrink-0" />
-               <span className="text-[rgba(0,0,0,0.85)] font-semibold text-sm truncate">{title}</span>
-               {open
-                  ? <HiChevronUp size={15} className="text-[#9ca3af] shrink-0 ml-1" />
-                  : <HiChevronDown size={15} className="text-[#9ca3af] shrink-0 ml-1" />}
+               <span className="text-[rgba(0,0,0,0.85)] font-semibold text-sm truncate">
+                  {title}
+               </span>
+               {open ? (
+                  <HiChevronUp size={15} className="text-[#9ca3af] shrink-0 ml-1" />
+               ) : (
+                  <HiChevronDown size={15} className="text-[#9ca3af] shrink-0 ml-1" />
+               )}
             </button>
             <button
                type="button"
@@ -142,7 +171,6 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
          {/* Body */}
          {open && (
             <div className="px-5 pb-6 pt-5 space-y-6">
-
                {/* Company + Position */}
                <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -150,14 +178,19 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                      <div className="relative">
                         <input
                            {...register(`${base}.company`, {
-                              maxLength: { value: MAX_COMPANY_LENGTH, message: `Максимум ${MAX_COMPANY_LENGTH} символов` },
+                              maxLength: {
+                                 value: MAX_COMPANY_LENGTH,
+                                 message: `Максимум ${MAX_COMPANY_LENGTH} символов`,
+                              },
                            })}
                            placeholder="Яндекс / Freelance"
                            className={`${cardErrors?.company ? inputErrCls : inputCls} pr-14`}
                         />
                         <CharCount current={company.length} max={MAX_COMPANY_LENGTH} />
                      </div>
-                     {cardErrors?.company?.message && <p className="text-red-500 text-xs mt-1">{cardErrors.company.message}</p>}
+                     {cardErrors?.company?.message && (
+                        <p className="text-red-500 text-xs mt-1">{cardErrors.company.message}</p>
+                     )}
                   </div>
                   <div>
                      <FieldLabel>Должность</FieldLabel>
@@ -172,15 +205,33 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                            }}
                            onKeyDown={(e) => {
                               if (!positionSuggestions.length) return;
-                              if (e.key === "ArrowDown") { e.preventDefault(); setPositionActiveIdx((i) => Math.min(i + 1, positionSuggestions.length - 1)); }
-                              else if (e.key === "ArrowUp") { e.preventDefault(); setPositionActiveIdx((i) => Math.max(i - 1, 0)); }
-                              else if (e.key === "Enter" && positionActiveIdx >= 0) {
+                              if (e.key === "ArrowDown") {
                                  e.preventDefault();
-                                 setValue(`${base}.position`, positionSuggestions[positionActiveIdx].label);
-                                 setPositionQuery(""); setPositionActiveIdx(-1);
-                              } else if (e.key === "Escape") { setPositionQuery(""); setPositionActiveIdx(-1); }
+                                 setPositionActiveIdx((i) =>
+                                    Math.min(i + 1, positionSuggestions.length - 1),
+                                 );
+                              } else if (e.key === "ArrowUp") {
+                                 e.preventDefault();
+                                 setPositionActiveIdx((i) => Math.max(i - 1, 0));
+                              } else if (e.key === "Enter" && positionActiveIdx >= 0) {
+                                 e.preventDefault();
+                                 setValue(
+                                    `${base}.position`,
+                                    positionSuggestions[positionActiveIdx].label,
+                                 );
+                                 setPositionQuery("");
+                                 setPositionActiveIdx(-1);
+                              } else if (e.key === "Escape") {
+                                 setPositionQuery("");
+                                 setPositionActiveIdx(-1);
+                              }
                            }}
-                           onBlur={() => setTimeout(() => { setPositionQuery(""); setPositionActiveIdx(-1); }, 150)}
+                           onBlur={() =>
+                              setTimeout(() => {
+                                 setPositionQuery("");
+                                 setPositionActiveIdx(-1);
+                              }, 150)
+                           }
                            placeholder="Frontend Developer"
                            className={`${cardErrors?.position ? inputErrCls : inputCls} pr-14`}
                         />
@@ -196,7 +247,8 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                                           onMouseDown={(e) => {
                                              e.preventDefault();
                                              setValue(`${base}.position`, r.label);
-                                             setPositionQuery(""); setPositionActiveIdx(-1);
+                                             setPositionQuery("");
+                                             setPositionActiveIdx(-1);
                                           }}
                                           className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer
                                              ${i === positionActiveIdx ? "bg-[#eff6ff] text-[#2563EB]" : "text-[rgba(0,0,0,0.65)] hover:bg-[#f8fafc] hover:text-[rgba(0,0,0,0.9)]"}`}
@@ -209,7 +261,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                            </div>
                         )}
                      </div>
-                     {cardErrors?.position?.message && <p className="text-red-500 text-xs mt-1">{cardErrors.position.message}</p>}
+                     {cardErrors?.position?.message && (
+                        <p className="text-red-500 text-xs mt-1">{cardErrors.position.message}</p>
+                     )}
                   </div>
                </div>
 
@@ -253,9 +307,15 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                         </>
                      )}
                   </div>
-                  {cardErrors?.startMonth?.message && <p className="text-red-500 text-xs mt-1">{cardErrors.startMonth.message}</p>}
+                  {cardErrors?.startMonth?.message && (
+                     <p className="text-red-500 text-xs mt-1">{cardErrors.startMonth.message}</p>
+                  )}
                   <label className="flex items-center gap-2 mt-2.5 cursor-pointer w-fit">
-                     <input type="checkbox" {...register(`${base}.isCurrent`)} className="accent-[#2563EB] w-3.5 h-3.5" />
+                     <input
+                        type="checkbox"
+                        {...register(`${base}.isCurrent`)}
+                        className="accent-[#2563EB] w-3.5 h-3.5"
+                     />
                      <span className="text-[#6b7280] text-xs">Работаю сейчас</span>
                   </label>
                </div>
@@ -264,7 +324,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                <div>
                   <div className="flex items-center justify-between mb-1.5">
                      <FieldLabel>Что ты делал</FieldLabel>
-                     <span className={`text-[10px] tabular-nums ${tasks.length >= MAX_TASKS ? "text-amber-500" : "text-[#9ca3af]"}`}>
+                     <span
+                        className={`text-[10px] tabular-nums ${tasks.length >= MAX_TASKS ? "text-amber-500" : "text-[#9ca3af]"}`}
+                     >
                         {tasks.length}/{MAX_TASKS}
                      </span>
                   </div>
@@ -302,7 +364,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                      className="mt-2 flex items-center gap-1.5 text-[#2563EB] hover:text-[#1d4ed8] text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                      <HiPlus size={13} />
-                     {tasks.length >= MAX_TASKS ? `Достигнут лимит ${MAX_TASKS} задач` : "Добавить задачу"}
+                     {tasks.length >= MAX_TASKS
+                        ? `Достигнут лимит ${MAX_TASKS} задач`
+                        : "Добавить задачу"}
                   </button>
                </div>
 
@@ -310,18 +374,28 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                <div>
                   <div className="flex items-center justify-between mb-1.5">
                      <FieldLabel>Стек технологий</FieldLabel>
-                     <span className={`text-[10px] tabular-nums ${isSkillsAtLimit ? "text-amber-500" : "text-[#9ca3af]"}`}>
+                     <span
+                        className={`text-[10px] tabular-nums ${isSkillsAtLimit ? "text-amber-500" : "text-[#9ca3af]"}`}
+                     >
                         {technologies.length}/{MAX_SKILLS_PER_EXP}
                      </span>
                   </div>
                   {technologies.length > 0 && (
                      <div className="flex flex-wrap gap-1.5 mb-2">
                         {technologies.map((t) => (
-                           <span key={t} className="inline-flex items-center gap-1 bg-[#eff6ff] border border-[#bfdbfe] text-[#2563EB] text-xs px-2 py-0.5 rounded-full">
+                           <span
+                              key={t}
+                              className="inline-flex items-center gap-1 bg-[#eff6ff] border border-[#bfdbfe] text-[#2563EB] text-xs px-2 py-0.5 rounded-full"
+                           >
                               {t}
                               <button
                                  type="button"
-                                 onClick={() => setValue(`${base}.technologies`, technologies.filter((x) => x !== t))}
+                                 onClick={() =>
+                                    setValue(
+                                       `${base}.technologies`,
+                                       technologies.filter((x) => x !== t),
+                                    )
+                                 }
                                  className="text-[#9ca3af] hover:text-red-400 transition-colors cursor-pointer"
                               >
                                  <HiXMark size={10} />
@@ -334,23 +408,57 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                      <input
                         value={techQuery}
                         disabled={isSkillsAtLimit}
-                        onChange={(e) => { setTechQuery(e.target.value); setTechActiveIdx(-1); }}
+                        onChange={(e) => {
+                           setTechQuery(e.target.value);
+                           setTechActiveIdx(-1);
+                        }}
                         onKeyDown={(e) => {
                            if (e.key === "Enter") {
                               e.preventDefault();
-                              const val = techActiveIdx >= 0 && suggestions.length > 0 ? suggestions[techActiveIdx] : techQuery.trim();
-                              if (val) { addTech(val); setTechActiveIdx(-1); }
+                              const val =
+                                 techActiveIdx >= 0 && suggestions.length > 0
+                                    ? suggestions[techActiveIdx]
+                                    : techQuery.trim();
+                              if (val) {
+                                 addTech(val);
+                                 setTechActiveIdx(-1);
+                              }
                               return;
                            }
                            if (suggestions.length > 0) {
-                              if (e.key === "ArrowDown") { e.preventDefault(); setTechActiveIdx((i) => Math.min(i + 1, suggestions.length - 1)); return; }
-                              if (e.key === "ArrowUp")   { e.preventDefault(); setTechActiveIdx((i) => Math.max(i - 1, 0)); return; }
-                              if (e.key === "Escape")    { setTechQuery(""); setTechActiveIdx(-1); return; }
+                              if (e.key === "ArrowDown") {
+                                 e.preventDefault();
+                                 setTechActiveIdx((i) => Math.min(i + 1, suggestions.length - 1));
+                                 return;
+                              }
+                              if (e.key === "ArrowUp") {
+                                 e.preventDefault();
+                                 setTechActiveIdx((i) => Math.max(i - 1, 0));
+                                 return;
+                              }
+                              if (e.key === "Escape") {
+                                 setTechQuery("");
+                                 setTechActiveIdx(-1);
+                                 return;
+                              }
                            }
-                           if (e.key === "," && techQuery.trim()) { e.preventDefault(); addTech(techQuery.trim()); setTechActiveIdx(-1); }
+                           if (e.key === "," && techQuery.trim()) {
+                              e.preventDefault();
+                              addTech(techQuery.trim());
+                              setTechActiveIdx(-1);
+                           }
                         }}
-                        onBlur={() => setTimeout(() => { setTechQuery(""); setTechActiveIdx(-1); }, 150)}
-                        placeholder={isSkillsAtLimit ? `Достигнут лимит ${MAX_SKILLS_PER_EXP} технологий` : "React, Node.js, Python… (Enter или запятая)"}
+                        onBlur={() =>
+                           setTimeout(() => {
+                              setTechQuery("");
+                              setTechActiveIdx(-1);
+                           }, 150)
+                        }
+                        placeholder={
+                           isSkillsAtLimit
+                              ? `Достигнут лимит ${MAX_SKILLS_PER_EXP} технологий`
+                              : "React, Node.js, Python… (Enter или запятая)"
+                        }
                         className={`${inputCls} disabled:opacity-50 disabled:cursor-not-allowed`}
                      />
                      {suggestions.length > 0 && (
@@ -361,7 +469,11 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                                     <button
                                        key={s}
                                        type="button"
-                                       onMouseDown={(e) => { e.preventDefault(); addTech(s); setTechActiveIdx(-1); }}
+                                       onMouseDown={(e) => {
+                                          e.preventDefault();
+                                          addTech(s);
+                                          setTechActiveIdx(-1);
+                                       }}
                                        className={`w-full text-left px-3 py-2 text-sm transition-colors cursor-pointer
                                           ${i === techActiveIdx ? "bg-[#eff6ff] text-[#2563EB]" : "text-[rgba(0,0,0,0.65)] hover:bg-[#f8fafc] hover:text-[rgba(0,0,0,0.9)]"}`}
                                     >
@@ -380,7 +492,9 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                   <div className="flex items-center justify-between mb-1.5">
                      <FieldLabel>Достижения / результаты</FieldLabel>
                      {!needsHelp && (
-                        <span className={`text-[10px] tabular-nums ${achievements.length >= MAX_ACHIEVEMENTS ? "text-amber-500" : "text-[#9ca3af]"}`}>
+                        <span
+                           className={`text-[10px] tabular-nums ${achievements.length >= MAX_ACHIEVEMENTS ? "text-amber-500" : "text-[#9ca3af]"}`}
+                        >
                            {achievements.length}/{MAX_ACHIEVEMENTS}
                         </span>
                      )}
@@ -399,14 +513,20 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                                           next[i] = e.target.value;
                                           setAchievements(next);
                                        }}
-                                       placeholder={ACHIEVEMENT_PLACEHOLDERS[i % ACHIEVEMENT_PLACEHOLDERS.length]}
+                                       placeholder={
+                                          ACHIEVEMENT_PLACEHOLDERS[
+                                             i % ACHIEVEMENT_PLACEHOLDERS.length
+                                          ]
+                                       }
                                        className={`${inputCls} pr-14`}
                                     />
                                     <CharCount current={ach.length} max={MAX_ACHIEVEMENT_LENGTH} />
                                  </div>
                                  <button
                                     type="button"
-                                    onClick={() => setAchievements(achievements.filter((_, j) => j !== i))}
+                                    onClick={() =>
+                                       setAchievements(achievements.filter((_, j) => j !== i))
+                                    }
                                     className="text-[#9ca3af] hover:text-red-400 transition-colors cursor-pointer shrink-0"
                                  >
                                     <HiXMark size={16} />
@@ -421,19 +541,29 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                            className="mt-2 flex items-center gap-1.5 text-[#2563EB] hover:text-[#1d4ed8] text-xs font-medium transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                            <HiPlus size={13} />
-                           {achievements.length >= MAX_ACHIEVEMENTS ? `Достигнут лимит ${MAX_ACHIEVEMENTS} результатов` : "Добавить результат"}
+                           {achievements.length >= MAX_ACHIEVEMENTS
+                              ? `Достигнут лимит ${MAX_ACHIEVEMENTS} результатов`
+                              : "Добавить результат"}
                         </button>
                      </>
                   )}
                   <label className="flex items-center gap-2 mt-3 cursor-pointer w-fit">
-                     <input type="checkbox" {...register(`${base}.needsAchievementHelp`)} className="accent-[#2563EB] w-3.5 h-3.5" />
-                     <span className="text-[#6b7280] text-xs">Помочь сформулировать результаты</span>
+                     <input
+                        type="checkbox"
+                        {...register(`${base}.needsAchievementHelp`)}
+                        className="accent-[#2563EB] w-3.5 h-3.5"
+                     />
+                     <span className="text-[#6b7280] text-xs">
+                        Помочь сформулировать результаты
+                     </span>
                   </label>
                   {needsHelp && (
                      <p className="mt-1.5 ml-5 text-[#6b7280] text-xs leading-relaxed">
                         Система предложит примеры метрик на основе твоего опыта
                         <br />
-                        <span className="text-[rgba(0,0,0,0.45)]">(Ты сможешь отредактировать их перед использованием)</span>
+                        <span className="text-[rgba(0,0,0,0.45)]">
+                           (Ты сможешь отредактировать их перед использованием)
+                        </span>
                      </p>
                   )}
                </div>
@@ -445,7 +575,11 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                      onClick={() => setProjectOpen((o) => !o)}
                      className="flex items-center gap-2 text-[#6b7280] hover:text-[rgba(0,0,0,0.75)] transition-colors cursor-pointer w-full text-left"
                   >
-                     {projectOpen ? <HiChevronUp size={13} className="shrink-0" /> : <HiChevronDown size={13} className="shrink-0" />}
+                     {projectOpen ? (
+                        <HiChevronUp size={13} className="shrink-0" />
+                     ) : (
+                        <HiChevronDown size={13} className="shrink-0" />
+                     )}
                      <span className="text-xs font-medium">Для секции «Проекты» в LinkedIn</span>
                      <span className="text-[10px] text-[#9ca3af] ml-auto">необязательно</span>
                   </button>
@@ -462,18 +596,33 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                                  value={projectType}
                                  onChange={(v) => setValue(`${base}.projectType`, v)}
                                  options={[
-                                    { value: "saas_product",      label: "SaaS / продукт с реальными пользователями" },
-                                    { value: "mobile_app",        label: "Мобильное приложение" },
-                                    { value: "open_source",       label: "Open source проект / библиотека" },
-                                    { value: "open_source_contrib",label: "Вклад в чужой open source" },
-                                    { value: "design_system",     label: "Дизайн-система / UI-библиотека" },
-                                    { value: "api_service",       label: "API / backend сервис" },
-                                    { value: "freelance",         label: "Фриланс / заказная разработка" },
-                                    { value: "internal_tool",     label: "Внутренний инструмент / автоматизация" },
-                                    { value: "side_project",      label: "Pet-проект / эксперимент" },
-                                    { value: "hackathon",         label: "Хакатон" },
-                                    { value: "academic",          label: "Учебный / дипломный" },
-                                    { value: "volunteer",         label: "Волонтёрский / некоммерческий" },
+                                    {
+                                       value: "saas_product",
+                                       label: "SaaS / продукт с реальными пользователями",
+                                    },
+                                    { value: "mobile_app", label: "Мобильное приложение" },
+                                    {
+                                       value: "open_source",
+                                       label: "Open source проект / библиотека",
+                                    },
+                                    {
+                                       value: "open_source_contrib",
+                                       label: "Вклад в чужой open source",
+                                    },
+                                    {
+                                       value: "design_system",
+                                       label: "Дизайн-система / UI-библиотека",
+                                    },
+                                    { value: "api_service", label: "API / backend сервис" },
+                                    { value: "freelance", label: "Фриланс / заказная разработка" },
+                                    {
+                                       value: "internal_tool",
+                                       label: "Внутренний инструмент / автоматизация",
+                                    },
+                                    { value: "side_project", label: "Pet-проект / эксперимент" },
+                                    { value: "hackathon", label: "Хакатон" },
+                                    { value: "academic", label: "Учебный / дипломный" },
+                                    { value: "volunteer", label: "Волонтёрский / некоммерческий" },
                                  ]}
                                  placeholder="Выбрать тип"
                               />
@@ -484,18 +633,18 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                                  value={projectRole}
                                  onChange={(v) => setValue(`${base}.projectRole`, v)}
                                  options={[
-                                    { value: "solo",        label: "Единственный разработчик" },
-                                    { value: "developer",   label: "Разработчик" },
-                                    { value: "co-founder",  label: "Со-основатель" },
-                                    { value: "lead",        label: "Тимлид / основной разработчик" },
-                                    { value: "architect",   label: "Архитектор / Tech Lead" },
-                                    { value: "fullstack",   label: "Full-stack разработчик" },
-                                    { value: "frontend",    label: "Frontend разработчик" },
-                                    { value: "backend",     label: "Backend разработчик" },
-                                    { value: "mobile",      label: "Mobile разработчик" },
-                                    { value: "devops",      label: "DevOps / Инфраструктура" },
+                                    { value: "solo", label: "Единственный разработчик" },
+                                    { value: "developer", label: "Разработчик" },
+                                    { value: "co-founder", label: "Со-основатель" },
+                                    { value: "lead", label: "Тимлид / основной разработчик" },
+                                    { value: "architect", label: "Архитектор / Tech Lead" },
+                                    { value: "fullstack", label: "Full-stack разработчик" },
+                                    { value: "frontend", label: "Frontend разработчик" },
+                                    { value: "backend", label: "Backend разработчик" },
+                                    { value: "mobile", label: "Mobile разработчик" },
+                                    { value: "devops", label: "DevOps / Инфраструктура" },
                                     { value: "contributor", label: "Контрибьютор" },
-                                    { value: "mentor",      label: "Ментор / ревьюер" },
+                                    { value: "mentor", label: "Ментор / ревьюер" },
                                  ]}
                                  placeholder="Выбрать роль"
                               />
@@ -512,7 +661,6 @@ function WorkExperienceCard({ index, onRemove }: { index: number; onRemove: () =
                      </div>
                   )}
                </div>
-
             </div>
          )}
       </div>
@@ -577,14 +725,18 @@ function ExperienceForm({ onBack, profileId }: { onBack: () => void; profileId: 
                   type="button"
                   onClick={() => append({ ...defaultWorkExperience })}
                   className={`mt-3 w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl border-2 border-dashed transition-all duration-150 cursor-pointer
-                     ${fields.length === 0
-                        ? "border-[#2563EB]/40 bg-[#eff6ff] text-[#2563EB] hover:border-[#2563EB]/70 hover:bg-[#dbeafe]"
-                        : "border-[#e2e8f0] text-[#9ca3af] hover:border-[#2563EB]/40 hover:text-[#2563EB]"}`}
+                     ${
+                        fields.length === 0
+                           ? "border-[#2563EB]/40 bg-[#eff6ff] text-[#2563EB] hover:border-[#2563EB]/70 hover:bg-[#dbeafe]"
+                           : "border-[#e2e8f0] text-[#9ca3af] hover:border-[#2563EB]/40 hover:text-[#2563EB]"
+                     }`}
                >
                   <HiPlus size={16} />
                   <span className="text-sm font-medium">
                      Добавить место работы
-                     <span className="ml-2 text-xs opacity-60">{fields.length}/{MAX_WORK_EXPERIENCES}</span>
+                     <span className="ml-2 text-xs opacity-60">
+                        {fields.length}/{MAX_WORK_EXPERIENCES}
+                     </span>
                   </span>
                </button>
             ) : (
@@ -593,9 +745,7 @@ function ExperienceForm({ onBack, profileId }: { onBack: () => void; profileId: 
                </p>
             )}
 
-            {saveError && (
-               <p className="mt-4 text-[12px] text-red-500 text-center">{saveError}</p>
-            )}
+            {saveError && <p className="mt-4 text-[12px] text-red-500 text-center">{saveError}</p>}
 
             <button
                type="submit"
@@ -649,7 +799,8 @@ export default function AddExperienceModal({ isOpen, onClose, profileId }: Props
                      Добавьте опыт работы
                   </h2>
                   <p className="text-[13px] text-[rgba(0,0,0,0.55)] mb-5 leading-relaxed">
-                     Вы не заполнили раздел опыта работы. Добавьте хотя бы одно место работы — это ключевой раздел профиля LinkedIn, который видят рекрутеры в первую очередь.
+                     Вы не заполнили раздел опыта работы. Добавьте хотя бы одно место работы - это
+                     ключевой раздел профиля LinkedIn, который видят рекрутеры в первую очередь.
                   </p>
 
                   <button

@@ -23,7 +23,11 @@ type Props = {
    is_purchased: boolean;
 };
 
-export default function RecommendationsSection({ recommendations, onBlurClick, is_purchased }: Props) {
+export default function RecommendationsSection({
+   recommendations,
+   onBlurClick,
+   is_purchased,
+}: Props) {
    const fakeTexts = useMemo(
       () =>
          Array.from({ length: Math.max(2, recommendations.length) }, () =>
@@ -35,10 +39,15 @@ export default function RecommendationsSection({ recommendations, onBlurClick, i
    if (recommendations.length === 0) return null;
    const tooltipText = (
       <>
-         Попросите коллегу или менеджера оставить рекомендацию в LinkedIn. Лучше выбрать человека с сильным профилем, с которым вы работали вместе — такие рекомендации выглядят убедительнее.
-         <br /><br />
-         Как добавить:<br /><br />
-         1. Нажмите «Добавить раздел» и выберите «Рекомендации»<br />
+         Попросите коллегу или менеджера оставить рекомендацию в LinkedIn. Лучше выбрать человека с
+         сильным профилем, с которым вы работали вместе - такие рекомендации выглядят убедительнее.
+         <br />
+         <br />
+         Как добавить:
+         <br />
+         <br />
+         1. Нажмите «Добавить раздел» и выберите «Рекомендации»
+         <br />
          2. В разделе нажмите «+» → «Запросить рекомендацию»
       </>
    );

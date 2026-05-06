@@ -173,7 +173,7 @@ export async function generateProfileContent(
    // Recommendations: 1 per work experience, minimum 2. Extra slots use skills-only prompt.
    const skillsOnlyCount = Math.max(0, 2 - exps.length);
 
-   // All promises are fired concurrently — Promise.all just awaits them together.
+   // All promises are fired concurrently - Promise.all just awaits them together.
    const [expDescriptions, projDescriptions, resumeSummary, recommendations] = await Promise.all([
       Promise.all(exps.map((exp) => askSingle(experiencePrompt(expInput(exp), formDataLike)))),
       Promise.all(exps.map((exp) => askSingle(projectPrompt(expInput(exp), formDataLike)))),

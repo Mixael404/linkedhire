@@ -5,6 +5,7 @@ import {
    HiCodeBracket,
    HiArrowDownTray,
    HiBookOpen,
+   HiStar,
 } from "react-icons/hi2";
 
 const ITEMS = [
@@ -27,6 +28,12 @@ const ITEMS = [
       accent: { bg: "bg-[#8B5CF6]/10", border: "border-[#8B5CF6]/20", text: "text-[#A78BFA]" },
    },
    {
+      icon: HiStar,
+      title: "Recommendations",
+      subtitle: "Готовые тексты рекомендаций от коллег и руководителей - под международный формат",
+      accent: { bg: "bg-[#F97316]/10", border: "border-[#F97316]/20", text: "text-[#FDBA74]" },
+   },
+   {
       icon: HiCodeBracket,
       title: "Skills / keywords",
       subtitle: "ATS-оптимизированные теги - тебя найдут нужные рекрутеры",
@@ -38,12 +45,12 @@ const ITEMS = [
       subtitle: "Готово к отправке - в международном формате",
       accent: { bg: "bg-[#F59E0B]/10", border: "border-[#F59E0B]/20", text: "text-[#FCD34D]" },
    },
-   {
-      icon: HiBookOpen,
-      title: "Инструкция куда всё вставить",
-      subtitle: "Пошаговый гайд - в LinkedIn и куда отправлять резюме",
-      accent: { bg: "bg-[#EC4899]/10", border: "border-[#EC4899]/20", text: "text-[#F472B6]" },
-   },
+   // {
+   //    icon: HiBookOpen,
+   //    title: "Инструкция куда всё вставить",
+   //    subtitle: "Пошаговый гайд - в LinkedIn и куда отправлять резюме",
+   //    accent: { bg: "bg-[#EC4899]/10", border: "border-[#EC4899]/20", text: "text-[#F472B6]" },
+   // },
 ];
 
 export default function WhatYouGet() {

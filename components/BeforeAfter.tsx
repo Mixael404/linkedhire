@@ -21,6 +21,12 @@ const comparisons = [
       after: "Designed and built REST API serving 500K+ daily requests. Reduced p95 latency by 60% through Redis caching. Led team of 3 engineers during product relaunch.",
       note: "Метрики + достижения + роль в команде",
    },
+   {
+      section: "Recommendations",
+      before: "Рекомендаций нет. Раздел пустой - рекрутеры не видят социального доказательства.",
+      after: "\"Alexey led the backend rewrite that cut our API latency by 60%. One of the most reliable engineers I've worked with - brings both technical depth and clear communication to every project.\" - CTO, Fintech startup",
+      note: "Конкретика + измеримый результат + личная характеристика",
+   },
 ];
 
 export default function BeforeAfter() {

@@ -6,8 +6,8 @@ export type RecommendationExpInput = ResolvedFormData["workExperiences"][number]
 };
 
 export const recommendationFromExpPrompt = (
-  exp: RecommendationExpInput,
-  data: ResolvedFormData,
+   exp: RecommendationExpInput,
+   data: ResolvedFormData,
 ): string => `You are writing a LinkedIn recommendation for a ${data.role} targeting the ${data.targetRegion} job market.
 
 CANDIDATE PROFILE:
@@ -60,9 +60,8 @@ STYLE:
 OUTPUT: Return ONLY the recommendation text.
 `;
 
-
 export const recommendationFromSkillsPrompt = (data: ResolvedFormData): string =>
-`You are writing a LinkedIn recommendation for a ${data.role} targeting the ${data.targetRegion} job market.
+   `You are writing a LinkedIn recommendation for a ${data.role} targeting the ${data.targetRegion} job market.
 
 CANDIDATE PROFILE:
 - Target role: ${data.role}
@@ -89,7 +88,7 @@ STRICT STRUCTURE:
 CRITICAL RULES:
 - Choose 1–2 task types and base the story on them
 - Use task types to reflect seniority (e.g. architecture > UI)
-- Do NOT list categories — integrate them naturally
+- Do NOT list categories - integrate them naturally
 - Do NOT use placeholders like [Name]
 - Refer to the person as "he" or "they" consistently
 
