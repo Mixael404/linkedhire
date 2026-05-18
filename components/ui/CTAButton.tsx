@@ -23,12 +23,12 @@ export default function CTAButton({
   const variants = {
     primary: {
       default:
-        "btn-glow bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl text-base",
+        "btn-glow bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-2.5 sm:px-8 sm:py-4 rounded-xl text-sm sm:text-base",
       sm: "btn-glow bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-lg text-sm font-semibold",
     },
     secondary: {
       default:
-        "border border-[#1B2847] hover:border-[#2563EB]/50 text-[#94A3B8] hover:text-white px-8 py-4 rounded-xl text-base font-medium",
+        "border border-[#1B2847] hover:border-[#2563EB]/50 text-[#94A3B8] hover:text-white px-6 py-2.5 sm:px-8 sm:py-4 rounded-xl text-sm sm:text-base font-medium",
       sm: "border border-[#1B2847] hover:border-[#2563EB]/50 text-[#94A3B8] hover:text-white px-4 py-1.5 rounded-lg text-sm font-medium",
     },
   };

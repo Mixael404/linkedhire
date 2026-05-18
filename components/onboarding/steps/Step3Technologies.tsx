@@ -5,26 +5,34 @@ import { useFormContext } from "react-hook-form";
 import { HiXMark, HiPlus } from "react-icons/hi2";
 import { OnboardingData } from "../../../types/onboarding";
 import { TECH_GROUPS } from "../../../constants/onboarding/technologies";
+import { TASK_CATEGORIES } from "../../../constants/onboarding/taskTypes";
 import Accordion from "../Accordion";
+
+const MAX_TASK_TYPES = 7;
 
 function Chip({
    label,
    selected,
+   disabled,
    onClick,
 }: {
    label: string;
    selected: boolean;
+   disabled?: boolean;
    onClick: () => void;
 }) {
    return (
       <button
          type="button"
          onClick={onClick}
-         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150 cursor-pointer
+         disabled={disabled}
+         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all duration-150
         ${
            selected
-              ? "bg-[#2563EB] border-[#2563EB] text-white"
-              : "bg-[#0D1426] border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/50 hover:text-white"
+              ? "bg-[#2563EB] border-[#2563EB] text-white cursor-pointer"
+              : disabled
+                ? "bg-[#0D1426] border-[#1B2847] text-[#475569] cursor-not-allowed"
+                : "bg-[#0D1426] border-[#1B2847] text-[#94A3B8] hover:border-[#2563EB]/50 hover:text-white cursor-pointer"
         }`}
       >
          {label}
@@ -38,7 +46,9 @@ export default function Step3Technologies() {
    const { watch, setValue } = useFormContext<OnboardingData>();
 
    const technologies = watch("technologies") ?? [];
+   const taskTypes = watch("taskTypes") ?? [];
    const [customTechInput, setCustomTechInput] = useState("");
+   const [openTaskGroup, setOpenTaskGroup] = useState<string | null>(null);
    const isAtLimit = technologies.length >= MAX_SKILLS;
 
    const toggleTech = (tech: string) => {
@@ -80,6 +90,73 @@ export default function Step3Technologies() {
                Выбери всё, с чем работаешь - чем точнее, тем лучше профиль
             </p>
          </div>
+
+         {/* ── Типы задач ── */}
+         <div className="mb-10">
+            <div className="flex items-baseline justify-between mb-4">
+               <h3
+                  className="text-white font-bold text-base"
+                  style={{ fontFamily: "var(--font-geologica)" }}
+               >
+                  С какими типами задач работал?
+               </h3>
+               <span
+                  className={`text-xs font-medium tabular-nums ${taskTypes.length >= MAX_TASK_TYPES ? "text-amber-400" : "text-[#64748B]"}`}
+               >
+                  {taskTypes.length} / {MAX_TASK_TYPES}
+               </span>
+            </div>
+
+            <div className="flex flex-col">
+               {TASK_CATEGORIES.map((cat) => {
+                  const selectedInCat = taskTypes.filter((t) => cat.tasks.includes(t)).length;
+                  return (
+                     <Accordion
+                        key={cat.id}
+                        title={cat.label}
+                        badge={selectedInCat > 0 ? selectedInCat : undefined}
+                        open={openTaskGroup === cat.id}
+                        onToggle={() =>
+                           setOpenTaskGroup((prev) => (prev === cat.id ? null : cat.id))
+                        }
+                     >
+                        <p className="text-[#475569] text-xs mb-3">👉 {cat.subtitle}</p>
+                        <div className="flex flex-wrap gap-2">
+                           {cat.tasks.map((task) => {
+                              const isSelected = taskTypes.includes(task);
+                              return (
+                                 <Chip
+                                    key={task}
+                                    label={task}
+                                    selected={isSelected}
+                                    disabled={!isSelected && taskTypes.length >= MAX_TASK_TYPES}
+                                    onClick={() => {
+                                       if (isSelected) {
+                                          setValue(
+                                             "taskTypes",
+                                             taskTypes.filter((t) => t !== task),
+                                          );
+                                       } else if (taskTypes.length < MAX_TASK_TYPES) {
+                                          setValue("taskTypes", [...taskTypes, task]);
+                                       }
+                                    }}
+                                 />
+                              );
+                           })}
+                        </div>
+                     </Accordion>
+                  );
+               })}
+            </div>
+         </div>
+
+         {/* ── Заголовок навыков ── */}
+         <h3
+            className="text-white font-bold text-base mb-4"
+            style={{ fontFamily: "var(--font-geologica)" }}
+         >
+            Навыки
+         </h3>
 
          {/* Selected tags strip */}
          {technologies.length > 0 && (

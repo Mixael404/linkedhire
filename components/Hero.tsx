@@ -25,7 +25,7 @@ export default function Hero() {
                   </div>
 
                   <h1
-                     className="anim-2 text-4xl sm:text-lime-400xl lg:text-[56px] font-black leading-[1.1] tracking-tight text-white mb-6"
+                     className="anim-2 text-[26px] sm:text-4xl lg:text-[56px] font-black leading-[1.15] sm:leading-[1.1] tracking-tight text-white mb-4 sm:mb-6"
                      style={{ fontFamily: "var(--font-geologica)" }}
                   >
                      Хочешь выйти на
@@ -33,20 +33,20 @@ export default function Hero() {
                      <span className="text-gradient">валютную удалёнку?</span>
                   </h1>
 
-                  <p className="anim-3 text-xl text-[#94A3B8] leading-relaxed mb-3 max-w-lg">
+                  <p className="anim-3 text-[15px] sm:text-xl text-[#94A3B8] leading-relaxed mb-3 max-w-lg">
                      Пока российский IT-рынок закрывается, в США и Европе тысячи remote-вакансий для
                      разработчиков - без переезда и без идеального английского.
                   </p>
                   <ul
                      style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
-                     className="anim-3 text-lg text-[#94A3B8] leading-relaxed mb-10 max-w-lg"
+                     className="anim-3 text-sm sm:text-lg text-[#94A3B8] leading-relaxed mb-8 sm:mb-10 max-w-lg"
                   >
                      <li>Получай отклики от рекрутеров из США и Европы</li>
                      <li>Упакуй опыт под международные стандарты</li>
                      <li>Готовый LinkedIn + PDF-резюме за 10 минут</li>
                   </ul>
 
-                  <div className="anim-4 flex flex-col sm:flex-row gap-4 mb-10">
+                  <div className="anim-4 flex flex-col sm:flex-row gap-2.5 sm:gap-4 mb-7 sm:mb-10">
                      <CTAButton href="/onboarding">
                         Начать бесплатно
                         <HiArrowRight size={16} />
